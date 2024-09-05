@@ -17,16 +17,15 @@ Team Project: Simulating real-world scenarios while practicing Scrum methodology
 - server.js: Start the server.
 - Store your personal MongoDB Atlas credentials in your .env file and add MONGO_URL='Your link'
 
+Install dependencies, you have to do this on the frontend and backend folders separately: 
+npm install
 
-
-How to start the development server: 
+How to start the Vite development server (frontend): 
 npm run dev
 
 Run the backend: 
 node server.js
 
-Run the frontend:
-npm start
 
 
 # Don't have the MongoDB Atlas account? 
