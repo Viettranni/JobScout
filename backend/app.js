@@ -1,11 +1,13 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const authRoutes = require('./src/routes/authRoutes');
-const jobRoutes = require('./src/routes/jobRoutes');
+const authRoutes = require('./src/routes/authRouter');
+const jobRoutes = require('./src/routes/jobRouter');
 
 const app = express();
 app.use(express.json());
+
+// Routers
 app.use('/api/auth', authRoutes);
 app.use('/api', jobRoutes);
 
