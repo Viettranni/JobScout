@@ -32,7 +32,7 @@ const duuniTori = async (city = "", searchTerm = "") => {
   // Handle the cookies modal (if it appears)
   try {
     const cookiesAcceptButtonSelector = ".gdpr-modal__button--accept";
-    await page.waitForSelector(cookiesAcceptButtonSelector, { timeout: 5000 });
+    await page.waitForSelector(cookiesAcceptButtonSelector, { timeout: 3000 });
     await page.click(cookiesAcceptButtonSelector);
     console.log("Cookies modal accepted");
   } catch (err) {
@@ -40,9 +40,23 @@ const duuniTori = async (city = "", searchTerm = "") => {
   }
 
   // Scrape the job listings
-  const jobs = await page.evaluate(() => {
-    return Array.from(document.querySelectorAll(".job-box")).map(
-      (jobElement) => {
+  const jobs = await page.evaluate((searchTerm) => {
+    // Function to parse the datePosted string
+    const parseDatePosted = (datePostedStr) => {
+      // Extract date part from the string
+      const match = datePostedStr.match(/Julkaistu (\d+)\.(\d+)/);
+      if (match) {
+        const day = parseInt(match[1], 10);
+        const month = parseInt(match[2], 10) - 1; // Months are zero-based in JS Date
+        const year = new Date().getFullYear(); // Current year
+
+        return new Date(year, month, day).toISOString(); // Format as ISO string
+      }
+      return "N/A";
+    };
+
+    return Array.from(document.querySelectorAll(".job-box"))
+      .map((jobElement) => {
         // Extract data using querySelector
         const title =
           jobElement.querySelector(".job-box__title")?.innerText.trim() ||
@@ -61,19 +75,26 @@ const duuniTori = async (city = "", searchTerm = "") => {
           jobElement.querySelector(".job-box__job-posted")?.innerText.trim() ||
           "N/A";
         const jobUrl = jobElement.querySelector("a.job-box__hover")?.href || "";
-        const category = jobElement.getAttribute("data-category") || "N/A"; // Extract category from data-category attribute
+        const category =
+          jobElement
+            .querySelector("a.job-box__hover")
+            ?.getAttribute("data-category") || "N/A"; // Extract category from data-category attribute
 
         return {
           title,
           company,
           location,
-          datePosted,
+          datePosted: parseDatePosted(datePosted),
           url: `https://duunitori.fi${jobUrl}`,
           category,
         };
-      }
-    );
-  });
+      })
+      .filter(
+        (job) =>
+          job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          job.company.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+  }, searchTerm);
 
   // Add jobs to jobList
   jobList.push(...jobs);
@@ -89,11 +110,12 @@ const duuniTori = async (city = "", searchTerm = "") => {
   await browser.close();
 
   console.log("Scraping complete. Jobs:", jobs);
+  console.log(new Date() - jobs[1].datePosted);
 };
 
 // Example usage with dynamic parameters provided by the user
 const city = "helsinki"; // Example of city parameter
-const searchTerm = "software engineer"; // Example of an empty search term
+const searchTerm = "lääkäri"; // Example of a search term
 
 duuniTori(city, searchTerm);
 
