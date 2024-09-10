@@ -1,7 +1,57 @@
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-extra");
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 const JobPost = require("../models/JobPost");
 
+puppeteer.use(StealthPlugin());
+
 const jobList = [];
+
+// Function to scrape job details from individual job pages
+const scrapeJobDetails = async (jobUrl, browser) => {
+  const jobPage = await browser.newPage(); // Open a new tab for each job
+  await jobPage.goto(jobUrl, { waitUntil: "networkidle2" });
+
+  const jobDetails = await jobPage.evaluate(() => {
+    const descriptionElement = document.querySelector(".description-box");
+    if (!descriptionElement) return {};
+
+    // Extract the full description text
+    const descriptionText = descriptionElement.innerText.trim();
+
+    // Extract responsibilities specifically if they are in a separate list
+    const responsibilitiesElement =
+      descriptionElement.querySelector("strong + ul");
+    const responsibilitiesText = responsibilitiesElement
+      ? responsibilitiesElement.innerText.trim()
+      : "N/A";
+
+    return {
+      description: descriptionText,
+      responsibilities: responsibilitiesText,
+    };
+  });
+
+  await jobPage.close(); // Close the tab after scraping
+  return jobDetails;
+};
+
+// Function to fetch job details for all job URLs concurrently
+const fetchJobDetailsConcurrently = async (jobUrls, browser) => {
+  const jobDetailsPromises = jobUrls.map(async (jobUrl) => {
+    if (jobUrl !== "N/A") {
+      console.log(`Scraping job details for URL: ${jobUrl}`);
+      try {
+        return await scrapeJobDetails(jobUrl, browser);
+      } catch (error) {
+        console.error(`Error scraping job details for URL ${jobUrl}:`, error);
+        return null;
+      }
+    }
+    return null;
+  });
+
+  return Promise.all(jobDetailsPromises);
+};
 
 const duuniTori = async (city = "", searchTerm = "") => {
   const browser = await puppeteer.launch({ headless: false });
@@ -43,21 +93,18 @@ const duuniTori = async (city = "", searchTerm = "") => {
   const jobs = await page.evaluate((searchTerm) => {
     // Function to parse the datePosted string
     const parseDatePosted = (datePostedStr) => {
-      // Extract date part from the string
       const match = datePostedStr.match(/Julkaistu (\d+)\.(\d+)/);
       if (match) {
         const day = parseInt(match[1], 10);
-        const month = parseInt(match[2], 10) - 1; // Months are zero-based in JS Date
-        const year = new Date().getFullYear(); // Current year
-
-        return new Date(year, month, day).toISOString(); // Format as ISO string
+        const month = parseInt(match[2], 10) - 1;
+        const year = new Date().getFullYear();
+        return new Date(year, month, day).toISOString();
       }
       return "N/A";
     };
 
     return Array.from(document.querySelectorAll(".job-box"))
       .map((jobElement) => {
-        // Extract data using querySelector
         const title =
           jobElement.querySelector(".job-box__title")?.innerText.trim() ||
           "N/A";
@@ -78,14 +125,14 @@ const duuniTori = async (city = "", searchTerm = "") => {
         const category =
           jobElement
             .querySelector("a.job-box__hover")
-            ?.getAttribute("data-category") || "N/A"; // Extract category from data-category attribute
+            ?.getAttribute("data-category") || "N/A";
 
         return {
           title,
           company,
           location,
           datePosted: parseDatePosted(datePosted),
-          url: `https://duunitori.fi${jobUrl}`,
+          url: jobUrl,
           category,
         };
       })
@@ -96,8 +143,20 @@ const duuniTori = async (city = "", searchTerm = "") => {
       );
   }, searchTerm);
 
-  // Add jobs to jobList
-  jobList.push(...jobs);
+  // Extract job URLs for detailed scraping
+  const jobUrls = jobs.map((job) => job.url);
+
+  // Fetch detailed job information concurrently
+  const jobDetails = await fetchJobDetailsConcurrently(jobUrls, browser);
+
+  // Combine job information with detailed descriptions
+  jobs.forEach((job, index) => {
+    if (jobDetails[index]) {
+      job.description = jobDetails[index].description;
+      job.responsibilities = jobDetails[index].responsibilities;
+    }
+    jobList.push(job); // Add job to jobList
+  });
 
   // Store the data in the database
   try {
@@ -110,12 +169,12 @@ const duuniTori = async (city = "", searchTerm = "") => {
   await browser.close();
 
   console.log("Scraping complete. Jobs:", jobs);
-  console.log(new Date() - jobs[1].datePosted);
+  console.log(`Total jobs scraped: ${jobs.length}`);
 };
 
 // Example usage with dynamic parameters provided by the user
 const city = "helsinki"; // Example of city parameter
-const searchTerm = "lääkäri"; // Example of a search term
+const searchTerm = "software engineer"; // Example of a search term
 
 duuniTori(city, searchTerm);
 
