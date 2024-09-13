@@ -1,31 +1,25 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react";
+import "./index.css";
 
-import Register from './components/Register';
-import Login from './components/Login';
-import Logout from './components/Logout';
-import JobList from './components/JobList';
+import Navbar from "./components/Navbar";
+import JobSearchComponent from "./components/JobSearchComponent";
+import ClientsSection from "./components/ClientSection";
+import JobScoutInfo from "./components/JobScoutInfo";
+import JobOpportunities from "./components/JobOpportunities";
+import Footer from "./components/Footer";
 
-function App() {
-  const [token, setToken] = useState(localStorage.getItem('token'));
-
+const App = () => {
   return (
-      <div className="App">
-          {!token ? (
-              <div>
-                  <Register />
-                  <Login setToken={setToken} />
-              </div>
-          ) : (
-              <div>
-                  <Logout setToken={setToken} />
-                  <JobList />
-              </div>
-          )}
-      </div>
+    <div>
+      <Navbar />
+      {/* Other components go here */}
+      <JobSearchComponent />
+      <ClientsSection />
+      <JobScoutInfo />
+      <JobOpportunities />
+      <Footer />
+    </div>
   );
-}
+};
 
-export default App
+export default App;
