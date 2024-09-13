@@ -172,10 +172,10 @@ const duuniTori = async (city = "", searchTerm = "") => {
   console.log(`Total jobs scraped: ${jobs.length}`);
 };
 
-// Example usage with dynamic parameters provided by the user
-const city = "helsinki"; // Example of city parameter
-const searchTerm = "software engineer"; // Example of a search term
+// // Example usage with dynamic parameters provided by the user
+// const city = "helsinki"; // Example of city parameter
+// const searchTerm = "software engineer"; // Example of a search term
 
-duuniTori(city, searchTerm);
+// duuniTori(city, searchTerm);
 
 module.exports = duuniTori;

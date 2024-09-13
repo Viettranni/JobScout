@@ -1,20 +1,22 @@
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const authRoutes = require('./src/routes/authRouter');
-const jobRoutes = require('./src/routes/jobRouter');
+require("dotenv").config();
+const connectDB = require("../backend/src/config/db");
+const express = require("express");
+const mongoose = require("mongoose");
+// const authRoutes = require("./src/routes/authRouter");
+const jobRoutes = require("./src/routes/jobRouter");
 
 const app = express();
+
 app.use(express.json());
 
+connectDB();
+
 // Routers
-app.use('/api/auth', authRoutes);
-app.use('/api', jobRoutes);
+// app.use("/api/auth", authRoutes);
+app.use("/api", jobRoutes);
 
-mongoose.connect(process.env.MONGO_URI, { 
-    
- })
-    .then(() => console.log('Connected successfully to MongoDB!'))
-    .catch(err => console.error('Could not connect to MongoDB...', err));
-
-module.exports = app;
+// Start the server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
