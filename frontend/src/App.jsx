@@ -4,8 +4,8 @@ import "./index.css";
 
 import Layout from "./components/layout/Layout";
 import Home from "./components/routes/home/Home"; // in own dir
-import Search from "./components/routes/Search";
-import Cabinet from "./components/routes/Cabinet";
+import Search from "./components/routes/search/Search";
+import Cabinet from "./components/routes/cabinet/Cabinet";
 import About from "./components/routes/about/About";  // in own dir
 import NotFound from "./components/routes/NotFound";
 

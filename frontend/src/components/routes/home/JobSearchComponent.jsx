@@ -1,6 +1,7 @@
 import React from "react";
 import JobCategoryCard from "./JobCategoryCard";
 import SearchBar from "./SearchBar";
+import jobScoutImg from '../../../assets/JobScoutLandingImg.png';
 
 const jobCategories = [
   {
@@ -33,7 +34,10 @@ const jobCategories = [
 function JobSearchComponent() {
   return (
     <main className="flex flex-col min-h-screen bg-white">
-      <section className="flex-grow flex flex-col items-center px-4 sm:px-8 md:px-16 lg:px-20 py-8 sm:py-12 md:py-16 lg:py-20 bg-indigo-950 rounded-b-xl">
+      <section 
+          className="flex-grow flex flex-col items-center px-4 sm:px-8 md:px-16 lg:px-20 py-8 sm:py-12 md:py-16 lg:py-20 bg-indigo-950 rounded-b-xl" 
+          style={{ backgroundImage: `url(${jobScoutImg})`, backgroundSize: '100%', backgroundPosition: 'bottom center', backgroundRepeat: 'no-repeat'}}
+        >
         <div className="w-full max-w-4xl">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center text-white leading-tight mb-8 sm:mb-12">
             The all-in-one place to find the job of your dreams
