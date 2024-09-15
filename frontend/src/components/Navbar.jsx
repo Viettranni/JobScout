@@ -3,16 +3,19 @@ import React from "react";
 const Navbar = () => {
   return (
     <nav className="sticky top-0 z-50 flex justify-between items-center p-4 bg-white shadow-md">
-      <div className="text-lg font-bold text-blue-900">JobScout</div>
+      <div className="text-lg font-bold text-blue-900">Job$cout</div>
       <div className="flex space-x-4">
-        <a href="/" className="text-blue-900 hover:text-blue-700">
+        <a href="/home" className="text-blue-900 hover:text-blue-700">
           Home
+        </a>
+        <a href="/search" className="text-blue-900 hover:text-blue-700">
+          Search
+        </a>
+        <a href="/cabinet" className="text-blue-900 hover:text-blue-700">
+          Cabinet
         </a>
         <a href="/about" className="text-blue-900 hover:text-blue-700">
           About
-        </a>
-        <a href="/contact" className="text-blue-900 hover:text-blue-700">
-          Contact
         </a>
       </div>
       <div className="flex space-x-4">
