@@ -1,7 +1,7 @@
 import React from "react";
-import ClientsSection from "../components/ClientSection";
-import JobScoutInfo from "../components/JobScoutInfo";
-import JobOpportunities from "../components/JobOpportunities";
+import ClientsSection from "./ClientSection";
+import JobScoutInfo from "./JobScoutInfo";
+import JobOpportunities from "./JobOpportunities";
 
 function About() {
     return(

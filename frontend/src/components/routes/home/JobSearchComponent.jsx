@@ -26,8 +26,7 @@ const jobCategories = [
   {
     title: "Find More",
     newJobs: null,
-    // icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/b176bf1629c272a22503d66b6bd3129b4cae383d7122cb80e2f44d66cb168d69?placeholderIfAbsent=true&apiKey=4bc34976a91d45169acbfea9a1c1cef5",
-    icon: null,
+    icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/650f9264855c85d2a7286e540940a86cf3ebb9ff31abed6a295f7217e39c5018?placeholderIfAbsent=true&apiKey=4bc34976a91d45169acbfea9a1c1cef5",
   },
 ];
 
