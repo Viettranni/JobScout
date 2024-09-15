@@ -8,7 +8,7 @@ const jobPostSchema = new mongoose.Schema({
   datePosted: { type: Date, required: true },
   url: { type: String, required: true },
   description: { type: String },
-  responsibilities: { type: String },
+  responsibilities: { type: [String] },
 });
 
 // Create a model based on the schema

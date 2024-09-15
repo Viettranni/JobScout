@@ -2,20 +2,34 @@ const express = require("express");
 const router = express.Router();
 const jobController = require("../controllers/jobControllers");
 
+// // Routes for scraping every jobsite
+// router.post("/jobs/scrape/:searchTerm/:city?", jobController.scrapeJobs);
+
+// GET/ all jobs
+router.get("/jobs", jobController.getAllJobs);
+
 // Routes for Duunitori job posts
-router.get("/duunitori/jobs", jobController.getAllJobs);
-router.get("/duunitori/scrape-jobs", jobController.scrapeDuuniToriJobs);
+// GET/by id
 router.get("/duunitori/jobs/:id", jobController.getJobById);
+// GET/by searctTerm or location
+router.get("/duunitori/jobs/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
+// GET/by searctTerm and location
+router.get("/duunitori/jobs/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
+// POST/scrape
+router.post("/duunitori/scrape-jobs", jobController.scrapeDuuniToriJobs);
+// DELETE
 router.delete("/duunitori/jobs/:id", jobController.deleteJob);
-router.get("/duunitori/jobs/:title?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
-router.get("/duunitori/jobs/:title/:location?", jobController.findJobs); // Matches /jobs/:title/:location
 
 // Routes for Indeed job posts
-router.get("/indeed/jobs", jobController.getAllJobs);
-router.get("/indeed/scrape-jobs", jobController.scrapeIndeedJobs);
+// GET/by id
 router.get("/indeed/jobs/:id", jobController.getJobById);
+// GET/by searctTerm or location
+router.get("/indeed/jobs/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
+// GET/by searctTerm and location
+router.get("/indeed/jobs/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
+// POST/scrape
+router.post("/indeed/scrape-jobs", jobController.scrapeIndeedJobs);
+// DELETE
 router.delete("/indeed/jobs/:id", jobController.deleteJob);
-router.get("/indeed/jobs/:title?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
-router.get("/indeed/jobs/:title/:location?", jobController.findJobs); // Matches /jobs/:title/:location
 
 module.exports = router;

@@ -1,6 +1,6 @@
 const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
-const JobPost = require("../models/JobPost");
+const { JobPost } = require("../models/JobPost");
 
 puppeteer.use(StealthPlugin());
 
@@ -87,7 +87,7 @@ const indeed = async (city = "", searchTerm = "") => {
   // Handle the cookies modal (if it appears)
   try {
     const cookiesAcceptButtonSelector = "#onetrust-accept-btn-handler";
-    await page.waitForSelector(cookiesAcceptButtonSelector, { timeout: 3000 });
+    await page.waitForSelector(cookiesAcceptButtonSelector, { timeout: 5000 });
     await page.click(cookiesAcceptButtonSelector);
     console.log("Cookies modal accepted");
   } catch (err) {
@@ -131,7 +131,7 @@ const indeed = async (city = "", searchTerm = "") => {
           company,
           location,
           datePosted: parseDatePosted(datePosted),
-          link: jobUrl,
+          url: jobUrl,
           category: searchTerm, // Using search term as the category
         };
       })
@@ -143,7 +143,7 @@ const indeed = async (city = "", searchTerm = "") => {
   }, searchTerm);
 
   // Extract job URLs for detailed scraping
-  const jobUrls = jobs.map((job) => job.link);
+  const jobUrls = jobs.map((job) => job.url);
 
   // Fetch detailed job information
   const jobDetails = await fetchJobs(jobUrls, browser);

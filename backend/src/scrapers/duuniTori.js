@@ -1,6 +1,6 @@
 const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
-const JobPost = require("../models/JobPost");
+const { JobPost } = require("../models/JobPost");
 
 puppeteer.use(StealthPlugin());
 
@@ -82,7 +82,7 @@ const duuniTori = async (city = "", searchTerm = "") => {
   // Handle the cookies modal (if it appears)
   try {
     const cookiesAcceptButtonSelector = ".gdpr-modal__button--accept";
-    await page.waitForSelector(cookiesAcceptButtonSelector, { timeout: 3000 });
+    await page.waitForSelector(cookiesAcceptButtonSelector, { timeout: 5000 });
     await page.click(cookiesAcceptButtonSelector);
     console.log("Cookies modal accepted");
   } catch (err) {

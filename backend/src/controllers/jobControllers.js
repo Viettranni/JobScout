@@ -3,6 +3,25 @@ const duuniTori = require("../scrapers/duuniTori");
 const indeed = require("../scrapers/indeed");
 
 // Scrape jobs from the websites
+exports.scrapeJobs = async (req, res) => {
+  const { city, searchTerm } = req.query;
+
+  try {
+    // Run both scrapers concurrently using Promise.all
+    await Promise.all([duuniTori(city, searchTerm), indeed(city, searchTerm)]);
+
+    res
+      .status(200)
+      .send(
+        "Job scraping complete for both DuuniTori and Indeed, and data saved."
+      );
+  } catch (err) {
+    console.error("Error in scrapeJobs controller:", err);
+    res.status(500).send("Error scraping jobs.");
+  }
+};
+
+// Scrape jobs from duunitori
 exports.scrapeDuuniToriJobs = async (req, res) => {
   const { city, searchTerm } = req.query;
   try {
@@ -14,6 +33,7 @@ exports.scrapeDuuniToriJobs = async (req, res) => {
   }
 };
 
+// Scrape jobs from indeed
 exports.scrapeIndeedJobs = async (req, res) => {
   const { city, searchTerm } = req.query;
   try {
@@ -76,7 +96,6 @@ exports.findJobs = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
 
 // Delete a job post by ID
 exports.deleteJob = async (req, res) => {
