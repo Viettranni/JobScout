@@ -77,46 +77,6 @@ exports.findJobs = async (req, res) => {
   }
 };
 
-// // Create a new job post
-// exports.createJob = async (req, res) => {
-//   const job = new JobPost({
-//     title: req.body.title,
-//     company: req.body.company,
-//     location: req.body.location,
-//     datePosted: req.body.datePosted,
-//     url: req.body.url,
-//     description: req.body.description,
-//     responsibilities: req.body.responsibilities,
-//   });
-
-//   try {
-//     const newJob = await job.save();
-//     res.status(201).json(newJob);
-//   } catch (err) {
-//     res.status(400).json({ message: err.message });
-//   }
-// };
-
-// // Update a job post by ID
-// exports.updateJob = async (req, res) => {
-//   try {
-//     const job = await JobPost.findById(req.params.id);
-//     if (!job) return res.status(404).json({ message: "Job not found" });
-
-//     job.title = req.body.title || job.title;
-//     job.company = req.body.company || job.company;
-//     job.location = req.body.location || job.location;
-//     job.datePosted = req.body.datePosted || job.datePosted;
-//     job.url = req.body.url || job.url;
-//     job.description = req.body.description || job.description;
-//     job.responsibilities = req.body.responsibilities || job.responsibilities;
-
-//     const updatedJob = await job.save();
-//     res.json(updatedJob);
-//   } catch (err) {
-//     res.status(400).json({ message: err.message });
-//   }
-// };
 
 // Delete a job post by ID
 exports.deleteJob = async (req, res) => {
