@@ -14,4 +14,4 @@ const jobPostSchema = new mongoose.Schema({
 // Create a model based on the schema
 const JobPost = mongoose.model("JobPost", jobPostSchema);
 
-module.exports = JobPost;
+module.exports = { JobPost, jobPostSchema };

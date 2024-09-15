@@ -1,7 +1,8 @@
-const JobPost = require("../models/JobPost");
+const { JobPost } = require("../models/JobPost");
 const duuniTori = require("../scrapers/duuniTori");
 const indeed = require("../scrapers/indeed");
 
+// Scrape jobs from the websites
 exports.scrapeDuuniToriJobs = async (req, res) => {
   const { city, searchTerm } = req.query;
   try {

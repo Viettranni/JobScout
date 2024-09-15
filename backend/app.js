@@ -4,6 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 // const authRoutes = require("./src/routes/authRouter");
 const jobRoutes = require("./src/routes/jobRouter");
+const userRoutes = require("./src/routes/userRouter");
 
 const app = express();
 
@@ -14,9 +15,6 @@ connectDB();
 // Routers
 // app.use("/api/auth", authRoutes);
 app.use("/api", jobRoutes);
+app.use("/api", userRoutes);
 
-// Start the server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+module.exports = app;
