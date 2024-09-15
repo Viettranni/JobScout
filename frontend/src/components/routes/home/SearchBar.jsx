@@ -26,7 +26,7 @@ function SearchBar() {
       />
       <button
         type="submit"
-        className="flex justify-center items-center px-3 rounded-lg bg-indigo-950 h-[60px] w-[60px]"
+        className="flex justify-center items-center px-3 rounded-lg bg-indigo-950 h-[60px] w-[60px] hover:bg-blue-900"
         aria-label="Submit search"
       >
         <img

@@ -1,5 +1,8 @@
 import PageLinks from "./PageLinks";
 import React from "react";
+import { Button } from '../ui/button';
+import LoginModal from './LoginModal'
+
 
 const Navbar = () => {
   return (
@@ -9,9 +12,13 @@ const Navbar = () => {
       <PageLinks parentClass="flex space-x-4" itemClass="text-blue-900 hover:text-blue-700" />
       
       <div className="flex space-x-4">
-        <button className="bg-blue-900 text-white py-2 px-4 rounded hover:bg-blue-700">
-          Aply Now
-        </button>
+        <LoginModal 
+          trigger={
+            <Button className="bg-indigo-950 text-white py-2 px-4 rounded hover:bg-blue-800">
+              Sign In / Register
+            </Button>
+          }
+        />
       </div>
     </nav>
   );

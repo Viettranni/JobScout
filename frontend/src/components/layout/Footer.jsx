@@ -13,7 +13,7 @@ const Footer = () => {
                 </div>
                 
                 <div className="w-[20%] text-center">
-                    <PageLinks parentClass="flex flex-col grow mt-7 text-2xl text-white whitespace-nowrap max-md:mt-10" itemClass="hover:text-blue-700" />
+                    <PageLinks parentClass="flex flex-col grow mt-7 text-2xl text-white whitespace-nowrap max-md:mt-10" itemClass="hover:text-indigo-300" />
                 </div>
                 
                 <div className="w-[40%] text-start pl-2">

@@ -2,7 +2,7 @@ import React from "react";
 
 function JobCategoryCard({ title, newJobs, icon }) {
   return (
-    <article className="flex flex-col items-start p-4 rounded-xl bg-indigo-950 aspect-[4/3] text-white">
+    <article className="flex flex-col items-start p-4 rounded-xl bg-indigo-950 aspect-[4/3] text-white hover:bg-indigo-900">
       <img
         loading="lazy"
         src={icon}
