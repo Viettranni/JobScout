@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import React from "react";
 import "./index.css";
 
-import Layout from "./Layout";
+import Layout from "./layout/Layout";
 import Home from "./routes/Home";
 import Search from "./routes/Search";
 import Cabinet from "./routes/Cabinet";
