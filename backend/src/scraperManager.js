@@ -1,49 +1,27 @@
-// scraperManager.js
-const schedule = require('node-schedule');
-
-const duuniTori = require('./scrapers/duuniTori');
-const indeed = require('./scrapers/indeed');
-const jobly = require('./scrapers/jobly');
-const linkedin = require('./scrapers/linkedin');
-const oikotie = require('./scrapers/oikotie');
-const tePalvelut = require('./scrapers/tePalvelut');
+require('dotenv').config();
+const mongoose = require('mongoose');
+const scrapeLinkedInJobs = require('./scrapers/linkedin'); 
 
 
-const scraperMap = {
-    site1: duuniTori,
-    site2: indeed,
-    site3: jobly,
-    site4: linkedin,
-    site5: oikotie,
-    site6: tePalvelut
-    
+const startScraping = async () => {
+  try {
+    // Connect to MongoDB
+    await mongoose.connect(process.env.MONGODB_URI, {  });
+    console.log("Connected to MongoDB Atlas");
+
+    // Start scraping tasks
+    await scrapeLinkedInJobs();
+    console.log("LinkedIn scraping complete");
+
+    // await scrapeOtherWebsite();
+    // console.log("Other website scraping complete");
+
+  } catch (err) {
+    console.error("Error during scraping process", err);
+  } finally {
+    // Disconnect from MongoDB
+    await mongoose.disconnect();
+  }
 };
 
-// Function to scrape all sites
-const scrapeAllSites = async () => {
-    try {
-        console.log('Starting scheduled scraping...');
-
-        // Iterate over all scrapers and execute them
-        for (const [site, scraper] of Object.entries(scraperMap)) {
-            console.log(`Scraping ${site}...`);
-            await scraper();
-            console.log(`${site} scraped successfully.`);
-        }
-
-        console.log('Scheduled scraping completed.');
-    } catch (error) {
-        console.error('Error during scheduled scraping:', error);
-    }
-};
-
-// Schedule the scraping job || Not being called in the app.js yet
-const scheduleScraping = () => {
-    // Run the job every day at midnight
-    schedule.scheduleJob('0 0 * * *', scrapeAllSites); // Cron expression for daily at midnight
-};
-
-module.exports = { 
-    scrapeAllSites,
-    scheduleScraping
- };
+startScraping();

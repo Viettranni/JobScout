@@ -1,25 +1,32 @@
 const puppeteer = require('puppeteer');
+const mongoose = require('mongoose');
+const JobPost = require('../models/JobPost'); // Adjust the path to your model
+
+// Define the delay function
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const scrapeLinkedInJobs = async () => {
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
 
-  // Go to LinkedIn Jobs search page
+  // Set User-Agent to mimic a real browser
+  await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
+  await page.setViewport({ width: 1200, height: 800 });
+
   const baseURL = "https://www.linkedin.com/jobs/search?keywords=&location=Finland&geoId=&trk=public_jobs_jobs-search-bar_search-submit&position=1&pageNum=0";
   await page.goto(baseURL, { waitUntil: "networkidle2" });
 
   // Handle Login Popup (if it appears)
   const handleLoginPopUp = async () => {
-        try {
-        const loginPopupSelector = '.artdeco-modal__actionbar button';
-        await page.waitForSelector(loginPopupSelector, { timeout: 5000 });
-        await page.click(loginPopupSelector); // Close login modal
-        console.log("Closed login popup");
+    try {
+      const loginPopupSelector = '.artdeco-modal__actionbar button';
+      await page.waitForSelector(loginPopupSelector, { timeout: 5000 });
+      await page.click(loginPopupSelector); // Close login modal
+      console.log("Closed login popup");
     } catch (err) {
-        console.log("No login popup found");
+      console.log("No login popup found");
     }
   }
-  
 
   // Handle Cookie Consent Modal (if it appears)
   try {
@@ -31,10 +38,7 @@ const scrapeLinkedInJobs = async () => {
     console.log("No cookie consent modal found");
   }
 
-  // Scroll down to load more jobs (LinkedIn loads jobs dynamically as you scroll)
-  const waitFor = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-  // Scroll down to load more jobs (LinkedIn loads jobs dynamically as you scroll)
+  // Scroll down to load more jobs
   let previousHeight;
   let attempt = 0;
   const maxAttempts = 10;
@@ -42,7 +46,7 @@ const scrapeLinkedInJobs = async () => {
   while (attempt < maxAttempts) {
     previousHeight = await page.evaluate(() => document.body.scrollHeight);
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    await waitFor(5000); // Wait for 5 seconds to let content load
+    await delay(5000); // Wait for 5 seconds to let content load
 
     const newHeight = await page.evaluate(() => document.body.scrollHeight);
     if (newHeight === previousHeight) break; // If the scroll height does not change, we stop
@@ -54,64 +58,45 @@ const scrapeLinkedInJobs = async () => {
   const jobs = await page.evaluate(() => {
     return Array.from(document.querySelectorAll('.base-card'))
       .map((jobElement) => {
-        const title =
-          jobElement.querySelector(".base-search-card__title")?.innerText.trim() ||
-          "N/A";
-        const company =
-          jobElement
-            .querySelector(".base-search-card__subtitle")
-            ?.innerText.trim() || "N/A";
-        const location =
-          jobElement
-            .querySelector(".base-search-card__metadata")
-            ?.innerText.trim() || "N/A";
-        const jobUrl =
-          jobElement
-            .querySelector(".base-card__full-link")
-            ?.getAttribute("href") || "";
-        const logoUrl =
-          jobElement
-            .querySelector(".artdeco-entity-image.artdeco-entity-image--square-4.lazy-loaded")
-            ?.getAttribute("src") || "N/A";
-        const postedTime =
-          jobElement
-            .querySelector(".job-search-card__listdate")
-            ?.innerText.trim() || "N/A";
+        const title = jobElement.querySelector(".base-search-card__title")?.innerText.trim() || "N/A";
+        const company = jobElement.querySelector(".base-search-card__subtitle")?.innerText.trim() || "N/A";
+        const location = jobElement.querySelector(".base-search-card__metadata")?.innerText.trim() || "N/A";
+        const jobUrl = jobElement.querySelector(".base-card__full-link")?.getAttribute("href") || "";
+        const logoUrl = jobElement.querySelector(".artdeco-entity-image.artdeco-entity-image--square-4.lazy-loaded")?.getAttribute("src") || "N/A";
+        const postedTime = jobElement.querySelector(".job-search-card__listdate")?.innerText.trim() || "N/A";
 
-
-        return {
-          title,
-          company,
-          location,
-          url: jobUrl,
-          logoUrl,
-          postedTime,
- 
-        //   insightText, <-- TODO: Is missing the description
-        };
+        return { title, company, location, url: jobUrl, logoUrl, postedTime };
       });
   });
 
   // For each job, navigate to its detail page and scrape the job description
   for (let job of jobs) {
     if (job.url) {
-      await page.goto(job.url, { waitUntil: "networkidle2" });
+      try {
+        await page.goto(job.url, { waitUntil: "networkidle2", timeout: 60000 });
 
-      await handleLoginPopUp();
+        await handleLoginPopUp();
 
-      // Scrape the job description
-      const jobDescription = await page.evaluate(() => {
-        const descriptionElement = document.querySelector('.description__text'); // Adjust this selector based on the job page layout
-        return descriptionElement?.innerText.trim() || 'No description available';
-      });
+        // Scrape the job description
+        const jobDescription = await page.evaluate(() => {
+          const descriptionElement = document.querySelector('.description__text'); // Adjust this selector based on the job page layout
+          return descriptionElement?.innerText.trim() || 'No description available';
+        });
 
-      job.description = jobDescription;
+        job.description = jobDescription;
+
+        // Save job to MongoDB
+        const newJob = new JobPost(job);
+        await newJob.save();
+        console.log(`Saved job to database: ${job.title}`);
+      } catch (err) {
+        console.error(`Failed to scrape job at ${job.url}`, err);
+      }
     }
   }
 
-  console.log(jobs);
-
+  console.log('Scraping complete');
   await browser.close();
 };
 
-scrapeLinkedInJobs();
+module.exports = scrapeLinkedInJobs;
