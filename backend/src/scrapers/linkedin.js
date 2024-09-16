@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 const mongoose = require('mongoose');
-const JobPost = require('../models/JobPost'); // Adjust the path to your model
+const JobPost = require('../models/JobPost'); 
 
 // Define the delay function
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -73,6 +73,14 @@ const scrapeLinkedInJobs = async () => {
   for (let job of jobs) {
     if (job.url) {
       try {
+        // Check if the job with the same title already exists in the database
+        const existingJob = await JobPost.findOne({ title: job.title });
+
+        if (existingJob) {
+          console.log(`Skipped job: ${job.title} - Already exists in the database`);
+          continue; // Skip this job if it already exists
+        }
+
         await page.goto(job.url, { waitUntil: "networkidle2", timeout: 60000 });
 
         await handleLoginPopUp();

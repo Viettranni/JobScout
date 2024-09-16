@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
-const fs = require('fs');
+const JobPost = require('../models/JobPost');
 
-(async () => {
+const scrapeTePalvelutJobs = async () => {
     // Launch the browser
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
@@ -19,9 +19,10 @@ const fs = require('fs');
             const title = post.querySelector('h4')?.innerText.trim();
             const link = post.querySelector('a')?.href;
             const company = post.querySelector('span[aria-label=""]')?.innerText.trim();
+            const logoUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrxpfmPZOQR26e2nNra9BYyVZDFqcoR8jhGw&amp;s%22%20class=%22sFlh5c%20FyHeAf"
 
-            return { title, link, company };
-        }).filter(post => post.link);
+            return { title, url: link, company, logoUrl };
+        }).filter(post => post.url);
     });
 
     // Function to extract job details (description, date, location) from a job page
@@ -45,7 +46,7 @@ const fs = require('fs');
         await jobPage.waitForSelector('div.col-xs-7.detailValue', { timeout: 5000 }); // Wait for the tab content to load
 
         // Extract closing date from "Tiedot" tab
-        const closingDate = await jobPage.evaluate(() => {
+        const postedTime = await jobPage.evaluate(() => {
             const dateElement = Array.from(document.querySelectorAll('div.col-xs-7.detailValue')).find(el => el.innerText.includes('klo'));
             return dateElement ? dateElement.innerText.trim() : 'No closing date found';
         });
@@ -57,22 +58,41 @@ const fs = require('fs');
         });
 
         await jobPage.close();
-        return { description, closingDate, location };
+        return { description, postedTime, location };
     };
 
-    // Get job details and update job postings
-    for (const posting of jobPostings) {
-        const details = await getJobDetails(posting.link);
-        posting.description = details.description;
-        posting.date = details.closingDate;
-        posting.location = details.location;
-    }
+    // Get job details, check for duplicates, and save to MongoDB
+    for (let posting of jobPostings) {
+        // Check if a job post with the same title already exists in the database
+        const existingJob = await JobPost.findOne({ title: posting.title });
 
-    // Save the results to a file
-    fs.writeFileSync('tePalvelutJobPostingsWithDetails.json', JSON.stringify(jobPostings, null, 2));
+        if (existingJob) {
+            console.log(`Skipped job: ${posting.title} - Already exists in the database`);
+            continue; // Skip if the job already exists
+        }
+
+        // Get the job details
+        const details = await getJobDetails(posting.url);
+        posting.description = details.description;
+        posting.postedTime = details.postedTime;
+        posting.location = details.location;
+        // Assuming logoUrl is not available in this source; set to null or remove if not used
+        posting.logoUrl = null; 
+
+        // Save the job posting to MongoDB
+        try {
+            const newJob = new JobPost(posting);
+            await newJob.save();
+            console.log(`Saved job to database: ${posting.title}`);
+        } catch (err) {
+            console.error(`Failed to save job: ${posting.title}`, err);
+        }
+    }
 
     // Close the browser
     await browser.close();
 
-    console.log('Job postings with details have been saved to tePalvelutJobPostingsWithDetails.json');
-})();
+    console.log('Job scraping and saving complete');
+};
+
+module.exports = scrapeTePalvelutJobs;
