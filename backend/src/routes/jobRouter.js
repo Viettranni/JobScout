@@ -18,7 +18,7 @@ router.delete("/:id", jobController.deleteJob);
 // GET/by id
 router.get("/duunitori/:id", jobController.getJobById);
 // GET/by searctTerm or location
-router.get("/duunitori/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
+router.get("/duunitori/detail/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
 // GET/by searctTerm and location
 router.get("/duunitori/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
 // POST/scrape
@@ -30,9 +30,9 @@ router.delete("/duunitori/:id", jobController.deleteJob);
 // GET/by id
 router.get("/indeed/:id", jobController.getJobById);
 // GET/by searctTerm or location
-router.get("/indeed/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
+router.get("/indeed/detail/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
 // GET/by searctTerm and location
-router.get("/indeed/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
+router.get("/indeed/detail/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
 // POST/scrape
 router.post("/indeed/scrape-jobs", jobController.scrapeIndeedJobs);
 // DELETE

@@ -76,20 +76,21 @@ exports.getJobById = async (req, res) => {
   }
 };
 
-// Controller to find jobs by title, location, or both
 exports.findJobs = async (req, res) => {
   try {
-    const { title, location } = req.params;
+    const { searchTerm, city } = req.params;
 
     // Build the query object based on provided parameters
     const query = {};
 
-    if (title && title !== "undefined") {
-      query.title = { $regex: new RegExp(title, "i") }; // Case-insensitive search
+    // Match the search term with the job title or description fields in your schema
+    if (searchTerm && searchTerm !== "undefined") {
+      query.title = { $regex: new RegExp(searchTerm, "i") }; // Case-insensitive search on title
     }
 
-    if (location && location !== "undefined") {
-      query.location = { $regex: new RegExp(location, "i") }; // Case-insensitive search
+    // Match the city with the location field in your schema
+    if (city && city !== "undefined") {
+      query.location = { $regex: new RegExp(city, "i") }; // Case-insensitive search on location
     }
 
     // Find jobs based on the query
@@ -103,6 +104,8 @@ exports.findJobs = async (req, res) => {
 
     res.status(200).json(jobs);
   } catch (err) {
+    // Log the error for debugging purposes
+    console.error("Error fetching jobs:", err);
     res.status(500).json({ message: err.message });
   }
 };
