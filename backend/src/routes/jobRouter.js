@@ -6,32 +6,36 @@ const jobController = require("../controllers/jobControllers");
 // router.post("/jobs/scrape/:searchTerm/:city?", jobController.scrapeJobs);
 
 // GET/ all jobs
-router.get("/jobs", jobController.getAllJobs);
+router.get("/", jobController.getAllJobs);
 // POST/scrape all jobsites
-router.post("/jobs/scrape", jobController.scrapeJobs);
+router.post("/scrape/:searchTerm/:city?", jobController.scrapeJobs);
+// GET/by id
+router.get("/:id", jobController.getJobById);
+// DELETE
+router.delete("/:id", jobController.deleteJob);
 
 // Routes for Duunitori job posts
 // GET/by id
-router.get("/duunitori/jobs/:id", jobController.getJobById);
+router.get("/duunitori/:id", jobController.getJobById);
 // GET/by searctTerm or location
-router.get("/duunitori/jobs/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
+router.get("/duunitori/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
 // GET/by searctTerm and location
-router.get("/duunitori/jobs/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
+router.get("/duunitori/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
 // POST/scrape
 router.post("/duunitori/scrape-jobs", jobController.scrapeDuuniToriJobs);
 // DELETE
-router.delete("/duunitori/jobs/:id", jobController.deleteJob);
+router.delete("/duunitori/:id", jobController.deleteJob);
 
 // Routes for Indeed job posts
 // GET/by id
-router.get("/indeed/jobs/:id", jobController.getJobById);
+router.get("/indeed/:id", jobController.getJobById);
 // GET/by searctTerm or location
-router.get("/indeed/jobs/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
+router.get("/indeed/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
 // GET/by searctTerm and location
-router.get("/indeed/jobs/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
+router.get("/indeed/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
 // POST/scrape
 router.post("/indeed/scrape-jobs", jobController.scrapeIndeedJobs);
 // DELETE
-router.delete("/indeed/jobs/:id", jobController.deleteJob);
+router.delete("/indeed/:id", jobController.deleteJob);
 
 module.exports = router;

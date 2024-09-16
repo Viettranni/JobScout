@@ -73,7 +73,7 @@ exports.updateUser = async (req, res) => {
     }
 
     const updatedUser = await user.save();
-    res.json(updatedUser);
+    res.status(200).json(updatedUser);
   } catch (err) {
     res
       .status(400)
@@ -92,7 +92,7 @@ exports.deleteUser = async (req, res) => {
   try {
     const deletedUser = await User.findOneAndDelete({ _id: id });
     if (deletedUser) {
-      res.status(200).json({ message: "User deleted successfully" });
+      res.status(204).json({ message: "User deleted successfully" });
     } else {
       res.status(404).json({ message: "User not found" });
     }
@@ -120,7 +120,7 @@ exports.addToFavourites = async (req, res) => {
     user.favourites.push(jobPostId);
     await user.save();
 
-    res.status(200).json(user);
+    res.status(201).json(user);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -152,7 +152,7 @@ exports.removeFromFavourites = async (req, res) => {
 
     // Optionally, repopulate the user document with job posts for a detailed response
     const updatedUser = await User.findById(id).populate("favourites");
-    res.json(updatedUser);
+    res.status(204).json(updatedUser);
   } catch (err) {
     console.error("Error removing from favourites:", err);
     res.status(500).json({ message: err.message });
@@ -167,7 +167,7 @@ exports.getUserWithFavourites = async (req, res) => {
     const user = await User.findById(id).populate("favourites");
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    res.json(user.favourites);
+    res.status(200).json(user.favourites);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

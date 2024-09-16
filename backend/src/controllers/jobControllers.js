@@ -1,6 +1,7 @@
 const { JobPost } = require("../models/JobPost");
 const duuniTori = require("../scrapers/duuniTori");
 const indeed = require("../scrapers/indeed");
+const mongoose = require("mongoose");
 
 // Scrape jobs from the websites
 exports.scrapeJobs = async (req, res) => {
@@ -11,7 +12,7 @@ exports.scrapeJobs = async (req, res) => {
     await Promise.all([duuniTori(city, searchTerm), indeed(city, searchTerm)]);
 
     res
-      .status(200)
+      .status(201)
       .send(
         "Job scraping complete for both DuuniTori and Indeed, and data saved."
       );
@@ -26,7 +27,7 @@ exports.scrapeDuuniToriJobs = async (req, res) => {
   const { city, searchTerm } = req.query;
   try {
     await duuniTori(city, searchTerm);
-    res.status(200).send("Job scraping complete and data saved.");
+    res.status(201).send("Job scraping complete and data saved.");
   } catch (err) {
     console.error("Error in scrapeJobs controller:", err);
     res.status(500).send("Error scraping jobs.");
@@ -38,7 +39,7 @@ exports.scrapeIndeedJobs = async (req, res) => {
   const { city, searchTerm } = req.query;
   try {
     await indeed(city, searchTerm);
-    res.status(200).send("Job scraping complete and data saved.");
+    res.status(201).send("Job scraping complete and data saved.");
   } catch (err) {
     console.error("Error in scrapeJobs controller:", err);
     res.status(500).send("Error scraping jobs.");
@@ -49,7 +50,7 @@ exports.scrapeIndeedJobs = async (req, res) => {
 exports.getAllJobs = async (req, res) => {
   try {
     const jobs = await JobPost.find();
-    res.json(jobs);
+    res.status(200).json(jobs);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -57,10 +58,19 @@ exports.getAllJobs = async (req, res) => {
 
 // Get a single job post by ID
 exports.getJobById = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
+
   try {
-    const job = await JobPost.findById(req.params.id);
-    if (!job) return res.status(404).json({ message: "Job not found" });
-    res.json(job);
+    const job = await JobPost.findById(id);
+    if (job) {
+      res.status(200).json(job);
+    } else {
+      res.status(404).json({ message: "Job posting not found" });
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -91,7 +101,7 @@ exports.findJobs = async (req, res) => {
         .json({ message: "No jobs found matching the criteria" });
     }
 
-    res.json(jobs);
+    res.status(200).json(jobs);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -99,13 +109,22 @@ exports.findJobs = async (req, res) => {
 
 // Delete a job post by ID
 exports.deleteJob = async (req, res) => {
-  try {
-    const job = await JobPost.findById(req.params.id);
-    if (!job) return res.status(404).json({ message: "Job not found" });
+  const { id } = req.params;
 
-    await job.remove();
-    res.json({ message: "Job deleted" });
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
+
+  try {
+    const jobDeleted = await JobPost.findOneAndDelete({ _id: id });
+    if (jobDeleted) {
+      res.status(204).json({ message: "job posting deleted successfully" });
+    } else {
+      res.status(404).json({ message: "job posting not found" });
+    }
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res
+      .status(500)
+      .json({ message: "Failed to delete jon posting", error: err.message });
   }
 };
