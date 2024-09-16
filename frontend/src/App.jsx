@@ -1,16 +1,15 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import React from "react";
+import "./index.css";
 
-import Register from './components/Register';
-import Login from './components/Login';
-import Logout from './components/Logout';
+import Layout from "./components/layout/Layout";
+import Home from "./components/routes/home/Home"; // in own dir
+import Search from "./components/routes/search/Search";
+import Cabinet from "./components/routes/cabinet/Cabinet";
+import About from "./components/routes/about/About";  // in own dir
+import NotFound from "./components/routes/NotFound";
 
-
-function App() {
-  const [token, setToken] = useState(localStorage.getItem('token'));
-
+const App = () => {
   return (
       <div className="App">
           {!token ? (
@@ -21,10 +20,11 @@ function App() {
           ) : (
               <div>
                   <Logout setToken={setToken} />
+                  <JobList />
               </div>
           )}
       </div>
   );
-}
+};
 
-export default App
+export default App;
