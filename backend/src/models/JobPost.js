@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-// Defines the structure/schema for job posts
+// Define the schema for the job post
 const jobPostSchema = new mongoose.Schema({
     title: String,
     company: String,
@@ -11,7 +11,7 @@ const jobPostSchema = new mongoose.Schema({
     description: String
 }, { timestamp: true });
 
-// Creates the model for exporting further
-const JobPost = mongoose.model('JobPost', jobPostSchema);
+// Create a model based on the schema
+const JobPost = mongoose.model("JobPost", jobPostSchema);
 
-module.exports = JobPost;
+module.exports = { JobPost, jobPostSchema };
