@@ -7,6 +7,8 @@ const jobController = require("../controllers/jobControllers");
 
 // GET/ all jobs
 router.get("/jobs", jobController.getAllJobs);
+// POST/scrape all jobsites
+router.post("/jobs/scrape", jobController.scrapeJobs);
 
 // Routes for Duunitori job posts
 // GET/by id

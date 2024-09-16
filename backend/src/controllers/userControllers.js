@@ -40,7 +40,7 @@ exports.createUser = async (req, res) => {
   const user = new User({ ...req.body });
 
   try {
-    const newUser = await user.save(); // Corrected to use instance's save method
+    const newUser = await user.save();
     res.status(201).json(newUser);
   } catch (err) {
     res
@@ -65,6 +65,7 @@ exports.updateUser = async (req, res) => {
     );
     if (!user) return res.status(404).json({ message: "User not found" });
 
+    // This is just a mock
     if (req.body.password) {
       // Hash new password if provided
       user.password = req.body.password;
