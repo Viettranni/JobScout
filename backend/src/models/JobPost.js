@@ -8,10 +8,13 @@ const jobPostSchema = new mongoose.Schema({
     url: String,
     logoUrl: String,
     postedTime: String,
-    description: String
-}, { timestamp: true });
+    description: String,
+    favorite: { type: Boolean, default: false },
+    applied: { type: Boolean, default: false }
+
+}, { timestamps: true });
 
 // Create a model based on the schema
 const JobPost = mongoose.model("JobPost", jobPostSchema);
 
-module.exports = { JobPost, jobPostSchema };
+module.exports = JobPost;

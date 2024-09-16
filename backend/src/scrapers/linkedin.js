@@ -1,5 +1,4 @@
 const puppeteer = require('puppeteer');
-const mongoose = require('mongoose');
 const JobPost = require('../models/JobPost'); 
 
 // Define the delay function
