@@ -5,12 +5,11 @@ const jobPostSchema = new mongoose.Schema({
     title: String,
     company: String,
     location: String,
+    datePosted: String,
     url: String,
-    logoUrl: String,
-    postedTime: String,
     description: String,
-    favorite: { type: Boolean, default: false },
-    applied: { type: Boolean, default: false }
+    responsibilities: String,
+    logo: String
 
 }, { timestamps: true });
 

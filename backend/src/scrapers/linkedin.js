@@ -61,10 +61,10 @@ const scrapeLinkedInJobs = async () => {
         const company = jobElement.querySelector(".base-search-card__subtitle")?.innerText.trim() || "N/A";
         const location = jobElement.querySelector(".base-search-card__metadata")?.innerText.trim() || "N/A";
         const jobUrl = jobElement.querySelector(".base-card__full-link")?.getAttribute("href") || "";
-        const logoUrl = jobElement.querySelector(".artdeco-entity-image.artdeco-entity-image--square-4.lazy-loaded")?.getAttribute("src") || "N/A";
-        const postedTime = jobElement.querySelector(".job-search-card__listdate")?.innerText.trim() || "N/A";
+        const logo = "Linkedin";
+        const datePosted = jobElement.querySelector(".job-search-card__listdate")?.innerText.trim() || "N/A";
 
-        return { title, company, location, url: jobUrl, logoUrl, postedTime };
+        return { title, company, location, url: jobUrl, logo, datePosted };
       });
   });
 

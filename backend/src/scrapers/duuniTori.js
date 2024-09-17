@@ -48,7 +48,7 @@ const fetchJobDetailsConcurrently = async (jobUrls, browser) => {
       }
     }
     return null;
-  });
+  }); 
 
   return Promise.all(jobDetailsPromises);
 };

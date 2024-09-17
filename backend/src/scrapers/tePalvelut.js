@@ -19,9 +19,10 @@ const scrapeTePalvelutJobs = async () => {
             const title = post.querySelector('h4')?.innerText.trim();
             const link = post.querySelector('a')?.href;
             const company = post.querySelector('span[aria-label=""]')?.innerText.trim();
-            const logoUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrxpfmPZOQR26e2nNra9BYyVZDFqcoR8jhGw&amp;s%22%20class=%22sFlh5c%20FyHeAf"
+            const logoUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrxpfmPZOQR26e2nNra9BYyVZDFqcoR8jhGw&amp;s%22%20class=%22sFlh5c%20FyHeAf",
+            const responsibilities = ""
 
-            return { title, url: link, company, logoUrl };
+            return { title, url: link, company, logo, responsibilities };
         }).filter(post => post.url);
     });
 
@@ -74,10 +75,10 @@ const scrapeTePalvelutJobs = async () => {
         // Get the job details
         const details = await getJobDetails(posting.url);
         posting.description = details.description;
-        posting.postedTime = details.postedTime;
+        posting.datePosted = details.datePosted;
         posting.location = details.location;
         // Assuming logoUrl is not available in this source; set to null or remove if not used
-        posting.logoUrl = null; 
+        posting.logo = "tePalvelut"; 
 
         // Save the job posting to MongoDB
         try {

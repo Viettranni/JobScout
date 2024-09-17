@@ -20,7 +20,7 @@ app.use(requestLogger);
 connectDB();
 
 // Routers
-app.use('/api/auth', authRoutes);
+// app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobRoutes);
 
 mongoose.connect(process.env.MONGO_URI, { 

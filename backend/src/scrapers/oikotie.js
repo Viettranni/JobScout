@@ -30,12 +30,13 @@ const scrapeOikotieJobs = async () => {
         const posts = Array.from(document.querySelectorAll('article.job-ad-list-item'));
         return posts.map(post => {
             const title = post.querySelector('h2.title a')?.innerText.trim();
-            const postedTime = post.querySelector('time')?.innerText.trim();
+            const datePosted = post.querySelector('time')?.innerText.trim();
             const jobUrl = post.querySelector('h2.title a')?.href;
             const company = post.querySelector('.body .employer')?.innerText.trim();
             const location = post.querySelector('.body .locations')?.innerText.trim();
-            const logoUrl = post.querySelector('.picture-img')?.src.trim();
-            return { title, postedTime, url: jobUrl, company, location, logoUrl };
+            const logo = "oikotie";
+            const responsibilities = "";
+            return { title, datePosted, url: jobUrl, company, location, logo, responsibilities };
         }); 
     });
 
