@@ -154,6 +154,7 @@ const duuniTori = async (city = "", searchTerm = "") => {
     if (jobDetails[index]) {
       job.description = jobDetails[index].description;
       job.responsibilities = jobDetails[index].responsibilities;
+      job.logo = "duunitori";
     }
     jobList.push(job); // Add job to jobList
   });
