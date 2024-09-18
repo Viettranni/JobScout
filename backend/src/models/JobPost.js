@@ -1,15 +1,23 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-// Defines the structure/schema for job posts
-const jobPostSchema = new mongoose.Schema({
-    title: String,
-    description: String,
-    salary: String,
-    datePosted: Date,
-    url: String
-});
+// Define the schema for the job post
+const jobPostSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true },
+    company: { type: String, required: true },
+    location: { type: String, required: true },
+    datePosted: { type: String, required: true },
+    url: { type: String, required: true, unique: true },
+    description: { type: [String] },
+    responsibilities: { type: [String] },
+    logo: { type: String },
+  },
+  {
+    timestamps: true, // Adds `createdAt` and `updatedAt` fields
+  }
+);
 
-// Creates the model for exporting further
-const JobPost = mongoose.model('JobPost', jobPostSchema);
+// Create a model based on the schema
+const JobPost = mongoose.model("JobPost", jobPostSchema);
 
-module.exports = JobPost;
+module.exports = { JobPost, jobPostSchema };
