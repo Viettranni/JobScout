@@ -9,7 +9,7 @@ const jobList = [];
 // Function to scrape job details from individual job pages
 const scrapeJobDescription = async (jobUrl, browser) => {
   const jobPage = await browser.newPage(); // Open a new tab for each job
-  await jobPage.goto(jobUrl, { waitUntil: "networkidle2" });
+  await jobPage.goto(jobUrl, { waitUntil: "domcontentloaded" });
 
   const jobDetails = await jobPage.evaluate(() => {
     const title =
@@ -82,7 +82,7 @@ const indeed = async (city = "", searchTerm = "") => {
     : baseURL;
 
   console.log(`Navigating to URL: ${url}`);
-  await page.goto(url, { waitUntil: "networkidle2" });
+  await page.goto(url, { waitUntil: "domcontentloaded" });
 
   // Handle the cookies modal (if it appears)
   try {
@@ -158,24 +158,25 @@ const indeed = async (city = "", searchTerm = "") => {
     jobList.push(job); // Add job to jobList
   });
 
-  // Store the data in the database
-  try {
-    await JobPost.insertMany(jobList);
-    console.log("Jobs saved to the database");
-  } catch (err) {
-    console.error("Error saving jobs to the database:", err);
-  }
+  // // Store the data in the database
+  // try {
+  //   await JobPost.insertMany(jobList);
+  //   console.log("Jobs saved to the database");
+  // } catch (err) {
+  //   console.error("Error saving jobs to the database:", err);
+  // }
 
   await browser.close();
 
   console.log("Scraping complete. Jobs:", jobs);
   console.log(`Total jobs scraped: ${jobs.length}`);
+  return jobList;
 };
 
-// Example usage with dynamic parameters provided by the user
-const city = "helsinki"; // Example of city parameter
-const searchTerm = "software engineer"; // Example of a search term
+// // Example usage with dynamic parameters provided by the user
+// const city = "helsinki"; // Example of city parameter
+// const searchTerm = "software engineer"; // Example of a search term
 
-indeed(city, searchTerm);
+// indeed(city, searchTerm);
 
 module.exports = indeed;

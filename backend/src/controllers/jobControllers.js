@@ -1,48 +1,277 @@
 const { JobPost } = require("../models/JobPost");
 const duuniTori = require("../scrapers/duuniTori");
 const indeed = require("../scrapers/indeed");
+const jobly = require("../scrapers/jobly");
 const mongoose = require("mongoose");
 
-// Scrape jobs from the websites
+// Scrape jobs from all the websites
 exports.scrapeJobs = async (req, res) => {
   const { city, searchTerm } = req.query;
 
   try {
-    // Run both scrapers concurrently using Promise.all
-    await Promise.all([duuniTori(city, searchTerm), indeed(city, searchTerm)]);
+    const result = await Promise.all([
+      duuniTori(city, searchTerm),
+      indeed(city, searchTerm),
+      jobly(city, searchTerm),
+    ]);
 
-    res
-      .status(201)
-      .send(
-        "Job scraping complete for both DuuniTori and Indeed, and data saved."
+    if (result) {
+      const jobsToCheck = result.map((job) => ({
+        title: job.title,
+        company: job.company,
+        location: job.location,
+      }));
+
+      const existingJobs = await JobPost.find({
+        $or: jobsToCheck.map((job) => ({
+          title: job.title,
+          company: job.company,
+          location: job.location,
+        })),
+      })
+        .select("title company location")
+        .lean();
+
+      const existingJobIdentifiers = new Set(
+        existingJobs.map((job) => `${job.title}|${job.company}|${job.location}`)
       );
+
+      const newJobs = result.filter((job) => {
+        const identifier = `${job.title}|${job.company}|${job.location}`;
+        if (existingJobIdentifiers.has(identifier)) {
+          console.log(
+            `Duplicate job found: ${job.title} at ${job.company} in ${job.location}`
+          );
+          return false;
+        }
+        return true;
+      });
+
+      if (newJobs.length > 0) {
+        try {
+          await JobPost.insertMany(newJobs);
+          console.log(`Inserted ${newJobs.length} new jobs.`);
+          res.status(201).json({
+            message: `Job scraping complete and ${newJobs.length} new job posts saved.`,
+          });
+        } catch (error) {
+          console.error("Error saving new jobs:", error.message);
+          return res
+            .status(500)
+            .json({ message: "Error saving new jobs", error: error.message });
+        }
+      } else {
+        console.log("No new jobs to insert. All jobs already exist.");
+        res.status(200).json({
+          message: `Job scraping complete and ${newJobs.length} new job posts saved. Database Already has the newest.`,
+        });
+      }
+    }
   } catch (err) {
     console.error("Error in scrapeJobs controller:", err);
-    res.status(500).send("Error scraping jobs.");
+    res
+      .status(500)
+      .json({ message: "Error scraping jobs.", error: err.message });
   }
 };
 
 // Scrape jobs from duunitori
 exports.scrapeDuuniToriJobs = async (req, res) => {
   const { city, searchTerm } = req.query;
+
   try {
-    await duuniTori(city, searchTerm);
-    res.status(201).send("Job scraping complete and data saved.");
+    const result = await duuniTori(city, searchTerm);
+
+    if (result) {
+      const jobsToCheck = result.map((job) => ({
+        title: job.title,
+        company: job.company,
+        location: job.location,
+      }));
+
+      const existingJobs = await JobPost.find({
+        $or: jobsToCheck.map((job) => ({
+          title: job.title,
+          company: job.company,
+          location: job.location,
+        })),
+      })
+        .select("title company location")
+        .lean();
+
+      const existingJobIdentifiers = new Set(
+        existingJobs.map((job) => `${job.title}|${job.company}|${job.location}`)
+      );
+
+      const newJobs = result.filter((job) => {
+        const identifier = `${job.title}|${job.company}|${job.location}`;
+        if (existingJobIdentifiers.has(identifier)) {
+          console.log(
+            `Duplicate job found: ${job.title} at ${job.company} in ${job.location}`
+          );
+          return false;
+        }
+        return true;
+      });
+
+      if (newJobs.length > 0) {
+        try {
+          await JobPost.insertMany(newJobs);
+          console.log(`Inserted ${newJobs.length} new jobs.`);
+          res.status(201).json({
+            message: `Job scraping complete and ${newJobs.length} new job posts saved.`,
+          });
+        } catch (error) {
+          console.error("Error saving new jobs:", error.message);
+          return res
+            .status(500)
+            .json({ message: "Error saving new jobs", error: error.message });
+        }
+      } else {
+        console.log("No new jobs to insert. All jobs already exist.");
+        res.status(200).json({
+          message: `Job scraping complete and ${newJobs.length} new job posts saved. Database Already has the newest.`,
+        });
+      }
+    }
   } catch (err) {
     console.error("Error in scrapeJobs controller:", err);
-    res.status(500).send("Error scraping jobs.");
+    res
+      .status(500)
+      .json({ message: "Error scraping jobs.", error: err.message });
   }
 };
 
 // Scrape jobs from indeed
 exports.scrapeIndeedJobs = async (req, res) => {
   const { city, searchTerm } = req.query;
+
   try {
-    await indeed(city, searchTerm);
-    res.status(201).send("Job scraping complete and data saved.");
+    const result = await indeed(city, searchTerm);
+
+    if (result) {
+      const jobsToCheck = result.map((job) => ({
+        title: job.title,
+        company: job.company,
+        location: job.location,
+      }));
+
+      const existingJobs = await JobPost.find({
+        $or: jobsToCheck.map((job) => ({
+          title: job.title,
+          company: job.company,
+          location: job.location,
+        })),
+      })
+        .select("title company location")
+        .lean();
+
+      const existingJobIdentifiers = new Set(
+        existingJobs.map((job) => `${job.title}|${job.company}|${job.location}`)
+      );
+
+      const newJobs = result.filter((job) => {
+        const identifier = `${job.title}|${job.company}|${job.location}`;
+        if (existingJobIdentifiers.has(identifier)) {
+          console.log(
+            `Duplicate job found: ${job.title} at ${job.company} in ${job.location}`
+          );
+          return false;
+        }
+        return true;
+      });
+
+      if (newJobs.length > 0) {
+        try {
+          await JobPost.insertMany(newJobs);
+          console.log(`Inserted ${newJobs.length} new jobs.`);
+          res.status(201).json({
+            message: `Job scraping complete and ${newJobs.length} new job posts saved.`,
+          });
+        } catch (error) {
+          console.error("Error saving new jobs:", error.message);
+          return res
+            .status(500)
+            .json({ message: "Error saving new jobs", error: error.message });
+        }
+      } else {
+        console.log("No new jobs to insert. All jobs already exist.");
+        res.status(200).json({
+          message: `Job scraping complete and ${newJobs.length} new job posts saved. Database Already has the newest.`,
+        });
+      }
+    }
   } catch (err) {
     console.error("Error in scrapeJobs controller:", err);
-    res.status(500).send("Error scraping jobs.");
+    res
+      .status(500)
+      .json({ message: "Error scraping jobs.", error: err.message });
+  }
+};
+
+exports.scrapeJoblyJobs = async (req, res) => {
+  const { city, searchTerm } = req.query;
+
+  try {
+    const result = await jobly(city, searchTerm);
+
+    if (result) {
+      const jobsToCheck = result.map((job) => ({
+        title: job.title,
+        company: job.company,
+        location: job.location,
+      }));
+
+      const existingJobs = await JobPost.find({
+        $or: jobsToCheck.map((job) => ({
+          title: job.title,
+          company: job.company,
+          location: job.location,
+        })),
+      })
+        .select("title company location")
+        .lean();
+
+      const existingJobIdentifiers = new Set(
+        existingJobs.map((job) => `${job.title}|${job.company}|${job.location}`)
+      );
+
+      const newJobs = result.filter((job) => {
+        const identifier = `${job.title}|${job.company}|${job.location}`;
+        if (existingJobIdentifiers.has(identifier)) {
+          console.log(
+            `Duplicate job found: ${job.title} at ${job.company} in ${job.location}`
+          );
+          return false;
+        }
+        return true;
+      });
+
+      if (newJobs.length > 0) {
+        try {
+          await JobPost.insertMany(newJobs);
+          console.log(`Inserted ${newJobs.length} new jobs.`);
+          res.status(201).json({
+            message: `Job scraping complete and ${newJobs.length} new job posts saved.`,
+          });
+        } catch (error) {
+          console.error("Error saving new jobs:", error.message);
+          return res
+            .status(500)
+            .json({ message: "Error saving new jobs", error: error.message });
+        }
+      } else {
+        console.log("No new jobs to insert. All jobs already exist.");
+        res.status(200).json({
+          message: `Job scraping complete and ${newJobs.length} new job posts saved. Database Already has the newest.`,
+        });
+      }
+    }
+  } catch (err) {
+    console.error("Error in scrapeJobs controller:", err);
+    res
+      .status(500)
+      .json({ message: "Error scraping jobs.", error: err.message });
   }
 };
 

@@ -2,9 +2,6 @@ const express = require("express");
 const router = express.Router();
 const jobController = require("../controllers/jobControllers");
 
-// // Routes for scraping every jobsite
-// router.post("/jobs/scrape/:searchTerm/:city?", jobController.scrapeJobs);
-
 // GET/ all jobs
 router.get("/", jobController.getAllJobs);
 // POST/scrape all jobsites
@@ -20,7 +17,7 @@ router.get("/duunitori/:id", jobController.getJobById);
 // GET/by searctTerm or location
 router.get("/duunitori/detail/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
 // GET/by searctTerm and location
-router.get("/duunitori/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
+router.get("/duunitori/detail/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
 // POST/scrape
 router.post("/duunitori/scrape-jobs", jobController.scrapeDuuniToriJobs);
 // DELETE
@@ -37,5 +34,17 @@ router.get("/indeed/detail/:searchTerm/:city?", jobController.findJobs); // Matc
 router.post("/indeed/scrape-jobs", jobController.scrapeIndeedJobs);
 // DELETE
 router.delete("/indeed/:id", jobController.deleteJob);
+
+// Routes for Jobly job posts
+// GET/by id
+router.get("/jobly/:id", jobController.getJobById);
+// GET/by searctTerm or location
+router.get("/jobly/detail/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
+// GET/by searctTerm and location
+router.get("/jobly/detail/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
+// POST/scrape
+router.post("/jobly/scrape-jobs", jobController.scrapeJoblyJobs);
+// DELETE
+router.delete("/jobly/:id", jobController.deleteJob);
 
 module.exports = router;

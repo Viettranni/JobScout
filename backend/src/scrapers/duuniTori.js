@@ -9,7 +9,7 @@ const jobList = [];
 // Function to scrape job details from individual job pages
 const scrapeJobDetails = async (jobUrl, browser) => {
   const jobPage = await browser.newPage(); // Open a new tab for each job
-  await jobPage.goto(jobUrl, { waitUntil: "networkidle2" });
+  await jobPage.goto(jobUrl, { waitUntil: "domcontentloaded" });
 
   const jobDetails = await jobPage.evaluate(() => {
     const descriptionElement = document.querySelector(".description-box");
@@ -77,7 +77,7 @@ const duuniTori = async (city = "", searchTerm = "") => {
     : baseURL;
 
   console.log(`Navigating to URL: ${url}`);
-  await page.goto(url, { waitUntil: "networkidle2" });
+  await page.goto(url, { waitUntil: "domcontentloaded" });
 
   // Handle the cookies modal (if it appears)
   try {
@@ -160,17 +160,19 @@ const duuniTori = async (city = "", searchTerm = "") => {
   });
 
   // Store the data in the database
-  try {
-    await JobPost.insertMany(jobList);
-    console.log("Jobs saved to the database");
-  } catch (err) {
-    console.error("Error saving jobs to the database:", err);
-  }
+  // try {
+  //   await JobPost.insertMany(jobList);
+  //   console.log("Jobs saved to the database");
+  // } catch (err) {
+  //   console.error("Error saving jobs to the database:", err);
+  // }
 
   await browser.close();
 
   console.log("Scraping complete. Jobs:", jobs);
   console.log(`Total jobs scraped: ${jobs.length}`);
+
+  return jobList;
 };
 
 // // Example usage with dynamic parameters provided by the user
