@@ -1,19 +1,50 @@
-const express = require('express');
-const Job = require('../models/JobPost');
-
+const express = require("express");
 const router = express.Router();
+const jobController = require("../controllers/jobControllers");
 
-// Get all jobs
-router.get('/jobs', async (req, res) => {
-    const jobs = await Job.find({});
-    res.json(jobs);
-});
+// GET/ all jobs
+router.get("/", jobController.getAllJobs);
+// POST/scrape all jobsites
+router.post("/scrape/:searchTerm/:city?", jobController.scrapeJobs);
+// GET/by id
+router.get("/:id", jobController.getJobById);
+// DELETE
+router.delete("/:id", jobController.deleteJob);
 
-// Trigger scraping
-router.post('/scrape', async (req, res) => {
-    const scrapeSite1 = require('../scrapers/site1Scraper');
-    await scrapeSite1();
-    res.send('Scraping Done!');
-});
+// Routes for Duunitori job posts
+// GET/by id
+router.get("/duunitori/:id", jobController.getJobById);
+// GET/by searctTerm or location
+router.get("/duunitori/detail/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
+// GET/by searctTerm and location
+router.get("/duunitori/detail/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
+// POST/scrape
+router.post("/duunitori/scrape-jobs", jobController.scrapeDuuniToriJobs);
+// DELETE
+router.delete("/duunitori/:id", jobController.deleteJob);
+
+// Routes for Indeed job posts
+// GET/by id
+router.get("/indeed/:id", jobController.getJobById);
+// GET/by searctTerm or location
+router.get("/indeed/detail/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
+// GET/by searctTerm and location
+router.get("/indeed/detail/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
+// POST/scrape
+router.post("/indeed/scrape-jobs", jobController.scrapeIndeedJobs);
+// DELETE
+router.delete("/indeed/:id", jobController.deleteJob);
+
+// Routes for Jobly job posts
+// GET/by id
+router.get("/jobly/:id", jobController.getJobById);
+// GET/by searctTerm or location
+router.get("/jobly/detail/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
+// GET/by searctTerm and location
+router.get("/jobly/detail/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
+// POST/scrape
+router.post("/jobly/scrape-jobs", jobController.scrapeJoblyJobs);
+// DELETE
+router.delete("/jobly/:id", jobController.deleteJob);
 
 module.exports = router;
