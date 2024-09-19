@@ -1,52 +1,45 @@
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const User = require('../models/user');
+const User = require("../models/User");
+const bcrypt = require("bcryptjs");
 
-const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
-
-// Register route
-router.post('/register', async (req, res) => {
-    const { username, password } = req.body;
+const registerUser = async (req, res) => {
+    const { firstname, lastname, email, password, favourites } = req.body;
     try {
-        const user = new User({ username, password });
-        await user.save();
-        res.status(201).json({ message: 'User registered' });
-    } catch (error) {
-        res.status(400).json({ error: 'User registration failed' });
-    }
-});
-
-// Login route
-router.post('/login', async (req, res) => {
-    const { username, password } = req.body;
-    try {
-        const user = await User.findOne({ username });
-        if (!user || !(await user.comparePassword(password))) {
-            return res.status(400).json({ error: 'Invalid credentials' });
+        const userExists = await User.findOne({ $or: [{ email }, { username }] });
+        if (userExists) {
+            return res.status(400).json({ message: " Email or username already taken "});
         }
-        const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
-        res.json({ token });
+
+        const newUser = new User({ firstname, lastname, email, password, favourites });
+        await newUser.save();
+
+        res.status(201).json({ message: "User registered successfully!" });
+        
     } catch (error) {
-        res.status(500).json({ error: 'Login failed' });
+        res.status(500).json({ message: "Server ERROR "});
     }
-});
-
-// Middleware to verify token
-const authenticate = (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ error: 'No token provided' });
-
-    jwt.verify(token, JWT_SECRET, (err, decoded) => {
-        if (err) return res.status(401).json({ error: 'Invalid token' });
-        req.userId = decoded.userId;
-        next();
-    });
 };
 
-// Logout route
-router.post('/logout', (req, res) => {
-    res.status(200).json({ message: 'Logged out' });
-});
+const loginUser = async (req, res) => {
+    const { email, password } = req.body;
 
-module.exports = router;
+    try {
+        const user = await User.findOne({ $or: [{ email: email } ]});
+        if (!user) {
+            res.status(400).json({ message: "User not found" });
+        }
+
+        const isMatch = await user.comparePassword(password);
+        if (!isMatch) {
+            res.status(400).json({ message: "Invalid credentials" });
+        }
+
+        res.status(200).json({ message: "Login successfully!", userId: user._id });
+    } catch (error) {
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
+module.exports = {
+    registerUser,
+    loginUser
+};

@@ -11,6 +11,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { BookmarkIcon, MapPinIcon, ChevronDownIcon, ChevronUpIcon, ChevronRightIcon  } from 'lucide-react'
 import { Link } from "react-router-dom";
+import axios from 'axios'
 import defaultJob from "../../../assets/defaultJob.png" 
 
 export default function JobSearch() {
@@ -19,6 +20,7 @@ export default function JobSearch() {
   const [workingSchedule, setWorkingSchedule] = useState('Working Schedule')
   const [expandedJob, setExpandedJob] = useState(null)
   const [savedJobs, setSavedJobs] = useState({})
+  const [userId, setUserId] = useState("12345"); // TODO: Take token session and store it into userId
 
   const jobListings = [
     { id: 1, title: 'Full Stack Developer', company: 'Twitter', location: 'Finland, Espoo', types: ['Fulltime', 'Distant', 'Project work'], logo: '/placeholder.svg?height=40&width=40' },
@@ -31,11 +33,24 @@ export default function JobSearch() {
     setExpandedJob(expandedJob === jobId ? null : jobId)
   }
 
-  const toggleSaveJob = (jobId) => {
-    setSavedJobs(prev => ({
-      ...prev,
-      [jobId]: !prev[jobId]
-    }))
+  const toggleSaveJob = async (jobId) => {
+    try {
+      if (savedJobs[jobId]) {
+        // Remove from favorites
+        await axios.post(`/user/favourites/remove/${jobId}`, { userId });
+      } else {
+        // Add to favorites
+        await axios.post(`/user/favourites/add/${jobId}`, { userId });
+      }
+      // Toggle saved state
+      setSavedJobs(prev => ({
+        ...prev,
+        [jobId]: !prev[jobId]
+      }));
+      alert(savedJobs[jobId] ? 'Job removed from favorites' : 'Job added to favorites');
+    } catch (error) {
+      alert(error.response?.data.message || "Error saving job");
+    }
   }
 
   const [currentPage, setCurrentPage] = useState(1);

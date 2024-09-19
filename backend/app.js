@@ -2,6 +2,7 @@ require("dotenv").config();
 const connectDB = require("../backend/src/config/db");
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require('cors');
 // const authRoutes = require("./src/routes/authRouter");
 const jobRoutes = require("./src/routes/jobRouter");
 const userRoutes = require("./src/routes/userRouter");
@@ -13,6 +14,10 @@ const {
 
 const app = express();
 
+app.use(cors({
+  origin: 'http://localhost:5173', // Frontend URL
+}));
+
 app.use(express.json());
 
 app.use(requestLogger);
@@ -20,8 +25,8 @@ app.use(requestLogger);
 connectDB();
 
 // Routers
-// app.use('/api/auth', authRoutes);
-app.use('/api/jobs', jobRoutes);
+app.use('/users', userRoutes);
+app.use('/jobPosts', jobRoutes);
 
 mongoose.connect(process.env.MONGO_URI, { 
     
