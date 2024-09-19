@@ -13,7 +13,7 @@ const jobPostSchema = new mongoose.Schema(
     logo: { type: String },
   },
   {
-    timestamps: true, // Adds `createdAt` and `updatedAt` fields
+    timestamps: true, 
   }
 );
 
