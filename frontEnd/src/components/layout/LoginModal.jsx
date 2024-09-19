@@ -61,6 +61,14 @@ function ModalContent() {
         <TabsContent value="register">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
+              <Label htmlFor="register-firstname">Firstname</Label>
+              <Input id="register-firstname" type="text" placeholder="Firstname" required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="register-lastname">Lastname</Label>
+              <Input id="register-lastname" type="text" placeholder="lastname" required />
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="register-email">Email</Label>
               <Input id="register-email" type="email" placeholder="m@example.com" required />
             </div>
