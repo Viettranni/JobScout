@@ -46,7 +46,7 @@ export default function JobSearch() {
       <div className="flex flex-col sm:flex-row mb-6">
         <Input className="mb-2 sm:mb-0 sm:mr-2" placeholder="Search job title or keyword" />
         <Input className="mb-2 sm:mb-0 sm:mr-2" placeholder="City or municipality" />
-        <Button className="bg-primary text-primary-foreground hover:bg-indigo-800">Find Jobs</Button>
+        <Button className="bg-primary text-primary-foreground hover:bg-hover">Find Jobs</Button>
       </div>
 
       <div className="flex flex-wrap mb-6 gap-2">
@@ -151,7 +151,7 @@ export default function JobSearch() {
                           </>
                         )}
                       </Button>
-                      <Button asChild className="bg-primary hover:bg-indigo-800" size="sm">
+                      <Button asChild className="bg-primary hover:bg-hover" size="sm">
                         <Link href={`/apply/${job.id}`}>
                           Apply Now
                         </Link>

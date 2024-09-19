@@ -1,39 +1,42 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import JobCategoryCard from "./JobCategoryCard";
 import SearchBar from "./SearchBar";
 import jobScoutImg from '../../../assets/JobScoutLandingImg.png';
+import { MonitorIcon, CircuitBoardIcon, MessageSquareIcon, BarChartIcon, MoreHorizontalIcon, BookOpenIcon, UsersIcon  } from 'lucide-react'
 
+// Has to work with backEnd info !!!
 const jobCategories = [
-  {
-    title: "Design",
-    newJobs: 147,
-    icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/7152116558450a9f689b062a8476fe7433341e321cfcd3483eb5725446986783?placeholderIfAbsent=true&apiKey=4bc34976a91d45169acbfea9a1c1cef5",
-  },
-  {
-    title: "Technology",
-    newJobs: 263,
-    icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/650f9264855c85d2a7286e540940a86cf3ebb9ff31abed6a295f7217e39c5018?placeholderIfAbsent=true&apiKey=4bc34976a91d45169acbfea9a1c1cef5",
-  },
-  {
-    title: "Marketing",
-    newJobs: 47,
-    icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/16934d1e7340153128cf77c6b0cfc13859fde08044997f2cb2535dde8d6eb1cb?placeholderIfAbsent=true&apiKey=4bc34976a91d45169acbfea9a1c1cef5",
-  },
-  {
-    title: "Finance",
-    newJobs: 78,
-    icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/ed7234a26e6fc1e889f8a178ed2a452b97eb0d8247026a8aa515704cf2ffd239?placeholderIfAbsent=true&apiKey=4bc34976a91d45169acbfea9a1c1cef5",
-  },
-  {
-    title: "Find More",
-    newJobs: null,
-    icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/650f9264855c85d2a7286e540940a86cf3ebb9ff31abed6a295f7217e39c5018?placeholderIfAbsent=true&apiKey=4bc34976a91d45169acbfea9a1c1cef5",
-  },
-];
+  { icon: <MonitorIcon className="w-8 h-8" />, title: 'Design', description: '147 new jobs posted last week' },
+  { icon: <CircuitBoardIcon className="w-8 h-8" />, title: 'Technology', description: '263 new jobs posted last week' },
+  { icon: <MessageSquareIcon className="w-8 h-8" />, title: 'Marketing', description: '47 new jobs posted last week' },
+  { icon: <BarChartIcon className="w-8 h-8" />, title: 'Finance', description: '78 new jobs posted last week' },
+  { icon: <BookOpenIcon className="w-8 h-8" />, title: 'Education', description: '92 new jobs posted last week' },
+  // { icon: <UsersIcon className="w-8 h-8" />, title: 'Human Resources', description: '54 new jobs posted last week' },
+  { icon: <MoreHorizontalIcon className="w-8 h-8" />, title: 'Find More', description: '' },
+]
 
 function JobSearchComponent() {
+  const [visibleBlocks, setVisibleBlocks] = useState(jobCategories.length)
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth
+      if (width < 640) setVisibleBlocks(1)
+      else if (width < 768) setVisibleBlocks(2)
+      else if (width < 1024) setVisibleBlocks(3)
+      else if (width < 1280) setVisibleBlocks(4)
+      else if (width < 1280) setVisibleBlocks(4)
+      else if (width < 1536) setVisibleBlocks(5)
+      else setVisibleBlocks(6)
+    }
+
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
   return (
-    <main className="flex flex-col min-h-screen bg-white">
+    <main className="flex flex-col min-h-screen h-full bg-white">
       <section 
           className="flex-grow flex flex-col items-center px-4 sm:px-8 md:px-16 lg:px-20 py-8 sm:py-12 md:py-16 lg:py-20 bg-indigo-950 rounded-b-xl" 
           style={{ backgroundImage: `url(${jobScoutImg})`, backgroundSize: '100%', backgroundPosition: 'bottom center', backgroundRepeat: 'no-repeat'}}
@@ -45,13 +48,17 @@ function JobSearchComponent() {
           <SearchBar />
         </div>
       </section>
-      <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 px-4 sm:px-8 md:px-16 lg:px-20 py-8 sm:py-12 -mt-5">
-        {jobCategories.map((category, index) => (
-          <JobCategoryCard key={index} {...category} />
-        ))}
-      </section>
+      {/* <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 px-4 sm:px-8 md:px-16 lg:px-20 py-8 sm:py-12 -mt-5"> */}
+      <div className="flex justify-center items-center bg-white p-4">
+        <div className="flex space-x-4 overflow-x-auto">
+          {jobCategories.slice(0, visibleBlocks).map((category, index) => (
+            <JobCategoryCard key={index} {...category} />
+          ))}
+        </div>
+      </div>
+      {/* </section> */}
     </main>
   );
-}
+};
 
 export default JobSearchComponent;

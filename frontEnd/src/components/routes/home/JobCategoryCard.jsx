@@ -1,19 +1,17 @@
 import React from "react";
 
-function JobCategoryCard({ title, newJobs, icon }) {
+function JobCategoryCard({ index, title, description, icon }) {
   return (
-    <article className="flex flex-col items-start p-4 rounded-xl bg-indigo-950 aspect-[4/3] text-white hover:bg-indigo-900">
-      <img
-        loading="lazy"
-        src={icon}
-        alt={`${title} category icon`}
-        className="object-contain w-22 h-22 mb-8"
-      />
-      <h2 className="text-lg font-semibold mb-2">{title}</h2>
-      {newJobs !== null && (
-        <p className="text-xs">{newJobs} new jobs posted last week</p>
-      )}
-    </article>
+    <div
+      key={index}
+      className="flex-shrink-0 w-64 h-40 bg-primary rounded-lg p-4 flex flex-col justify-between text-white transition-all duration-300 ease-in-out hover:bg-hover"
+    >
+      <div className="flex items-center space-x-2">
+        {icon}
+        <h2 className="text-xl font-bold">{title}</h2>
+      </div>
+      <p className="text-sm text-gray-300">{description}</p>
+    </div>
   );
 }
 

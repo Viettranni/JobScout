@@ -14,7 +14,7 @@ const Navbar = () => {
       <div className="flex space-x-4">
         <LoginModal 
           trigger={
-            <Button className="bg-indigo-950 text-white py-2 px-4 rounded hover:bg-blue-800">
+            <Button className="bg-indigo-950 text-white py-2 px-4 rounded hover:bg-hover">
               Sign In / Register
             </Button>
           }
