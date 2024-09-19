@@ -1,5 +1,5 @@
 import React from "react";
-import JobSearchComponent from "./JobSearchComponent";
+import JobSearchComponent from "./SearchComponent";
 
 function Home() {
   return(

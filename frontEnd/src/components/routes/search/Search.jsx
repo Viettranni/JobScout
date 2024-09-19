@@ -1,3 +1,5 @@
+import { useLocation } from 'react-router-dom';
+
 import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -40,6 +42,10 @@ export default function JobSearch() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 3; // Assuming we have 3 pages
+
+
+  // req from home
+  const query = new URLSearchParams(location.search).get('q') || '';
 
   return (
     <div className="container mx-auto px-4 py-8 lg:w-4/5">
@@ -97,6 +103,7 @@ export default function JobSearch() {
 
       <div className="mb-6">
         <h2 className="text-xl font-semibold">378 Jobs results</h2>
+        <p className="text-l font-semibold">for: "{query}"</p>
         {/* <div className="flex justify-between items-center">
           <span>Sort by:</span>
           <Button variant="link">Last Updated</Button>

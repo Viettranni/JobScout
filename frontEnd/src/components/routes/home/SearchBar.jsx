@@ -1,13 +1,17 @@
 import React, { useState } from "react";
-
+import { useNavigate } from 'react-router-dom';
 import SearchButton from './SearchButton';
 
 function SearchBar() {
   const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
   };
+
 
   return (
     <form
