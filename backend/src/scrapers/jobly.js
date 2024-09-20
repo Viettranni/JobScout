@@ -121,7 +121,9 @@ const visitJobPage = async (browser, job) => {
 
     // Extract the job description
     const description = descriptionElement
-      ? Array.from(descriptionElement).map((p) => p.textContent.trim())
+      ? Array.from(descriptionElement)
+          .map((p) => p.textContent.trim())
+          .join(" ")
       : "Description not found";
 
     // Extract responsibilities if available
