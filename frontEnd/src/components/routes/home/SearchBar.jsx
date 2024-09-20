@@ -9,6 +9,10 @@ function SearchBar() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (searchTerm.trim() === '') return
+
+    // Send the search query to the backend here
+
     navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
   };
 
