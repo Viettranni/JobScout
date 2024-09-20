@@ -1,20 +1,9 @@
 import React, { useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { searchHook } from '@/components/routes/searchHook'
 import SearchButton from './SearchButton';
 
 function SearchBar() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const navigate = useNavigate();
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (searchTerm.trim() === '') return
-
-    // Send the search query to the backend here
-
-    navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
-  };
+  const { searchTerm, setSearchTerm, handleSubmit } = searchHook()
 
 
   return (

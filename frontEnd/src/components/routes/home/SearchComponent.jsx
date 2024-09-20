@@ -58,7 +58,7 @@ if (width < 768) {
      {/* our most popular component */} 
 
       <div className="w-full bg-white p-4">
-      <h2 className='mb-2 text-indigo-900 font-bold'>Our most popular job categories: </h2>
+      <h2 className='mb-2 text-indigo-900 font-bold'>Our saved example searches: </h2>
 
       <div
         className={
