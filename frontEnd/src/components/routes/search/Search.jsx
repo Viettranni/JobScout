@@ -5,8 +5,12 @@ import { Pagination } from "./Pagination";
 import { DropdownHandler } from "./DropdownHandler";
 import { useLocation } from "react-router-dom";
 import { dropdownData } from "../mockDropdownData";
+import { useEffect } from "react";
 
 export default function JobSearch() {
+
+  useEffect(() => {document.title = 'Job Tracks & Trails'}, [])
+
   const {
     expandedJob,
     savedJobs,
