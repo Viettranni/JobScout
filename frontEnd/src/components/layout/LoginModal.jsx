@@ -31,7 +31,7 @@ function ModalContent() {
     lastname: "",
     email: "",
     password: "",
-    favourites: ""
+    confirmPassword: ""
   });
 
   const [loginData, setLoginData] = useState({
@@ -39,7 +39,7 @@ function ModalContent() {
     password: ""
   });
 
-  const handleChange = (e) => {
+  const handleRegisterChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -49,15 +49,27 @@ function ModalContent() {
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
     try {
       const response = await axios.post("http://localhost:4000/users/register", formData);
       alert(response.data.message); // Show success message
       setIsOpen(false)
     } catch (error) {
-      alert(error.response.data.message); // Show error message
-      console.log("User saved unsuccesfully");
+      console.error("Registration error:", error);
+        
+      // Ensure the response and data exist before trying to alert
+      if (error.response && error.response.data && error.response.data.message) {
+          alert(error.response.data.message); // Show error message from server
+      } else {
+          alert("An unexpected error occurred."); // Fallback message for other errors
+      }
     }
-  }
+  };
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -101,23 +113,23 @@ function ModalContent() {
           <form onSubmit={handleRegisterSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="register-firstname">Firstname</Label>
-              <Input id="register-firstname" type="text" name="firstname" onChange={handleChange} placeholder="Firstname" required />
+              <Input id="register-firstname" type="text" name="firstname" onChange={handleRegisterChange} placeholder="Firstname" required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="register-lastname">Lastname</Label>
-              <Input id="register-lastname" type="text" name="lastname" onChange={handleChange} placeholder="lastname" required />
+              <Input id="register-lastname" type="text" name="lastname" onChange={handleRegisterChange} placeholder="lastname" required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="register-email">Email</Label>
-              <Input id="register-email" type="email" name="email" onChange={handleChange} placeholder="m@example.com" required />
+              <Input id="register-email" type="email" name="email" onChange={handleRegisterChange} placeholder="m@example.com" required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="register-password">Password</Label>
-              <Input id="register-password" type="password" name="password" onChange={handleChange} required />
+              <Input id="register-password" type="password" name="password" onChange={handleRegisterChange} required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirm-password">Confirm Password</Label>
-              <Input id="confirm-password" type="password" onChange={handleChange} required />
+              <Input id="confirm-password" type="password" name="confirmPassword" onChange={handleRegisterChange} required />
             </div>
             <Button type="submit" className="w-full bg-indigo-950 hover:bg-indigo-900">Register</Button>
           </form>

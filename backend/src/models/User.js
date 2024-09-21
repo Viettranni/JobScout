@@ -7,7 +7,8 @@ const userSchema = new mongoose.Schema({
   lastname: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  favourites: [{ type: mongoose.Schema.Types.ObjectId, ref: "JobPost" }], // Array of JobPost references
+  favourites: [{ type: mongoose.Schema.Types.ObjectId, ref: "JobPost" }],
+  appliedJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: "JobPost" }], // Array of JobPost references
 });
 
 // Hash password before saving

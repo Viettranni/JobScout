@@ -1,21 +1,26 @@
 const User = require("../models/User");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcryptjs"); // Implemented in the User model
 
 const registerUser = async (req, res) => {
-    const { firstname, lastname, email, password, favourites } = req.body;
+    const { firstname, lastname, email, password, favourites, appliedJobs } = req.body;
     try {
-        const userExists = await User.findOne({ $or: [{ email }, { username }] });
+        const userExists = await User.findOne({ email });
         if (userExists) {
-            return res.status(400).json({ message: " Email or username already taken "});
+            return res.status(400).json({ message: " You already have an Account! Log in :) "});
         }
 
-        const newUser = new User({ firstname, lastname, email, password, favourites });
+        const newUser = new User({ firstname, lastname, email, password, favourites, appliedJobs });
         await newUser.save();
 
         res.status(201).json({ message: "User registered successfully!" });
         
     } catch (error) {
-        res.status(500).json({ message: "Server ERROR "});
+        if (error.name === "ValidationError") {
+            res.status(400).json({ message: error.message });
+        } else {
+            console.error("Error during registration:", error);
+            res.status(500).json({ message: "Server ERROR" });
+        }
     }
 };
 
@@ -25,12 +30,12 @@ const loginUser = async (req, res) => {
     try {
         const user = await User.findOne({ $or: [{ email: email } ]});
         if (!user) {
-            res.status(400).json({ message: "User not found" });
+            return res.status(400).json({ message: "User not found" });
         }
 
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
-            res.status(400).json({ message: "Invalid credentials" });
+            return res.status(400).json({ message: "Invalid credentials" });
         }
 
         res.status(200).json({ message: "Login successfully!", userId: user._id });

@@ -15,7 +15,7 @@ const {
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:5173', // Frontend URL
+  origin: 'http://localhost:5173', // Allowing the Frontend to interact with backend
 }));
 
 app.use(express.json());
@@ -28,10 +28,10 @@ connectDB();
 app.use('/users', userRoutes);
 app.use('/jobPosts', jobRoutes);
 
-mongoose.connect(process.env.MONGO_URI, { 
+// mongoose.connect(process.env.MONGO_URI, { 
     
- })
-    .then(() => console.log('Connected successfully to MongoDB!'))
-    .catch(err => console.error('Could not connect to MongoDB...', err));
+//  })
+//     .then(() => console.log('Connected successfully to MongoDB!'))
+//     .catch(err => console.error('Could not connect to MongoDB...', err));
 
 module.exports = app;
