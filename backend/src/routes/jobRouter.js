@@ -5,7 +5,7 @@ const jobController = require("../controllers/jobControllers");
 // GET/ all jobs
 router.get("/", jobController.getAllJobs);
 // POST/scrape all jobsites
-router.post("/scrape/:searchTerm/:city?", jobController.scrapeJobs);
+router.post("/allsites/scrape-jobs", jobController.scrapeJobs);
 // GET/by id
 router.get("/:id", jobController.getJobById);
 // DELETE
@@ -14,9 +14,9 @@ router.delete("/:id", jobController.deleteJob);
 // Routes for Duunitori job posts
 // GET/by id
 router.get("/duunitori/:id", jobController.getJobById);
-// GET/by searctTerm or location
+// GET/by searchTerm or location
 router.get("/duunitori/detail/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
-// GET/by searctTerm and location
+// GET/by searchTerm and location
 router.get("/duunitori/detail/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
 // POST/scrape
 router.post("/duunitori/scrape-jobs", jobController.scrapeDuuniToriJobs);
@@ -26,9 +26,9 @@ router.delete("/duunitori/:id", jobController.deleteJob);
 // Routes for Indeed job posts
 // GET/by id
 router.get("/indeed/:id", jobController.getJobById);
-// GET/by searctTerm or location
+// GET/by searchTerm or location
 router.get("/indeed/detail/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
-// GET/by searctTerm and location
+// GET/by searchTerm and location
 router.get("/indeed/detail/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
 // POST/scrape
 router.post("/indeed/scrape-jobs", jobController.scrapeIndeedJobs);
@@ -38,7 +38,7 @@ router.delete("/indeed/:id", jobController.deleteJob);
 // Routes for Jobly job posts
 // GET/by id
 router.get("/jobly/:id", jobController.getJobById);
-// GET/by searctTerm or location
+// GET/by searchTerm or location
 router.get("/jobly/detail/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
 // GET/by searctTerm and location
 router.get("/jobly/detail/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location

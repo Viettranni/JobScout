@@ -9,14 +9,37 @@ exports.scrapeJobs = async (req, res) => {
   const { page, city, searchTerm } = req.query;
 
   try {
-    const result = await Promise.all([
+    // Fetch job results from all sources (duuniTori, indeed, jobly)
+    const results = await Promise.all([
       duuniTori(city, searchTerm, page),
       indeed(city, searchTerm, page),
       jobly(city, searchTerm, page),
     ]);
 
-    if (result) {
-      const jobsToCheck = result.map((job) => ({
+    // Flatten the results into a single array since each API returns an array
+    const allResults = results.flat();
+
+    if (allResults) {
+      // Filter out jobs that don't meet the required schema
+      const filteredResults = allResults.filter((job) => {
+        // Ensure required fields are present and of correct type
+        const hasRequiredFields =
+          typeof job.title === "string" &&
+          typeof job.company === "string" &&
+          typeof job.location === "string" &&
+          typeof job.datePosted === "string" &&
+          typeof job.url === "string";
+
+        // Ensure required fields are not empty
+        const requiredFieldsNotEmpty =
+          job.title && job.company && job.location && job.datePosted && job.url;
+
+        // Return jobs that pass both checks
+        return hasRequiredFields && requiredFieldsNotEmpty;
+      });
+
+      // Now proceed with checking against existing jobs in the database
+      const jobsToCheck = filteredResults.map((job) => ({
         title: job.title,
         company: job.company,
         location: job.location,
@@ -36,7 +59,8 @@ exports.scrapeJobs = async (req, res) => {
         existingJobs.map((job) => `${job.title}|${job.company}|${job.location}`)
       );
 
-      const newJobs = result.filter((job) => {
+      // Filter out jobs that already exist in the database
+      const newJobs = filteredResults.filter((job) => {
         const identifier = `${job.title}|${job.company}|${job.location}`;
         if (existingJobIdentifiers.has(identifier)) {
           console.log(
@@ -47,8 +71,10 @@ exports.scrapeJobs = async (req, res) => {
         return true;
       });
 
+      // Check if there are new jobs to insert
       if (newJobs.length > 0) {
         try {
+          // Insert new jobs into the database
           await JobPost.insertMany(newJobs);
           console.log(`Inserted ${newJobs.length} new jobs.`);
           res.status(201).json({
@@ -63,7 +89,7 @@ exports.scrapeJobs = async (req, res) => {
       } else {
         console.log("No new jobs to insert. All jobs already exist.");
         res.status(200).json({
-          message: `Job scraping complete. ${page} page/s scraped. ${newJobs.length} new job post/s saved. Database Already has the newest.`,
+          message: `Job scraping complete. ${page} page/s scraped. ${newJobs.length} new job post/s saved. Database already has the newest.`,
         });
       }
     }
