@@ -13,6 +13,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode'
+import { useNavigate } from 'react-router-dom';
+
 
 // Create a context to manage the modal's open state
 const ModalContext = createContext({
@@ -25,6 +28,7 @@ const useModalContext = () => useContext(ModalContext)
 
 // Modal content component
 function ModalContent() {
+  const navigate = useNavigate()
   const { setIsOpen } = useModalContext()
   const [formData, setFormData] = useState({
     firstname: "",
@@ -47,6 +51,8 @@ function ModalContent() {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
   };
 
+
+  // Handling the REGISTER submit
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
 
@@ -58,6 +64,13 @@ function ModalContent() {
     try {
       const response = await axios.post("http://localhost:4000/users/register", formData);
       alert(response.data.message); // Show success message
+      const { token } = response.data;
+
+      localStorage.setItem("token", token);
+
+      navigate("/");
+      window.location.reload();
+
       setIsOpen(false)
     } catch (error) {
       console.error("Registration error:", error);
@@ -71,12 +84,22 @@ function ModalContent() {
     }
   };
 
+
+  // Handling the LOGIN submit
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post("http://localhost:4000/users/login", loginData);
       console.log(response)
-      alert(response.data.message); // Show success message
+
+      const { token } = response.data;
+
+      localStorage.setItem("token", token);
+      
+      navigate("/");
+      window.location.reload();
+
+      // alert(response.data.message); // Show success message
     } catch (error) {
       console.error("Full error:", error);
       alert(error.response.data.message); // Show error message
