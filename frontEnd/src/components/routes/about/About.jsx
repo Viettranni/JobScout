@@ -4,7 +4,6 @@ import JobScoutInfo from "./JobScoutInfo";
 import JobOpportunities from "./JobOpportunities";
 
 function About() {
-<<<<<<< HEAD
   return (
     <div>
       <JobScoutInfo />
@@ -15,15 +14,3 @@ function About() {
 }
 
 export default About;
-=======
-    return(
-      <div>
-          <ClientsSection />
-          <JobScoutInfo />
-          <JobOpportunities />
-      </div>   
-    );
-  }
-  
-  export default About;
->>>>>>> vietbe

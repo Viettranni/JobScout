@@ -58,12 +58,7 @@ const fetchJobDetailsSequentially = async (jobUrls, browser) => {
       console.error(`Invalid URL: ${jobUrl}`);
       jobDetails.push(null); // Skip invalid URLs and push null
     }
-<<<<<<< HEAD
   }
-=======
-    return null;
-  }); 
->>>>>>> vietbe
 
   return jobDetails; // Return the list of job details
 };

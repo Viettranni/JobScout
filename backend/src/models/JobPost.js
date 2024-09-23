@@ -8,20 +8,12 @@ const jobPostSchema = new mongoose.Schema(
     location: { type: String, required: true },
     datePosted: { type: String, required: true },
     url: { type: String, required: true, unique: true },
-<<<<<<< HEAD
     description: { type: String },
-=======
-    description: { type: [String] },
->>>>>>> vietbe
     responsibilities: { type: [String] },
     logo: { type: String },
   },
   {
-<<<<<<< HEAD
     timestamps: true, // Adds `createdAt` and `updatedAt` fields
-=======
-    timestamps: true, 
->>>>>>> vietbe
   }
 );
 

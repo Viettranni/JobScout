@@ -1,12 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userControllers");
-<<<<<<< HEAD
 const authRouter = require("../routes/authRouter");
-=======
-const authRouter = require("../routes/authRouter")
-const favouritesController = require("../controllers/favouritesControllers");
->>>>>>> vietbe
 
 // Routes for user management
 router.get("/allUsers", userController.getAllUsers);
@@ -21,9 +16,6 @@ router.delete("/:id/favourites/:jobPostId", userController.removeFromFavourites)
 router.post("/register", authRouter.registerUser); // Registers new user
 router.post("/login", authRouter.loginUser); // Login user
 
-// Favourites logic
-router.post("/favourites/add/:jobId", favouritesController.addJobPostToFavourites); // Adds a favourited job to user id
-router.post("favourites/remove/:jobId", favouritesController. removeJobPostFromFavourites)
 
 // Auth routes
 router.post("/register", authRouter.registerUser); // Registers new user

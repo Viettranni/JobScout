@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useEffect } from "react";
 
 function NotFound() {
@@ -23,12 +22,6 @@ function NotFound() {
       </div>
     </div>
   )
-=======
-import React from "react";
-
-function NotFound() {
-  return <div>This is NotFound</div>;
->>>>>>> vietbe
 }
 
 export default NotFound;
