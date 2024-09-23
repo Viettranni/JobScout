@@ -40,11 +40,23 @@ router.delete("/indeed/:id", jobController.deleteJob);
 router.get("/jobly/:id", jobController.getJobById);
 // GET/by searchTerm or location
 router.get("/jobly/detail/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
-// GET/by searctTerm and location
+// GET/by searchTerm and location
 router.get("/jobly/detail/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
 // POST/scrape
 router.post("/jobly/scrape-jobs", jobController.scrapeJoblyJobs);
 // DELETE
 router.delete("/jobly/:id", jobController.deleteJob);
+
+// Routes for Oikotie job posts
+// GET/by id
+router.get("/oikotie/:id", jobController.getJobById);
+// GET/by searchTerm or location
+router.get("/oikotie/detail/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
+// GET/by searchTerm and location
+router.get("/oikotie/detail/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
+// POST/scrape
+router.post("/oikotie/scrape-jobs", jobController.scrapeOikotieJobs);
+// DELETE
+router.delete("/oikotie/:id", jobController.deleteJob);
 
 module.exports = router;
