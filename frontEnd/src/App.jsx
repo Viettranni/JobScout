@@ -1,4 +1,7 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation  } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
+import ScrollToTop from './ScrollToTop';
+import PageTransition from "./transition"
 import React from "react";
 import "./index.css";
 
@@ -9,24 +12,32 @@ import Cabinet from "./components/routes/cabinet/Cabinet";
 import About from "./components/routes/about/About";  // in own dir
 import NotFound from "./components/routes/NotFound";
 
-const App = () => {
+
+const AnimatedRoutes = () => {
+  const location = useLocation();
+
   return (
-    <BrowserRouter>
-      <Routes>
-        
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Layout />}>
-          <Route path="/home" element={<Home />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/cabinet" element={<Cabinet />} />
-          <Route path="/about" element={<About />} />
-          {/* <Route path="/registration" element={<Registration />} /> */}
-
-          <Route path="*" element={<NotFound />} />
+          <Route index element={<PageTransition><Home /></PageTransition>} />
+          <Route path="search" element={<PageTransition><Search /></PageTransition>} />
+          <Route path="cabinet" element={<PageTransition><Cabinet /></PageTransition>} />
+          <Route path="about" element={<PageTransition><About /></PageTransition>} />
+          <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Route>
-
       </Routes>
-    </BrowserRouter>
+    </AnimatePresence>
   );
 };
+
+function App() {
+  return (
+    <BrowserRouter>
+      <ScrollToTop />
+      <AnimatedRoutes />
+    </BrowserRouter>
+  );
+}
 
 export default App;
