@@ -13,7 +13,10 @@ export default {
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		colors: {
+<<<<<<< HEAD
 			hover: 'hsl(var(--hover))',
+=======
+>>>>>>> vietbe
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

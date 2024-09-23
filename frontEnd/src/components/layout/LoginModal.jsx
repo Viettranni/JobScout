@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
+import axios from 'axios';
+
 // Create a context to manage the modal's open state
 const ModalContext = createContext({
   isOpen: false,
@@ -24,13 +26,62 @@ const useModalContext = () => useContext(ModalContext)
 // Modal content component
 function ModalContent() {
   const { setIsOpen } = useModalContext()
+  const [formData, setFormData] = useState({
+    firstname: "",
+    lastname: "",
+    email: "",
+    password: "",
+    confirmPassword: ""
+  });
 
-  const handleSubmit = (event) => {
-    event.preventDefault()
-    // Handle form submission logic here
-    console.log('Form submitted')
-    setIsOpen(false)
-  }
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: ""
+  });
+
+  const handleRegisterChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleLoginChange = (e) => {
+    setLoginData({ ...loginData, [e.target.name]: e.target.value });
+  };
+
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:4000/users/register", formData);
+      alert(response.data.message); // Show success message
+      setIsOpen(false)
+    } catch (error) {
+      console.error("Registration error:", error);
+        
+      // Ensure the response and data exist before trying to alert
+      if (error.response && error.response.data && error.response.data.message) {
+          alert(error.response.data.message); // Show error message from server
+      } else {
+          alert("An unexpected error occurred."); // Fallback message for other errors
+      }
+    }
+  };
+
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post("http://localhost:4000/users/login", loginData);
+      console.log(response)
+      alert(response.data.message); // Show success message
+    } catch (error) {
+      console.error("Full error:", error);
+      alert(error.response.data.message); // Show error message
+    }
+  };
 
   return (
     <DialogContent className="sm:max-w-[425px]">
@@ -46,31 +97,39 @@ function ModalContent() {
           <TabsTrigger value="register">Register</TabsTrigger>
         </TabsList>
         <TabsContent value="login">
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleLoginSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="m@example.com" required />
+              <Input id="email" type="email" name="email" onChange={handleLoginChange} placeholder="m@example.com" required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" required />
+              <Input id="password" type="password" name="password" onChange={handleLoginChange} required />
             </div>
             <Button type="submit" className="w-full bg-indigo-950 hover:bg-indigo-900">Login</Button>
           </form>
         </TabsContent>
         <TabsContent value="register">
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleRegisterSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="register-firstname">Firstname</Label>
+              <Input id="register-firstname" type="text" name="firstname" onChange={handleRegisterChange} placeholder="Firstname" required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="register-lastname">Lastname</Label>
+              <Input id="register-lastname" type="text" name="lastname" onChange={handleRegisterChange} placeholder="lastname" required />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="register-email">Email</Label>
-              <Input id="register-email" type="email" placeholder="m@example.com" required />
+              <Input id="register-email" type="email" name="email" onChange={handleRegisterChange} placeholder="m@example.com" required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="register-password">Password</Label>
-              <Input id="register-password" type="password" required />
+              <Input id="register-password" type="password" name="password" onChange={handleRegisterChange} required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirm-password">Confirm Password</Label>
-              <Input id="confirm-password" type="password" required />
+              <Input id="confirm-password" type="password" name="confirmPassword" onChange={handleRegisterChange} required />
             </div>
             <Button type="submit" className="w-full bg-indigo-950 hover:bg-indigo-900">Register</Button>
           </form>

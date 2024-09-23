@@ -1,4 +1,5 @@
 import React from "react";
+<<<<<<< HEAD
 import { useState } from "react";
 import Step1 from "../../../assets/opp1.png";
 import Step2 from "../../../assets/opp2.png";
@@ -37,23 +38,52 @@ const features = [
   {
     staticImage: Step1, // Static image
     gifImage: Gif1, // Path to the GIF
+=======
+
+const FeatureCard = ({ image, title, description }) => (
+  <article className="flex flex-col w-[33%] max-md:ml-0 max-md:w-full">
+    <div className="flex flex-col grow items-center text-2xl font-bold text-center text-indigo-950 max-md:mt-10">
+      <div className="px-7 pb-0 text-xl rounded-3xl aspect-square bg-zinc-300 leading-[50px] w-[324px] max-md:pt-24 max-md:pb-28 max-md:pl-5">
+        {image}
+      </div>
+      <h2 className="mt-7 leading-[50px]">{title}</h2>
+      <p className="self-stretch mt-5">{description}</p>
+    </div>
+  </article>
+);
+
+const features = [
+  {
+    image: "pic of creating account",
+>>>>>>> vietbe
     title: "Create your account",
     description:
       "Sign up now to personalize your job search experience and unlock all features.",
   },
   {
+<<<<<<< HEAD
     staticImage: Step2,
     gifImage: Gif1,
+=======
+    image: "pic of exploring",
+>>>>>>> vietbe
     title: "Explore Jobs You Need",
     description:
       "Browse and filter job listings tailored to your skills and career goals.",
   },
   {
+<<<<<<< HEAD
     staticImage: Step3,
     gifImage: Gif1,
     title: "View Your Saved Jobs in the Cabinet",
     description:
       "Keep track of jobs you’ve saved and revisit them as you search for the perfect opportunity.",
+=======
+    image: "pic of checking notif",
+    title: "Get Instant Notifications",
+    description:
+      "Stay informed with real-time alerts whenever new jobs matching your criteria are posted.",
+>>>>>>> vietbe
   },
 ];
 
@@ -68,8 +98,12 @@ const JobOpportunities = () => {
           {features.map((feature, index) => (
             <FeatureCard
               key={index}
+<<<<<<< HEAD
               staticImage={feature.staticImage}
               gifImage={feature.gifImage}
+=======
+              image={feature.image}
+>>>>>>> vietbe
               title={feature.title}
               description={feature.description}
             />

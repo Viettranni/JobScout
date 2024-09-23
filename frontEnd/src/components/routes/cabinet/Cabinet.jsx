@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
+=======
+import React, { useState } from 'react';
+>>>>>>> vietbe
 import { Link } from "react-router-dom";
 import profileImage from "../../../assets/profile.png"
 import defaultJob from "../../../assets/defaultJob.png" 
@@ -9,9 +13,12 @@ import { Badge } from "@/components/ui/badge";
 import { BookmarkIcon, MapPinIcon, ChevronDownIcon, ChevronUpIcon, ChevronRightIcon  } from 'lucide-react'
 
 export default function SavedJobs() {
+<<<<<<< HEAD
 
   useEffect(() => {document.title = 'Camp Locker'}, [])
 
+=======
+>>>>>>> vietbe
   const [expandedJob, setExpandedJob] = useState(null)
   const [savedJobs, setSavedJobs] = useState([
     { id: 1, title: 'Full Stack Developer', company: 'Twitter', location: 'Finland, Espoo', types: ['Fulltime', 'Distant', 'Project work'], logo: '/twitter-logo.png', saved: true },
