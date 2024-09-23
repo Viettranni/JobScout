@@ -1,19 +1,16 @@
-import React, { useEffect } from "react";
+import React from "react";
 import ClientsSection from "./ClientSection";
 import JobScoutInfo from "./JobScoutInfo";
 import JobOpportunities from "./JobOpportunities";
 
 function About() {
+  return (
+    <div>
+      <JobScoutInfo />
+      <ClientsSection />
+      <JobOpportunities />
+    </div>
+  );
+}
 
-  useEffect(() => {document.title = 'Our Job Trailblazers'}, [])
-
-    return(
-      <div>
-          <ClientsSection />
-          <JobScoutInfo />
-          <JobOpportunities />
-      </div>   
-    );
-  }
-  
-  export default About;
+export default About;
