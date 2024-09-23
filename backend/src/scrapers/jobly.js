@@ -121,7 +121,9 @@ const visitJobPage = async (browser, job) => {
 
     // Extract the job description
     const description = descriptionElement
-      ? Array.from(descriptionElement).map((p) => p.textContent.trim())
+      ? Array.from(descriptionElement)
+          .map((p) => p.textContent.trim())
+          .join(" ")
       : "Description not found";
 
     // Extract responsibilities if available
@@ -145,7 +147,7 @@ const visitJobPage = async (browser, job) => {
   return updatedJob;
 };
 
-// // Call the jobly function to start scraping
+// // // Call the jobly function to start scraping
 // const run = async () => {
 //   const city = "Helsinki";
 //   const searchTerm = "lääkäri";
@@ -158,6 +160,6 @@ const visitJobPage = async (browser, job) => {
 //   }
 // };
 
-// run();
+// run("helsinki", "lääkäri");
 
 module.exports = jobly;

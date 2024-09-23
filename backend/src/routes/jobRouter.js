@@ -5,7 +5,7 @@ const jobController = require("../controllers/jobControllers");
 // GET/ all jobs
 router.get("/", jobController.getAllJobs);
 // POST/scrape all jobsites
-router.post("/scrape/:searchTerm/:city?", jobController.scrapeJobs);
+router.post("/allsites/scrape/:searchTerm/:city?", jobController.scrapeJobs);
 // GET/by id
 router.get("/:id", jobController.getJobById);
 // DELETE
