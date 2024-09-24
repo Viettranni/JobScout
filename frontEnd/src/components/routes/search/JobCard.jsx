@@ -50,11 +50,15 @@ export function JobCard({
                   <MapPinIcon className="w-4 h-4 mr-1" /> {job.location}
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {job.types.map((type, index) => (
-                    <Badge key={index} variant="secondary">
-                      {type}
-                    </Badge>
-                  ))}
+                  {Array.isArray(job.types) && job.types.length > 0 ? (
+                    job.types.map((type, index) => (
+                      <Badge key={index} variant="secondary">
+                        {type}
+                      </Badge>
+                    ))
+                  ) : (
+                    <p>No Types</p> // Fallback if types array is undefined or empty
+                  )}
                 </div>
               </div>
               <div className="flex items-center space-x-2 mt-2 sm:mt-0">
@@ -72,7 +76,7 @@ export function JobCard({
                   )}
                 </Button>
                 <Button asChild className="bg-primary hover:bg-hover" size="sm">
-                  <Link to={`/apply/${job.id}`}>Apply Now</Link>
+                  <Link to={`${job.url}`} target="_blank" >Apply Now</Link>
                 </Button>
               </div>
             </div>
@@ -82,13 +86,7 @@ export function JobCard({
           <div className="mt-4 p-4 bg-muted rounded-md">
             <h4 className="font-semibold mb-2">Job Description</h4>
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-              sunt in culpa qui officia deserunt mollit anim id est laborum.
+              {job.description}
             </p>
           </div>
         )}
