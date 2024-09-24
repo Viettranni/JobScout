@@ -13,7 +13,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode'
 import { useNavigate } from 'react-router-dom';
 
 
@@ -43,6 +42,8 @@ function ModalContent() {
     password: ""
   });
 
+  const [error, setError] = useState("");
+
   const handleRegisterChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -57,11 +58,12 @@ function ModalContent() {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
+      setError("Passwords do not match!");
       return;
     }
 
     try {
+      // Instead of Fetch, Axios automatically converts the JSON responses, saving the need to call json() separately
       const response = await axios.post("http://localhost:4000/users/register", formData);
       alert(response.data.message); // Show success message
       const { token } = response.data;
@@ -71,15 +73,24 @@ function ModalContent() {
       navigate("/");
       window.location.reload();
 
-      setIsOpen(false)
+      setIsOpen(false);
+      setError("")
+      setFormData({
+        firstname: "",
+        lastname: "",
+        email: "",
+        password: "",
+        confirmPassword: ""
+      });
+
     } catch (error) {
       console.error("Registration error:", error);
         
       // Ensure the response and data exist before trying to alert
-      if (error.response && error.response.data && error.response.data.message) {
-          alert(error.response.data.message); // Show error message from server
+      if (error.response && error.response.data && error.response.data.error) {
+          setError(error.response.data.error); // Show error message from server
       } else {
-          alert("An unexpected error occurred."); // Fallback message for other errors
+          setError("An unexpected error occurred."); // Fallback message for other errors
       }
     }
   };
@@ -99,10 +110,21 @@ function ModalContent() {
       navigate("/");
       window.location.reload();
 
+      setIsOpen(false); // Close modal on successful login
+      setError(""); // Reset error message
+      setLoginData({
+        email: "",
+        password: ""
+      }); // Clear login form after success
+
       // alert(response.data.message); // Show success message
     } catch (error) {
       console.error("Full error:", error);
-      alert(error.response.data.message); // Show error message
+      if (error.response && error.response.data && error.response.data.error) {
+        setError(error.response.data.error); // Set error message from backend
+      } else {
+        setError("An unexpected error occurred."); // Set fallback error
+      }
     }
   };
 
@@ -130,6 +152,11 @@ function ModalContent() {
               <Input id="password" type="password" name="password" onChange={handleLoginChange} required />
             </div>
             <Button type="submit" className="w-full bg-indigo-950 hover:bg-indigo-900">Login</Button>
+            {error && (
+              <div className="text-red-500 bg-red-100 p-2 mt-2 rounded">
+                {error}
+              </div>
+            )}
           </form>
         </TabsContent>
         <TabsContent value="register">
@@ -155,6 +182,11 @@ function ModalContent() {
               <Input id="confirm-password" type="password" name="confirmPassword" onChange={handleRegisterChange} required />
             </div>
             <Button type="submit" className="w-full bg-indigo-950 hover:bg-indigo-900">Register</Button>
+            {error && (
+              <div className="text-red-500 bg-red-100 p-2 mt-2 rounded">
+                {error}
+              </div>
+            )}
           </form>
         </TabsContent>
       </Tabs>

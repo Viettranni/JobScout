@@ -20,6 +20,7 @@ const Navbar = () => {
     }
   }, []); // Run this effect once on component mount
 
+  //  Logout logic
   const handleLogout = () => {
     localStorage.removeItem("token"); // Remove token from local storage
     setUser(null); // Reset user state

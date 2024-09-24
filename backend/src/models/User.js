@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const { jobPostSchema } = require("./JobPost"); // Assuming JobPost is a schema, not a model
+const validator = require('validator');
 
 const userSchema = new mongoose.Schema(
   {
@@ -36,6 +37,11 @@ const userSchema = new mongoose.Schema(
 userSchema.statics.signup = async function (firstname, lastname, email, password, favourites, appliedJobs) {
   const userExists = await this.findOne({ email });
   if (userExists) throw new Error('User already exists');
+
+  // Password validator
+  if (!validator.isStrongPassword(password)) {
+    throw Error('Password not strong enough!')
+  };
 
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
