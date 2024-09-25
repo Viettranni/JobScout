@@ -59,4 +59,16 @@ router.post("/oikotie/scrape-jobs", jobController.scrapeOikotieJobs);
 // DELETE
 router.delete("/oikotie/:id", jobController.deleteJob);
 
+// Routes for Oikotie job posts
+// GET/by id
+router.get("/tepalvelut/:id", jobController.getJobById);
+// GET/by searchTerm or location
+router.get("/tepalvelut/detail/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
+// GET/by searchTerm and location
+router.get("/tepalvelut/detail/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
+// POST/scrape
+router.post("/tepalvelut/scrape-jobs", jobController.scrapeTePalvelutJobs);
+// DELETE
+router.delete("/tepalvelut/:id", jobController.deleteJob);
+
 module.exports = router;

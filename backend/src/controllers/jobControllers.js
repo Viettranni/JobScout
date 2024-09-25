@@ -4,6 +4,7 @@ const indeed = require("../scrapers/indeed");
 const jobly = require("../scrapers/jobly");
 const oikotie = require("../scrapers/oikotie");
 const mongoose = require("mongoose");
+const tePalvelut = require("../scrapers/tePalvelut");
 
 // Scrape jobs from all the websites
 exports.scrapeJobs = async (req, res) => {
@@ -383,6 +384,95 @@ exports.scrapeOikotieJobs = async (req, res) => {
   try {
     // Fetch results from the 'duuniTori' function
     const result = await oikotie(city, searchTerm, page);
+
+    if (result) {
+      // Filter out jobs that don't meet the required schema
+      const filteredResults = result.filter((job) => {
+        // Ensure required fields are present and of correct type
+        const hasRequiredFields =
+          typeof job.title === "string" &&
+          typeof job.company === "string" &&
+          typeof job.location === "string" &&
+          typeof job.datePosted === "string" &&
+          typeof job.url === "string";
+
+        // Ensure required fields are not empty
+        const requiredFieldsNotEmpty =
+          job.title && job.company && job.location && job.datePosted && job.url;
+
+        // Filter jobs that pass both checks
+        return hasRequiredFields && requiredFieldsNotEmpty;
+      });
+
+      // Now proceed with checking against existing jobs in the database
+      const jobsToCheck = filteredResults.map((job) => ({
+        title: job.title,
+        company: job.company,
+        location: job.location,
+      }));
+
+      const existingJobs = await JobPost.find({
+        $or: jobsToCheck.map((job) => ({
+          title: job.title,
+          company: job.company,
+          location: job.location,
+        })),
+      })
+        .select("title company location")
+        .lean();
+
+      const existingJobIdentifiers = new Set(
+        existingJobs.map((job) => `${job.title}|${job.company}|${job.location}`)
+      );
+
+      // Filter out jobs that already exist in the database
+      const newJobs = filteredResults.filter((job) => {
+        const identifier = `${job.title}|${job.company}|${job.location}`;
+        if (existingJobIdentifiers.has(identifier)) {
+          console.log(
+            `Duplicate job found: ${job.title} at ${job.company} in ${job.location}`
+          );
+          return false;
+        }
+        return true;
+      });
+
+      // Check if there are new jobs to insert
+      if (newJobs.length > 0) {
+        try {
+          // Insert new jobs into the database
+          await JobPost.insertMany(newJobs);
+          console.log(`Inserted ${newJobs.length} new jobs.`);
+          res.status(201).json({
+            message: `Job scraping complete. ${page} page/s scraped. ${newJobs.length} new job post/s saved.`,
+          });
+        } catch (error) {
+          console.error("Error saving new jobs:", error.message);
+          return res
+            .status(500)
+            .json({ message: "Error saving new jobs", error: error.message });
+        }
+      } else {
+        console.log("No new jobs to insert. All jobs already exist.");
+        res.status(200).json({
+          message: `Job scraping complete. ${page} page/s scraped. ${newJobs.length} new job post/s saved. Database already has the newest.`,
+        });
+      }
+    }
+  } catch (err) {
+    console.error("Error in scrapeDuuniToriJobs controller:", err);
+    res
+      .status(500)
+      .json({ message: "Error scraping jobs.", error: err.message });
+  }
+};
+
+exports.scrapeTePalvelutJobs = async (req, res) => {
+  const { page, city, searchTerm, totalJobs } = req.query;
+
+  try {
+    // Fetch results from the 'duuniTori' function
+    const result = await tePalvelut(city, searchTerm, page, totalJobs);
 
     if (result) {
       // Filter out jobs that don't meet the required schema

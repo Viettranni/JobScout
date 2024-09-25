@@ -1,99 +1,189 @@
-const puppeteer = require('puppeteer');
-const JobPost = require('../models/JobPost');
+const puppeteer = require("puppeteer-extra");
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 
-const scrapeTePalvelutJobs = async () => {
+puppeteer.use(StealthPlugin());
+
+const jobList = [];
+
+const tePalvelut = async (
+  city = "",
+  searchTerm = "",
+  totalPages = 1,
+  totalJobs = 1
+) => {
+  let browser;
+
+  const baseURL = "https://paikat.te-palvelut.fi/tpt/";
+
+  try {
     // Launch the browser
-    const browser = await puppeteer.launch({ headless: true });
+    browser = await puppeteer.launch({ headless: false });
     const page = await browser.newPage();
 
-    // Navigate to the job listings page
-    await page.goto('https://paikat.te-palvelut.fi/tpt/?professions=1,2,3,4,5,6,7,8,9,0,X0&announced=0&leasing=0&remotely=0&english=false&sort=1', { waitUntil: 'networkidle2' });
+    // Loop through the pages for pagination
+    for (let currentPage = 1; currentPage <= totalPages; currentPage++) {
+      const queryParams = [];
 
-    // Wait for job postings to load
-    await page.waitForSelector('.col-xs-12.list-group-item');
+      if (searchTerm) {
+        queryParams.push(`searchPhrase=${encodeURIComponent(searchTerm)}`);
+      }
 
-    // Extract job postings and their links (limit to 10)
-    const jobPostings = await page.evaluate(() => {
-        const posts = Array.from(document.querySelectorAll('.col-xs-12.list-group-item'));
-        return posts.slice(0, 10).map(post => {
-            const title = post.querySelector('h4')?.innerText.trim();
-            const link = post.querySelector('a')?.href;
-            const company = post.querySelector('span[aria-label=""]')?.innerText.trim();
-            const logo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrxpfmPZOQR26e2nNra9BYyVZDFqcoR8jhGw&amp;s%22%20class=%22sFlh5c%20FyHeAf";
+      if (city) {
+        queryParams.push(`location=${encodeURIComponent(city)}`);
+      }
+
+      // Add pagination (adjust parameter depending on how pagination works on the site)
+      queryParams.push(`page=${currentPage}`);
+
+      // Construct the final URL
+      const url = queryParams.length
+        ? `${baseURL}?${queryParams.join("&")}`
+        : baseURL;
+
+      console.log(`Navigating to URL: ${url}`);
+
+      // Navigate to the job listings page
+      await page.goto(url, { waitUntil: "networkidle2" });
+
+      // Wait for job postings to load
+      await page.waitForSelector(".col-xs-12.list-group-item");
+
+      // Extract job postings and their links
+      const jobPostings = await page.evaluate(() => {
+        const posts = Array.from(
+          document.querySelectorAll(".col-xs-12.list-group-item")
+        );
+        return posts
+          .map((post) => {
+            const title = post.querySelector("h4")?.innerText.trim();
+            const link = post.querySelector("a")?.href;
+            const company = post
+              .querySelector('span[aria-label=""]')
+              ?.innerText.trim();
+            const logo =
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrxpfmPZOQR26e2nNra9BYyVZDFqcoR8jhGw&amp;s%22%20class=%22sFlh5c%20FyHeAf";
             const responsibilities = "";
 
             return { title, url: link, company, logo, responsibilities };
-        }).filter(post => post.url);
-    });
+          })
+          .filter((post) => post.url);
+      });
 
-    // Function to extract job details (description, date, location) from a job page
-    const getJobDetails = async (jobPageUrl) => {
+      // Function to extract job details (description, date, location) from a job page
+      const getJobDetails = async (jobPageUrl) => {
         const jobPage = await browser.newPage();
-        await jobPage.goto(jobPageUrl, { waitUntil: 'networkidle2' });
-
-        // Extract job description from "Kuvaus" tab (default tab)
-        const description = await jobPage.evaluate(() => {
-            const descriptionElement = document.querySelector('.detailText');
-            return descriptionElement ? descriptionElement.innerText.trim() : 'No description found';
-        });
-
-        // Click on the "Tiedot" tab to access location and date
-        await jobPage.evaluate(() => {
-            const tiedotTab = Array.from(document.querySelectorAll('ul.nav-tabs li')).find(tab => tab.innerText.includes('Tiedot'));
-            if (tiedotTab) {
-                tiedotTab.querySelector('a').click();
-            }
-        });
-        await jobPage.waitForSelector('div.col-xs-7.detailValue', { timeout: 5000 }); // Wait for the tab content to load
-
-        // Extract closing date from "Tiedot" tab
-        const postedTime = await jobPage.evaluate(() => {
-            const dateElement = Array.from(document.querySelectorAll('div.col-xs-7.detailValue')).find(el => el.innerText.includes('klo'));
-            return dateElement ? dateElement.innerText.trim() : 'No closing date found';
-        });
-
-        // Extract location from "Tiedot" tab
-        const location = await jobPage.evaluate(() => {
-            const locationElement = Array.from(document.querySelectorAll('div.col-xs-7.detailValue')).find(el => el.innerText.match(/^\d{5}/)); // Match zip code at the start
-            return locationElement ? locationElement.innerText.trim() : 'No location found';
-        });
-
-        await jobPage.close();
-        return { description, postedTime, location };
-    };
-
-    // Get job details, check for duplicates, and save to MongoDB
-    for (let posting of jobPostings) {
-        // Check if a job post with the same title already exists in the database
-        const existingJob = await JobPost.findOne({ title: posting.title });
-
-        if (existingJob) {
-            console.log(`Skipped job: ${posting.title} - Already exists in the database`);
-            continue; // Skip if the job already exists
-        }
-
-        // Get the job details
-        const details = await getJobDetails(posting.url);
-        posting.description = details.description;
-        posting.datePosted = details.datePosted;
-        posting.location = details.location;
-        // Assuming logoUrl is not available in this source; set to null or remove if not used
-        posting.logo = "tePalvelut"; 
-
-        // Save the job posting to MongoDB
         try {
-            const newJob = new JobPost(posting);
-            await newJob.save();
-            console.log(`Saved job to database: ${posting.title}`);
+          await jobPage.goto(jobPageUrl, { waitUntil: "networkidle2" });
+
+          // Extract job description from "Kuvaus" tab (default tab)
+          const description = await jobPage.evaluate(() => {
+            const descriptionElement = document.querySelector(".detailText");
+            return descriptionElement
+              ? descriptionElement.innerText.trim()
+              : "No description found";
+          });
+
+          // Click on the "Tiedot" tab to access location and date
+          await jobPage.evaluate(() => {
+            const tiedotTab = Array.from(
+              document.querySelectorAll("ul.nav-tabs li")
+            ).find((tab) => tab.innerText.includes("Tiedot"));
+            if (tiedotTab) {
+              tiedotTab.querySelector("a").click();
+            }
+          });
+
+          await jobPage.waitForSelector("div.col-xs-7.detailValue", {
+            timeout: 5000,
+          }); // Wait for the tab content to load
+
+          // Extract closing date from "Tiedot" tab
+          const postedTime = await jobPage.evaluate(() => {
+            const dateElement = Array.from(
+              document.querySelectorAll("div.col-xs-7.detailValue")
+            ).find((el) => el.innerText.includes("klo"));
+            return dateElement
+              ? dateElement.innerText.trim()
+              : "No closing date found";
+          });
+
+          // Extract location from "Tiedot" tab
+          const location = await jobPage.evaluate(() => {
+            const locationElement = Array.from(
+              document.querySelectorAll("div.col-xs-7.detailValue")
+            ).find((el) => el.innerText.match(/^\d{5}/)); // Match zip code at the start
+            return locationElement
+              ? locationElement.innerText.trim()
+              : "No location found";
+          });
+
+          return { description, postedTime, location };
         } catch (err) {
-            console.error(`Failed to save job: ${posting.title}`, err);
+          console.error(`Failed to extract details from ${jobPageUrl}`, err);
+          return {
+            description: "Error extracting description",
+            postedTime: null,
+            location: null,
+          };
+        } finally {
+          await jobPage.close();
         }
+      };
+
+      // Get job details, and push to jobList
+      for (let posting of jobPostings) {
+        try {
+          // Get the job details
+          const details = await getJobDetails(posting.url);
+          posting.description = details.description;
+          posting.datePosted = details.postedTime;
+          posting.location = details.location;
+          posting.logo = "tePalvelut"; // Assuming logoUrl is not available in this source; set to null or remove if not used
+          jobList.push(posting);
+          console.log(`Saved job to jobList: ${posting.title}`);
+
+          // Check if jobList has reached 50 jobs, if so, return it
+          if (jobList.length >= totalJobs) {
+            console.log(
+              `Job list length has reached ${totalJobs}, returning early.`
+            );
+            return jobList;
+          }
+        } catch (err) {
+          console.error(`Failed to process or save job: ${posting.title}`, err);
+        }
+      }
+
+      console.log(`Page ${currentPage} scraped.`);
     }
-
-    // Close the browser
-    await browser.close();
-
-    console.log('Job scraping and saving complete');
+  } catch (err) {
+    console.error("Error during scraping process:", err);
+  } finally {
+    // Close the browser in the 'finally' block to ensure it always closes
+    if (browser) {
+      await browser.close();
+      console.log("Browser closed");
+    }
+    console.log("Scraping complete. Jobs:", jobList);
+    console.log(`Total jobs scraped: ${jobList.length}`);
+    console.log(`Total pages scraped: ${totalPages}`);
+    return jobList;
+  }
 };
 
-module.exports = scrapeTePalvelutJobs;
+// const runScraper = async () => {
+//   try {
+//     // Call the function and await the result
+//     const jobs = await tePalvelut("helsinki", "opettaja", 10, 3);
+
+//     // Log the result (jobs)
+//     console.log("Scraped jobs:", jobs);
+//   } catch (error) {
+//     console.error("Error occurred while scraping:", error);
+//   }
+// };
+
+// // Execute the async function
+// runScraper();
+
+module.exports = tePalvelut;
