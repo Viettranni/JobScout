@@ -9,7 +9,7 @@ const tePalvelut = async (
   city = "",
   searchTerm = "",
   totalPages = 1,
-  totalJobs = 1
+  totalJobs = 10
 ) => {
   let browser;
 
@@ -174,7 +174,7 @@ const tePalvelut = async (
 // const runScraper = async () => {
 //   try {
 //     // Call the function and await the result
-//     const jobs = await tePalvelut("helsinki", "opettaja", 10, 3);
+//     const jobs = await tePalvelut("helsinki", "opettaja", 10, 20);
 
 //     // Log the result (jobs)
 //     console.log("Scraped jobs:", jobs);

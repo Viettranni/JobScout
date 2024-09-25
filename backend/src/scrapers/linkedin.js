@@ -121,12 +121,12 @@ const scrapeLinkedInJobs = async () => {
   return jobList;
 };
 
-scrapeLinkedInJobs()
-  .then((jobs) => {
-    console.log("Final job list:", jobs);
-  })
-  .catch((error) => {
-    console.error("Error during the scraping process:", error);
-  });
+// scrapeLinkedInJobs()
+//   .then((jobs) => {
+//     console.log("Final job list:", jobs);
+//   })
+//   .catch((error) => {
+//     console.error("Error during the scraping process:", error);
+//   });
 
 module.exports = scrapeLinkedInJobs;

@@ -7,7 +7,7 @@ const jobPostSchema = new mongoose.Schema(
     company: { type: String, required: true },
     location: { type: String, required: true },
     datePosted: { type: String, required: true },
-    url: { type: String, required: true, unique: true },
+    url: { type: String, required: true },
     description: { type: String },
     responsibilities: { type: [String] },
     logo: { type: String },
