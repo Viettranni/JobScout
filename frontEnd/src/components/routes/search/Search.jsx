@@ -1,15 +1,16 @@
-import { useJobSearch } from "./useJobSearch"; // Import your custom hook
+import { useJobSearch } from "../../hooks/useJobSearch"; // Import your custom hook
 import { SearchBar } from "./SearchBar";
-import { JobList } from "./JobList";
-import { Pagination } from "./Pagination";
+import { JobList } from "../common/JobList";
+import { Pagination } from "../common/Pagination";
 import { DropdownHandler } from "./DropdownHandler";
 import { useLocation } from "react-router-dom";
-import { dropdownData } from "../mockDropdownData";
+import { dropdownData } from "../../../mockData/mockDropdownData";
 import { useEffect } from "react";
 
 export default function JobSearch() {
-
-  useEffect(() => {document.title = 'Job Tracks & Trails'}, [])
+  useEffect(() => {
+    document.title = "Job Tracks & Trails";
+  }, []);
 
   const {
     expandedJob,
@@ -27,9 +28,8 @@ export default function JobSearch() {
 
   return (
     <div className="container mx-auto px-4 py-8 lg:w-4/5">
-     <SearchBar />
+      <SearchBar />
       <div className="flex flex-wrap mb-6 gap-2">
-
         <div className="mr-5">
           <h2 className="text-xl font-semibold">
             {jobListings.length} Jobs results
@@ -37,10 +37,7 @@ export default function JobSearch() {
           <p className="text-l font-semibold">for: "{query}"</p>
         </div>
         <DropdownHandler dropdownData={dropdownData} />
-
- 
       </div>
-
 
       <JobList
         jobs={jobListings}

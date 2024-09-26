@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { searchHook } from '@/components/routes/searchHook'
-import SearchButton from './SearchButton';
+import { searchHook } from "@/components/hooks/searchHook";
+import SearchButton from "./SearchButton";
 
 function SearchBar() {
-  const { searchTerm, setSearchTerm, handleSubmit } = searchHook()
-
+  const { searchTerm, setSearchTerm, handleSubmit } = searchHook();
 
   return (
     <form
