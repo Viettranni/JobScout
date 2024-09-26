@@ -17,6 +17,7 @@ exports.scrapeJobs = async (req, res) => {
       indeed(city, searchTerm, page),
       jobly(city, searchTerm, page),
       oikotie(city, searchTerm),
+      tePalvelut(city, searchTerm),
     ]);
 
     // Flatten the results into a single array since each API returns an array
@@ -468,11 +469,11 @@ exports.scrapeOikotieJobs = async (req, res) => {
 };
 
 exports.scrapeTePalvelutJobs = async (req, res) => {
-  const { page, city, searchTerm, totalJobs } = req.query;
+  const { city, searchTerm, totalJobs } = req.query;
 
   try {
     // Fetch results from the 'duuniTori' function
-    const result = await tePalvelut(city, searchTerm, page, totalJobs);
+    const result = await tePalvelut(city, searchTerm, totalJobs);
 
     if (result) {
       // Filter out jobs that don't meet the required schema
@@ -533,7 +534,7 @@ exports.scrapeTePalvelutJobs = async (req, res) => {
           await JobPost.insertMany(newJobs);
           console.log(`Inserted ${newJobs.length} new jobs.`);
           res.status(201).json({
-            message: `Job scraping complete. ${page} page/s scraped. ${newJobs.length} new job post/s saved.`,
+            message: `Job scraping complete. ${newJobs.length} new job post/s saved.`,
           });
         } catch (error) {
           console.error("Error saving new jobs:", error.message);
@@ -544,7 +545,7 @@ exports.scrapeTePalvelutJobs = async (req, res) => {
       } else {
         console.log("No new jobs to insert. All jobs already exist.");
         res.status(200).json({
-          message: `Job scraping complete. ${page} page/s scraped. ${newJobs.length} new job post/s saved. Database already has the newest.`,
+          message: `Job scraping complete. ${newJobs.length} new job post/s saved. Database already has the newest.`,
         });
       }
     }
