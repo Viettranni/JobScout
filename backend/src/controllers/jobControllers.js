@@ -471,6 +471,8 @@ exports.getAllJobs = async (req, res) => {
   try {
     const jobs = await JobPost.find();
     res.status(200).json(jobs);
+    console.log(jobs);
+    
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

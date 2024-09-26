@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userControllers");
-const authRouter = require("../routes/authRouter");
 
 // Routes for user management
 router.get("/allUsers", userController.getAllUsers);
@@ -12,13 +11,9 @@ router.post("/:id/favourites/:jobPostId", userController.addToFavourites); // Ad
 router.delete("/:id/favourites/:jobPostId", userController.removeFromFavourites); // Route to remove a job post from user's favourites
 
 
-// Auth routes
-router.post("/register", authRouter.registerUser); // Registers new user
-router.post("/login", authRouter.loginUser); // Login user
+// Register and login from Model statics
+router.post("/register", userController.registerUser); // Registers new user
+router.post("/login", userController.loginUser); // Login user
 
-
-// Auth routes
-router.post("/register", authRouter.registerUser); // Registers new user
-router.post("/login", authRouter.loginUser); // Login user
 
 module.exports = router;

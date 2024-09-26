@@ -13,6 +13,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 
 // Create a context to manage the modal's open state
 const ModalContext = createContext({
@@ -25,6 +27,7 @@ const useModalContext = () => useContext(ModalContext)
 
 // Modal content component
 function ModalContent() {
+  const navigate = useNavigate()
   const { setIsOpen } = useModalContext()
   const [formData, setFormData] = useState({
     firstname: "",
@@ -39,6 +42,8 @@ function ModalContent() {
     password: ""
   });
 
+  const [error, setError] = useState("");
+
   const handleRegisterChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -47,39 +52,79 @@ function ModalContent() {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
   };
 
+
+  // Handling the REGISTER submit
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
+      setError("Passwords do not match!");
       return;
     }
 
     try {
+      // Instead of Fetch, Axios automatically converts the JSON responses, saving the need to call json() separately
       const response = await axios.post("http://localhost:4000/users/register", formData);
       alert(response.data.message); // Show success message
-      setIsOpen(false)
+      const { token } = response.data;
+
+      localStorage.setItem("token", token);
+
+      navigate("/");
+      window.location.reload();
+
+      setIsOpen(false);
+      setError("")
+      setFormData({
+        firstname: "",
+        lastname: "",
+        email: "",
+        password: "",
+        confirmPassword: ""
+      });
+
     } catch (error) {
       console.error("Registration error:", error);
         
       // Ensure the response and data exist before trying to alert
-      if (error.response && error.response.data && error.response.data.message) {
-          alert(error.response.data.message); // Show error message from server
+      if (error.response && error.response.data && error.response.data.error) {
+          setError(error.response.data.error); // Show error message from server
       } else {
-          alert("An unexpected error occurred."); // Fallback message for other errors
+          setError("An unexpected error occurred."); // Fallback message for other errors
       }
     }
   };
 
+
+  // Handling the LOGIN submit
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post("http://localhost:4000/users/login", loginData);
       console.log(response)
-      alert(response.data.message); // Show success message
+
+      const { token } = response.data;
+
+      localStorage.setItem("token", token);
+      
+      navigate("/");
+      window.location.reload();
+
+      setIsOpen(false); // Close modal on successful login
+      setError(""); // Reset error message
+      setLoginData({
+        email: "",
+        password: ""
+      }); // Clear login form after success
+
+      // alert(response.data.message); // Show success message
     } catch (error) {
       console.error("Full error:", error);
-      alert(error.response.data.message); // Show error message
+      if (error.response && error.response.data && error.response.data.error) {
+        setError(error.response.data.error); // Set error message from backend
+      } else {
+        setError("An unexpected error occurred."); // Set fallback error
+      }
     }
   };
 
@@ -107,6 +152,11 @@ function ModalContent() {
               <Input id="password" type="password" name="password" onChange={handleLoginChange} required />
             </div>
             <Button type="submit" className="w-full bg-indigo-950 hover:bg-indigo-900">Login</Button>
+            {error && (
+              <div className="text-red-500 bg-red-100 p-2 mt-2 rounded">
+                {error}
+              </div>
+            )}
           </form>
         </TabsContent>
         <TabsContent value="register">
@@ -132,6 +182,11 @@ function ModalContent() {
               <Input id="confirm-password" type="password" name="confirmPassword" onChange={handleRegisterChange} required />
             </div>
             <Button type="submit" className="w-full bg-indigo-950 hover:bg-indigo-900">Register</Button>
+            {error && (
+              <div className="text-red-500 bg-red-100 p-2 mt-2 rounded">
+                {error}
+              </div>
+            )}
           </form>
         </TabsContent>
       </Tabs>
