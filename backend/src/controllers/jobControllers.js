@@ -82,7 +82,7 @@ exports.scrapeJobs = async (req, res) => {
           await JobPost.insertMany(newJobs);
           console.log(`Inserted ${newJobs.length} new jobs.`);
           res.status(201).json({
-            message: `Job scraping complete. ${page} page/s scraped. ${newJobs.length} new job post/s saved.`,
+            message: `Job scraping complete. 5 jobsites scraped. ${newJobs.length} new job post/s saved.`,
           });
         } catch (error) {
           console.error("Error saving new jobs:", error.message);
@@ -93,7 +93,7 @@ exports.scrapeJobs = async (req, res) => {
       } else {
         console.log("No new jobs to insert. All jobs already exist.");
         res.status(200).json({
-          message: `Job scraping complete. ${page} page/s scraped. ${newJobs.length} new job post/s saved. Database already has the newest.`,
+          message: `Job scraping complete. 5 jobsites scraped. ${newJobs.length} new job post/s saved. Database already has the newest.`,
         });
       }
     }
