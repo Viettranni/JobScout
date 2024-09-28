@@ -1,20 +1,22 @@
 const express = require("express");
 const router = express.Router();
+const adminUserController = require("../controllers/adminUserControllers");
 const userController = require("../controllers/userControllers");
+const authMiddleware = require("../middleware/authMiddleware");
 
-// Routes for user management
-router.get("/allUsers", userController.getAllUsers);
-router.get("/:id", userController.getUserById); // Get a user by ID
-router.patch("/:id", userController.updateUser); // Update user details
-router.delete("/delete/:id", userController.deleteUser); // Delete a user
-router.post("/:id/favourites/:jobPostId", userController.addToFavourites); // Add job to user's favourites
-router.delete(
-  "/:id/favourites/:jobPostId",
-  userController.removeFromFavourites
-); // Route to remove a job post from user's favourites
-
-// Register and login from Model statics
+// Unprotected Register and Login routes for all
 router.post("/register", userController.registerUser); // Registers new user
 router.post("/login", userController.loginUser); // Login user
+
+// Protected user routes
+router.get("/profile", authMiddleware, userController.getUserById); // Get current user's profile (no :id needed)
+router.patch("/profile", authMiddleware, userController.updateUser); // Update current user's profile (no :id needed)
+router.delete("/profile", authMiddleware, userController.deleteUser); // Delete current user's account (no :id needed)
+router.post("/favourites", authMiddleware, userController.addToFavourites); // Add job to current user's favourites
+router.delete(
+  "/favourites",
+  authMiddleware,
+  userController.removeFromFavourites
+); // Remove job from current user's favourites
 
 module.exports = router;

@@ -1,34 +1,35 @@
 const User = require("../models/User");
 const mongoose = require("mongoose");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
-// GET all users
-exports.getAllUsers = async (req, res) => {
-  try {
-    const users = await User.find({})
-      .sort({ createdAt: -1 })
-      .populate("favourites"); // Populate favourites with job post data
-    res.json(users);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-// GET a single user by ID
+// GET/ user by token id
 exports.getUserById = async (req, res) => {
-  const { id } = req.params;
+  // Ensure req.user exists after authMiddleware
+  if (!req.user || !req.user.id) {
+    return res
+      .status(401)
+      .json({ message: "Invalid user or user not authenticated" });
+  }
+  const userId = req.user.id; // Extracted from JWT
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
     return res.status(400).json({ message: "Invalid user ID" });
   }
 
   try {
-    const user = await User.findById(id).populate("favourites");
-    if (user) {
-      res.status(200).json(user);
-    } else {
-      res.status(404).json({ message: "User not found" });
+    const user = await User.findById(userId)
+      .populate("favourites") // Populate with necessary relations
+      .select("-password"); // Exclude the password field
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
+
+    // Return only the necessary fields
+    const { _id, firstname, lastname, email, favourites, role } = user;
+    res
+      .status(200)
+      .json({ id: _id, firstname, lastname, email, favourites, role });
   } catch (err) {
     res
       .status(500)
@@ -36,7 +37,7 @@ exports.getUserById = async (req, res) => {
   }
 };
 
-// POST Create a new user
+// POST / create user
 exports.createUser = async (req, res) => {
   const user = new User({ ...req.body });
 
@@ -50,31 +51,32 @@ exports.createUser = async (req, res) => {
   }
 };
 
-// PATCH Update a user by ID
+// PATCH/ update user
 exports.updateUser = async (req, res) => {
-  const { id } = req.params;
+  // Ensure req.user exists after authMiddleware
+  if (!req.user || !req.user.id) {
+    return res
+      .status(401)
+      .json({ message: "Invalid user or user not authenticated" });
+  }
+  const userId = req.user.id; // Extracted from JWT
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
     return res.status(400).json({ message: "Invalid user ID" });
   }
 
   try {
-    const user = await User.findOneAndUpdate(
-      { _id: id },
+    const user = await User.findByIdAndUpdate(
+      userId,
       { ...req.body },
       { new: true }
-    );
+    ).select("-password");
+
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // This is just a mock
-    if (req.body.password) {
-      // Hash new password if provided
-      user.password = req.body.password;
-      await user.save(); // Save before hashing
-    }
-
-    const updatedUser = await user.save();
-    res.status(200).json(updatedUser);
+    // Return only the necessary fields
+    const { _id, firstname, lastname, email } = user;
+    res.status(200).json({ id: _id, firstname, lastname, email });
   } catch (err) {
     res
       .status(400)
@@ -82,16 +84,22 @@ exports.updateUser = async (req, res) => {
   }
 };
 
-// Delete a user by ID
+// DELETE/ user by id
 exports.deleteUser = async (req, res) => {
-  const { id } = req.params;
+  // Ensure req.user exists after authMiddleware
+  if (!req.user || !req.user.id) {
+    return res
+      .status(401)
+      .json({ message: "Invalid user or user not authenticated" });
+  }
+  const userId = req.user.id; // Extracted from JWT
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
     return res.status(400).json({ message: "Invalid user ID" });
   }
 
   try {
-    const deletedUser = await User.findOneAndDelete({ _id: id });
+    const deletedUser = await User.findByIdAndDelete(userId);
     if (deletedUser) {
       res.status(204).json({ message: "User deleted successfully" });
     } else {
@@ -104,68 +112,90 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
-// Add job to user's favourites
+// POST/ add favourites to user
 exports.addToFavourites = async (req, res) => {
-  const { id, jobPostId } = req.params; // User ID from URL
+  // Ensure req.user exists after authMiddleware
+  if (!req.user || !req.user.id) {
+    return res
+      .status(401)
+      .json({ message: "Invalid user or user not authenticated" });
+  }
+  const userId = req.user.id; // Extracted from JWT
+  const { jobPostId } = req.body;
 
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(jobPostId)) {
+    return res.status(400).json({ message: "Invalid job post ID" });
+  }
   try {
-    const user = await User.findById(id);
+    const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // Check if the job ID already exists in favourites
     if (user.favourites.includes(jobPostId)) {
       return res.status(400).json({ message: "Job already in favourites" });
     }
 
-    // Add the job ID to favourites array
     user.favourites.push(jobPostId);
     await user.save();
 
-    res.status(201).json(user);
+    res.status(201).json(user.favourites);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-// Remove a job post from favourites
+// DELETE/ delete favourites from user
 exports.removeFromFavourites = async (req, res) => {
-  const { id, jobPostId } = req.params; // Get id and jobPostId from URL params
+  // Ensure req.user exists after authMiddleware
+  if (!req.user || !req.user.id) {
+    return res
+      .status(401)
+      .json({ message: "Invalid user or user not authenticated" });
+  }
+  const userId = req.user.id; // Extracted from JWT
+  const { jobPostId } = req.body;
+
+  if (
+    !mongoose.Types.ObjectId.isValid(userId) ||
+    !mongoose.Types.ObjectId.isValid(jobPostId)
+  ) {
+    return res.status(400).json({ message: "Invalid user ID or jobPostId" });
+  }
 
   try {
-    // Find the user by ID
-    const user = await User.findById(id);
+    const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // Ensure favourites is an array of objects
-    if (!Array.isArray(user.favourites)) {
-      return res
-        .status(500)
-        .json({ message: "User favourites should be an array" });
-    }
-
-    // Remove job post from favourites array
     user.favourites = user.favourites.filter(
-      (jobPost) => jobPost._id.toString() !== jobPostId.toString()
+      (jobPost) => jobPost.toString() !== jobPostId
     );
 
-    // Save the updated user document
     await user.save();
-
-    // Optionally, repopulate the user document with job posts for a detailed response
-    const updatedUser = await User.findById(id).populate("favourites");
-    res.status(204).json(updatedUser);
+    res.status(200).json(user.favourites);
   } catch (err) {
-    console.error("Error removing from favourites:", err);
     res.status(500).json({ message: err.message });
   }
 };
 
-// Get user's favourites
+// GET/ return only user's favourites
 exports.getUserWithFavourites = async (req, res) => {
-  const { id } = req.params; // User ID from URL
+  // Ensure req.user exists after authMiddleware
+  if (!req.user || !req.user.id) {
+    return res
+      .status(401)
+      .json({ message: "Invalid user or user not authenticated" });
+  }
+  const userId = req.user.id; // Extracted from JWT
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
 
   try {
-    const user = await User.findById(id).populate("favourites");
+    const user = await User.findById(userId).populate("favourites");
     if (!user) return res.status(404).json({ message: "User not found" });
 
     res.status(200).json(user.favourites);
@@ -174,19 +204,28 @@ exports.getUserWithFavourites = async (req, res) => {
   }
 };
 
-
 exports.registerUser = async (req, res) => {
   const { firstname, lastname, email, password } = req.body;
-  
+
   try {
-    const newUser = await User.signup(firstname, lastname, email, password, [], []);
-    const token = jwt.sign({ id: newUser._id, firstname: newUser.firstname }, process.env.JWT_SECRET, { expiresIn: '30m' });
+    const newUser = await User.signup(
+      firstname,
+      lastname,
+      email,
+      password,
+      [],
+      []
+    );
+    const token = jwt.sign(
+      { id: newUser._id, firstname: newUser.firstname },
+      process.env.JWT_SECRET,
+      { expiresIn: "30m" }
+    );
 
     res.status(201).json({ message: "User created successfully!", token }); // Sending the Token to the client
-    console.log('New user registered:', newUser.firstname);
-
+    console.log("New user registered:", newUser.firstname);
   } catch (error) {
-    console.error('Error in registerUser:', error.message);  // Log error message
+    console.error("Error in registerUser:", error.message); // Log error message
     res.status(400).json({ error: error.message });
   }
 };
@@ -196,11 +235,25 @@ exports.loginUser = async (req, res) => {
 
   try {
     const loggedInUser = await User.login(email, password);
-    const token = jwt.sign({ id: loggedInUser._id, firstname: loggedInUser.firstname }, process.env.JWT_SECRET, { expiresIn: '30m' });
+    const token = jwt.sign(
+      {
+        id: loggedInUser._id,
+        firstname: loggedInUser.firstname,
+        role: loggedInUser.role,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "30m" }
+    );
 
-    res.status(200).json({ message: "User logged in successfully", token, firstname: loggedInUser.firstname });
+    res.status(200).json({
+      message: "User logged in successfully",
+      token,
+      firstname: loggedInUser.firstname,
+      id: loggedInUser._id,
+      role: loggedInUser.role,
+    });
   } catch (error) {
-    console.error('Error in loginUser:', error.message);  // Log error message
+    console.error("Error in loginUser:", error.message); // Log error message
     res.status(400).json({ error: error.message });
   }
 };
