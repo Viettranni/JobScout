@@ -1,0 +1,38 @@
+export const savedJobs = [
+  {
+    id: 1,
+    title: "Full Stack Developer",
+    company: "Twitter",
+    location: "Finland, Espoo",
+    types: ["Fulltime", "Distant", "Project work"],
+    logo: "/twitter-logo.png",
+    saved: true,
+  },
+  {
+    id: 2,
+    title: "Full Stack Developer",
+    company: "Spotify",
+    location: "Finland, Espoo",
+    types: ["Distant", "Project work"],
+    logo: "/spotify-logo.png",
+    saved: true,
+  },
+  {
+    id: 3,
+    title: "Full Stack Developer",
+    company: "Duunitori",
+    location: "Finland, Espoo",
+    types: ["Fulltime", "Distant"],
+    logo: "/duunitori-logo.png",
+    saved: true,
+  },
+  {
+    id: 4,
+    title: "Full Stack Developer",
+    company: "CodeHeart",
+    location: "Finland, Espoo",
+    types: ["Fulltime", "Distant", "Project work"],
+    logo: "/codeheart-logo.png",
+    saved: true,
+  },
+];

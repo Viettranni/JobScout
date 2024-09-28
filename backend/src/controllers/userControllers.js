@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const mongoose = require("mongoose");
+const jwt = require('jsonwebtoken');
 
 // GET all users
 exports.getAllUsers = async (req, res) => {
@@ -170,5 +171,36 @@ exports.getUserWithFavourites = async (req, res) => {
     res.status(200).json(user.favourites);
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+
+exports.registerUser = async (req, res) => {
+  const { firstname, lastname, email, password } = req.body;
+  
+  try {
+    const newUser = await User.signup(firstname, lastname, email, password, [], []);
+    const token = jwt.sign({ id: newUser._id, firstname: newUser.firstname }, process.env.JWT_SECRET, { expiresIn: '30m' });
+
+    res.status(201).json({ message: "User created successfully!", token }); // Sending the Token to the client
+    console.log('New user registered:', newUser.firstname);
+
+  } catch (error) {
+    console.error('Error in registerUser:', error.message);  // Log error message
+    res.status(400).json({ error: error.message });
+  }
+};
+
+exports.loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const loggedInUser = await User.login(email, password);
+    const token = jwt.sign({ id: loggedInUser._id, firstname: loggedInUser.firstname }, process.env.JWT_SECRET, { expiresIn: '30m' });
+
+    res.status(200).json({ message: "User logged in successfully", token, firstname: loggedInUser.firstname });
+  } catch (error) {
+    console.error('Error in loginUser:', error.message);  // Log error message
+    res.status(400).json({ error: error.message });
   }
 };

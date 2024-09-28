@@ -3,7 +3,7 @@ const router = express.Router();
 const jobController = require("../controllers/jobControllers");
 
 // GET/ all jobs
-router.get("/", jobController.getAllJobs);
+router.get("/getAllJobs", jobController.getAllJobs);
 // POST/scrape all jobsites
 router.post("/allsites/scrape-jobs", jobController.scrapeJobs);
 // GET/by id
