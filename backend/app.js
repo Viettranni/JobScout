@@ -12,7 +12,7 @@ const {
   unknownEndpoint,
   errorHandler,
 } = require("./src/middleware/customMiddleware");
-const statusMonitor = require("express-status-monitor");
+// const statusMonitor = require("express-status-monitor");
 const morgan = require("morgan");
 
 const app = express();
@@ -25,7 +25,7 @@ app.use(
 
 app.use(express.json());
 
-app.use(statusMonitor());
+// app.use(statusMonitor());
 app.use(morgan("dev"));
 
 connectDB();

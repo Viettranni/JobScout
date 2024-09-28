@@ -8,8 +8,6 @@ const roleMiddleware = require("../middleware/roleMiddleware");
 router.get("/", jobController.getAllJobs);
 // GET/by id
 router.get("/:id", jobController.getJobById);
-// DELETE
-router.delete("/:id", jobController.deleteJob);
 
 // Routes for Duunitori job posts
 // GET/by id
@@ -18,8 +16,6 @@ router.get("/duunitori/:id", jobController.getJobById);
 router.get("/duunitori/detail/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
 // GET/by searchTerm and location
 router.get("/duunitori/detail/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
-// DELETE
-router.delete("/duunitori/:id", jobController.deleteJob);
 
 // Routes for Indeed job posts
 // GET/by id
@@ -28,8 +24,6 @@ router.get("/indeed/:id", jobController.getJobById);
 router.get("/indeed/detail/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
 // GET/by searchTerm and location
 router.get("/indeed/detail/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
-// DELETE
-router.delete("/indeed/:id", jobController.deleteJob);
 
 // Routes for Jobly job posts
 // GET/by id
@@ -38,8 +32,6 @@ router.get("/jobly/:id", jobController.getJobById);
 router.get("/jobly/detail/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
 // GET/by searchTerm and location
 router.get("/jobly/detail/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
-// DELETE
-router.delete("/jobly/:id", jobController.deleteJob);
 
 // Routes for Oikotie job posts
 // GET/by id
@@ -49,7 +41,6 @@ router.get("/oikotie/detail/:searchTerm?", jobController.findJobs); // Matches /
 // GET/by searchTerm and location
 router.get("/oikotie/detail/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
 // DELETE
-router.delete("/oikotie/:id", jobController.deleteJob);
 
 // Routes for Oikotie job posts
 // GET/by id
@@ -58,8 +49,6 @@ router.get("/tepalvelut/:id", jobController.getJobById);
 router.get("/tepalvelut/detail/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
 // GET/by searchTerm and location
 router.get("/tepalvelut/detail/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
-// DELETE
-router.delete("/tepalvelut/:id", jobController.deleteJob);
 
 router.use(authMiddleware);
 // POST/scrape all jobsites
@@ -74,5 +63,17 @@ router.post("/jobly/scrape-jobs", jobController.scrapeJoblyJobs);
 router.post("/oikotie/scrape-jobs", jobController.scrapeOikotieJobs);
 // POST/scrape
 router.post("/tepalvelut/scrape-jobs", jobController.scrapeTePalvelutJobs);
+// DELETE
+router.delete("/:id", jobController.deleteJob);
+// DELETE
+router.delete("/duunitori/:id", jobController.deleteJob);
+// DELETE
+router.delete("/indeed/:id", jobController.deleteJob);
+// DELETE
+router.delete("/oikotie/:id", jobController.deleteJob);
+// DELETE
+router.delete("/jobly/:id", jobController.deleteJob);
+// DELETE
+router.delete("/tepalvelut/:id", jobController.deleteJob);
 
 module.exports = router;

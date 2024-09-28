@@ -3,7 +3,12 @@ require("dotenv").config();
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI, {});
+    const mongoURI =
+      process.env.NODE_ENV === "test"
+        ? "mongodb://localhost:27017/testdb" // Placeholder for test DB (this will be overridden by MongoMemoryServer in your tests)
+        : process.env.MONGO_URI; // Use MongoDB Atlas in development/production
+
+    const conn = await mongoose.connect(mongoURI, {});
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     // Log the error if the connection fails
