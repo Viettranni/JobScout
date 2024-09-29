@@ -2,24 +2,30 @@ import React, { useEffect } from "react";
 import { JobList } from "../common/JobList";
 import { Pagination } from "../common/Pagination";
 import { ProfileSection } from "./ProfileSection";
-import { savedJobs as initialSavedJobs } from "../../../mockData/savedJobsData"; // Import the saved jobs
-import { useJobSearch } from "../../hooks/useJobSearch"; // Import the hook
+import { useSavedJobs } from "../../hooks/useSavedJobs"; // Hook to fetch saved jobs
 
 export default function Cabinet() {
-  // Use the useJobSearch hook with initial saved jobs
   const {
-    expandedJob,
     savedJobs,
+    loading,
+    error,
     currentPage,
-    jobListings,
+    totalPages,
     setCurrentPage,
-    toggleJobExpansion,
-    toggleSaveJob,
-  } = useJobSearch(initialSavedJobs);
+    toggleSaveJob, // Make sure this function is available in the hook
+  } = useSavedJobs(); // Ensure toggleSaveJob is returned from the hook
 
   useEffect(() => {
     document.title = "Camp Locker";
   }, []);
+
+  if (loading) {
+    return <p>Loading saved jobs...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -31,18 +37,19 @@ export default function Cabinet() {
 
       {/* Job List Component */}
       <JobList
-        jobs={jobListings}
-        expandedJob={expandedJob}
-        toggleJobExpansion={toggleJobExpansion}
-        savedJobs={savedJobs}
-        toggleSaveJob={toggleSaveJob}
+        jobs={savedJobs || []} // Pass the saved jobs to JobList
+        savedJobs={(savedJobs || []).reduce(
+          (acc, job) => ({ ...acc, [job._id]: true }),
+          {}
+        )} // Create a map of saved jobs
+        toggleSaveJob={toggleSaveJob} // Ensure this function is passed
       />
 
       {/* Pagination Component */}
       <Pagination
-        currentPage={currentPage}
-        totalPages={3} // Assuming 3 pages for simplicity
-        setCurrentPage={setCurrentPage}
+        currentPage={currentPage} // Pass current page state
+        totalPages={totalPages} // Pass total pages calculated from the hook
+        setCurrentPage={setCurrentPage} // Set the current page
       />
     </div>
   );

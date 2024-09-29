@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
-function useAnimatedScroll() {
+function useAnimatedScroll(trigger) {
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -13,11 +13,11 @@ function useAnimatedScroll() {
       }
     };
     scrollToTop();
-  }, [pathname]);
+  }, [pathname, trigger]); // Add the 'trigger' as a dependency
 }
 
-function ScrollToTop() {
-  useAnimatedScroll();
+function ScrollToTop({ trigger }) {
+  useAnimatedScroll(trigger); // Pass the trigger to the scroll function
   return null;
 }
 

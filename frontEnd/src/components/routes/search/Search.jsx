@@ -1,4 +1,4 @@
-import { useJobSearch } from "../../hooks/useJobSearch"; // Import your custom hook
+import { useJobSearch } from "../../hooks/useJobSearch";
 import { SearchBar } from "./SearchBar";
 import { JobList } from "../common/JobList";
 import { Pagination } from "../common/Pagination";
@@ -16,14 +16,15 @@ export default function JobSearch() {
     expandedJob,
     savedJobs,
     currentPage,
+    totalPages,
+    totalJobs, // Get the total number of jobs from the hook
     jobListings,
     setCurrentPage,
     toggleJobExpansion,
     toggleSaveJob,
-  } = useJobSearch(); // Use the custom hook
+  } = useJobSearch();
 
   const location = useLocation();
-  const totalPages = 3; // Assuming we have 3 pages
   const query = new URLSearchParams(location.search).get("q") || "";
 
   return (
@@ -31,9 +32,7 @@ export default function JobSearch() {
       <SearchBar />
       <div className="flex flex-wrap mb-6 gap-2">
         <div className="mr-5">
-          <h2 className="text-xl font-semibold">
-            {jobListings.length} Jobs results
-          </h2>
+          <h2 className="text-xl font-semibold">{totalJobs} Jobs results</h2>
           <p className="text-l font-semibold">for: "{query}"</p>
         </div>
         <DropdownHandler dropdownData={dropdownData} />

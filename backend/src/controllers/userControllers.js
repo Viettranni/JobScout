@@ -182,23 +182,47 @@ exports.removeFromFavourites = async (req, res) => {
 
 // GET/ return only user's favourites
 exports.getUserWithFavourites = async (req, res) => {
-  // Ensure req.user exists after authMiddleware
   if (!req.user || !req.user.id) {
     return res
       .status(401)
       .json({ message: "Invalid user or user not authenticated" });
   }
-  const userId = req.user.id; // Extracted from JWT
+  const userId = req.user.id;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
 
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     return res.status(400).json({ message: "Invalid user ID" });
   }
 
   try {
-    const user = await User.findById(userId).populate("favourites");
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const user = await User.findById(userId)
+      .populate({
+        path: "favourites",
+        options: {
+          skip,
+          limit,
+        },
+      })
+      .lean();
 
-    res.status(200).json(user.favourites);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const validFavourites = user.favourites.filter((fav) => fav && fav._id);
+
+    // Total favourites count (assuming favourites is an array in user schema)
+    const totalFavourites = user.favourites.length; // This is for total favorites without pagination
+    // or const totalFavourites = await JobPost.countDocuments({ _id: { $in: user.favourites } });
+
+    res.status(200).json({
+      favourites: validFavourites,
+      totalFavourites, // Set correct total count here
+      currentPage: page,
+      totalPages: Math.ceil(totalFavourites / limit),
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

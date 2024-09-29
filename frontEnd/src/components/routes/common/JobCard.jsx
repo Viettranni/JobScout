@@ -36,11 +36,11 @@ export function JobCard({
               <Button
                 variant="ghost"
                 className="p-2"
-                onClick={toggleSave}
+                onClick={toggleSave} // Handle save/unsave on click
                 aria-label={isSaved ? "Unsave job" : "Save job"}
               >
                 <BookmarkIcon
-                  className={`w-5 h-5 ${isSaved ? "fill-primary" : ""}`}
+                  className={`w-5 h-5 ${isSaved ? "fill-primary" : ""}`} // Change style based on save state
                 />
               </Button>
             </div>
