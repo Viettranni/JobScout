@@ -11,8 +11,8 @@ exports.scrapeJobs = async (req, res) => {
   const { page, city, searchTerm } = req.query;
 
   try {
-    // Fetch job results from all sources (duuniTori, indeed, jobly)
-    const results = await Promise.all([
+    // Use Promise.allSettled to handle partial scraper failures
+    const results = await Promise.allSettled([
       duuniTori(city, searchTerm, page),
       indeed(city, searchTerm, page),
       jobly(city, searchTerm, page),
@@ -20,13 +20,34 @@ exports.scrapeJobs = async (req, res) => {
       tePalvelut(city, searchTerm),
     ]);
 
-    // Flatten the results into a single array since each API returns an array
-    const allResults = results.flat();
+    // Collect successful results
+    const successfulResults = results
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => result.value);
 
-    if (allResults) {
+    // Log or track failed scrapers
+    const failedScrapers = results
+      .filter((result) => result.status === "rejected")
+      .map((result, index) => {
+        const scraperNames = [
+          "duuniTori",
+          "indeed",
+          "jobly",
+          "oikotie",
+          "tePalvelut",
+        ];
+        console.error(
+          `Scraper failed: ${scraperNames[index]} - ${result.reason.message}`
+        );
+        return scraperNames[index];
+      });
+
+    // Flatten the successful results into a single array
+    const allResults = successfulResults.flat();
+
+    if (allResults.length > 0) {
       // Filter out jobs that don't meet the required schema
       const filteredResults = allResults.filter((job) => {
-        // Ensure required fields are present and of correct type
         const hasRequiredFields =
           typeof job.title === "string" &&
           typeof job.company === "string" &&
@@ -34,55 +55,67 @@ exports.scrapeJobs = async (req, res) => {
           typeof job.datePosted === "string" &&
           typeof job.url === "string";
 
-        // Ensure required fields are not empty
-        const requiredFieldsNotEmpty =
-          job.title && job.company && job.location && job.datePosted && job.url;
-
-        // Return jobs that pass both checks
-        return hasRequiredFields && requiredFieldsNotEmpty;
+        return (
+          hasRequiredFields &&
+          job.title &&
+          job.company &&
+          job.location &&
+          job.datePosted &&
+          job.url
+        );
       });
 
-      // Now proceed with checking against existing jobs in the database
+      // Check against existing jobs in the database using 'title', 'company', 'location', and 'url'
       const jobsToCheck = filteredResults.map((job) => ({
         title: job.title,
         company: job.company,
         location: job.location,
+        url: job.url,
       }));
 
+      // Query the database for jobs that match by title, company, location, or url
       const existingJobs = await JobPost.find({
         $or: jobsToCheck.map((job) => ({
-          title: job.title,
-          company: job.company,
-          location: job.location,
+          $or: [
+            { title: job.title, company: job.company, location: job.location },
+            { url: job.url }, // Checking against the unique 'url' field
+          ],
         })),
       })
-        .select("title company location")
+        .select("title company location url")
         .lean();
 
       const existingJobIdentifiers = new Set(
-        existingJobs.map((job) => `${job.title}|${job.company}|${job.location}`)
+        existingJobs.map(
+          (job) => `${job.title}|${job.company}|${job.location}|${job.url}`
+        )
       );
 
-      // Filter out jobs that already exist in the database
+      // Filter out jobs that already exist in the database based on title, company, location, or url
       const newJobs = filteredResults.filter((job) => {
-        const identifier = `${job.title}|${job.company}|${job.location}`;
-        if (existingJobIdentifiers.has(identifier)) {
-          console.log(
-            `Duplicate job found: ${job.title} at ${job.company} in ${job.location}`
-          );
-          return false;
-        }
-        return true;
+        const identifier = `${job.title}|${job.company}|${job.location}|${job.url}`;
+        return !existingJobIdentifiers.has(identifier);
       });
 
-      // Check if there are new jobs to insert
       if (newJobs.length > 0) {
         try {
-          // Insert new jobs into the database
-          await JobPost.insertMany(newJobs);
+          // Insert new jobs into the database with upsert logic to avoid duplicates
+          await Promise.all(
+            newJobs.map(async (job) => {
+              await JobPost.updateOne(
+                { url: job.url }, // Matching by URL
+                { $setOnInsert: job }, // Only insert if the job does not exist
+                { upsert: true } // Insert if no match, skip otherwise
+              );
+            })
+          );
+
           console.log(`Inserted ${newJobs.length} new jobs.`);
           res.status(201).json({
-            message: `Job scraping complete. 5 jobsites scraped. ${newJobs.length} new job post/s saved.`,
+            message: `Job scraping complete. ${successfulResults.length} jobsites scraped. ${newJobs.length} new job post/s saved.`,
+            failedScrapers: failedScrapers.length
+              ? `Some scrapers failed: ${failedScrapers.join(", ")}`
+              : undefined,
           });
         } catch (error) {
           console.error("Error saving new jobs:", error.message);
@@ -93,9 +126,19 @@ exports.scrapeJobs = async (req, res) => {
       } else {
         console.log("No new jobs to insert. All jobs already exist.");
         res.status(200).json({
-          message: `Job scraping complete. 5 jobsites scraped. ${newJobs.length} new job post/s saved. Database already has the newest.`,
+          message: `Job scraping complete. ${successfulResults.length} jobsites scraped. No new job post/s saved. Database already has the newest.`,
+          failedScrapers: failedScrapers.length
+            ? `Some scrapers failed: ${failedScrapers.join(", ")}`
+            : undefined,
         });
       }
+    } else {
+      res.status(500).json({
+        message: "Job scraping failed. No data was successfully scraped.",
+        failedScrapers: failedScrapers.length
+          ? `Some scrapers failed: ${failedScrapers.join(", ")}`
+          : undefined,
+      });
     }
   } catch (err) {
     console.error("Error in scrapeJobs controller:", err);
@@ -563,7 +606,6 @@ exports.getAllJobs = async (req, res) => {
     const jobs = await JobPost.find();
     res.status(200).json(jobs);
     console.log(jobs);
-    
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -596,18 +638,19 @@ exports.findJobs = async (req, res) => {
     // Build the query object based on provided parameters
     const query = {};
 
-    // Match the search term with the job title or description fields in your schema
-    if (searchTerm && searchTerm !== "undefined") {
+    // Match the search term with the job title if provided
+    if (searchTerm && searchTerm.trim()) {
       query.title = { $regex: new RegExp(searchTerm, "i") }; // Case-insensitive search on title
     }
 
-    // Match the city with the location field in your schema
-    if (city && city !== "undefined") {
+    // Match the city with the location if provided
+    if (city && city.trim()) {
       query.location = { $regex: new RegExp(city, "i") }; // Case-insensitive search on location
     }
+    console.log("Query:", query); // Debug: log the constructed query
 
-    // Find jobs based on the query
-    const jobs = await JobPost.find(query);
+    // If the query object is empty, return all jobs
+    const jobs = await JobPost.find(Object.keys(query).length > 0 ? query : {});
 
     if (jobs.length === 0) {
       return res
@@ -618,6 +661,32 @@ exports.findJobs = async (req, res) => {
     res.status(200).json(jobs);
   } catch (err) {
     // Log the error for debugging purposes
+    console.error("Error fetching jobs:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.findJobsByCity = async (req, res) => {
+  try {
+    const { city } = req.params;
+
+    // Build the query object
+    const query = {
+      location: { $regex: new RegExp(city, "i") }, // Case-insensitive search on location
+    };
+
+    console.log("Query:", query); // Debug: log the constructed query
+
+    const jobs = await JobPost.find(query);
+
+    if (jobs.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No jobs found matching the criteria" });
+    }
+
+    res.status(200).json(jobs);
+  } catch (err) {
     console.error("Error fetching jobs:", err);
     res.status(500).json({ message: err.message });
   }
@@ -636,11 +705,11 @@ exports.deleteJob = async (req, res) => {
     if (jobDeleted) {
       res.status(204).json({ message: "job posting deleted successfully" });
     } else {
-      res.status(404).json({ message: "job posting not found" });
+      res.status(404).json({ message: "Job posting not found" });
     }
   } catch (err) {
     res
       .status(500)
-      .json({ message: "Failed to delete jon posting", error: err.message });
+      .json({ message: "Failed to delete job posting", error: err.message });
   }
 };
