@@ -248,7 +248,7 @@ describe("Job API", () => {
     });
   });
 
-  describe("GET api/jobs/detail/:searchTerm?/:city?", () => {
+  describe("GET api/jobs/detail/:searchTerm?/:city?/:logo?", () => {
     // Clean up the database before each test
     beforeEach(async () => {
       await JobPost.deleteMany({});
@@ -291,11 +291,67 @@ describe("Job API", () => {
       await JobPost.create(mockJob2);
 
       const res = await request(app)
-        .get("/api/jobs/detail/Developer/") // Corrected path with prefix
+        .get("/api/jobs/detail/Developer") // Corrected path with prefix
         .expect(200);
 
       expect(res.body.length).toBe(1);
       expect(res.body[0]).toMatchObject(mockJob1);
+    });
+
+    it("should return jobs matching only the location", async () => {
+      const mockJob1 = {
+        title: "Developer",
+        company: "Tech Inc",
+        location: "Remote",
+        datePosted: new Date().toISOString(),
+        url: "http://example.com",
+        logo: "duunitori",
+      };
+      const mockJob2 = {
+        title: "Designer",
+        company: "Design Co",
+        location: "Helsinki",
+        datePosted: new Date().toISOString(),
+        url: "http://example2.com",
+        logo: "jobly",
+      };
+      await JobPost.create(mockJob1);
+      await JobPost.create(mockJob2);
+
+      const res = await request(app)
+        .get("/api/jobs/detail/:searchTerm/Helsinki") // Corrected path with prefix
+        .expect(200);
+
+      expect(res.body.length).toBe(1);
+      expect(res.body[0]).toMatchObject(mockJob2);
+    });
+
+    it("should return jobs matching only the logo term", async () => {
+      const mockJob1 = {
+        title: "Developer",
+        company: "Tech Inc",
+        location: "Remote",
+        datePosted: new Date().toISOString(),
+        url: "http://example.com",
+        logo: "duunitori",
+      };
+      const mockJob2 = {
+        title: "Designer",
+        company: "Design Co",
+        location: "Onsite",
+        datePosted: new Date().toISOString(),
+        url: "http://example2.com",
+        logo: "jobly",
+      };
+      await JobPost.create(mockJob1);
+      await JobPost.create(mockJob2);
+
+      const res = await request(app)
+        .get("/api/jobs/detail/:searchTerm/:city/jobly") // Corrected path with prefix
+        .expect(200);
+
+      expect(res.body.length).toBe(1);
+      expect(res.body[0]).toMatchObject(mockJob2);
     });
 
     it("should return 404 if no jobs found matching the criteria", async () => {
@@ -308,77 +364,29 @@ describe("Job API", () => {
       });
     });
 
-    // it("should return all jobs if no search term and city are provided", async () => {
-    //   const mockJob1 = {
-    //     title: "Developer",
-    //     company: "Tech Inc",
-    //     location: "Remote",
-    //     datePosted: new Date().toISOString(),
-    //     url: "http://example.com",
-    //   };
-    //   const mockJob2 = {
-    //     title: "Designer",
-    //     company: "Design Co",
-    //     location: "Onsite",
-    //     datePosted: new Date().toISOString(),
-    //     url: "http://example2.com",
-    //   };
-    //   await JobPost.create(mockJob1);
-    //   await JobPost.create(mockJob2);
-
-    //   const res = await request(app)
-    //     .get("/api/jobs/detail/") // Corrected path with prefix (no search term or city)
-    //     .expect(200);
-
-    //   expect(res.body.length).toBe(2);
-    //   expect(res.body).toEqual(expect.arrayContaining([mockJob1, mockJob2]));
-    // });
-  });
-
-  describe("GET /api/jobs/detailbyloc/:city", () => {
-    it("should return jobs matching only the city", async () => {
+    it("should return all jobs if no search term and city are provided", async () => {
       const mockJob1 = {
         title: "Developer",
         company: "Tech Inc",
-        location: "Helsinki",
+        location: "Remote",
         datePosted: new Date().toISOString(),
         url: "http://example.com",
-        _id: "66f926d3df518f925e9eb42d", // Simulated ID
-        __v: 0, // Simulated version key
-        createdAt: new Date().toISOString(), // Simulated creation date
-        updatedAt: new Date().toISOString(), // Simulated update date
-        responsibilities: [],
       };
-
       const mockJob2 = {
         title: "Designer",
         company: "Design Co",
-        location: "Helsinki",
+        location: "Onsite",
         datePosted: new Date().toISOString(),
         url: "http://example2.com",
-        _id: "66f926d3df518f925e9eb41d", // Simulated ID
-        __v: 0, // Simulated version key
-        createdAt: new Date().toISOString(), // Simulated creation date
-        updatedAt: new Date().toISOString(), // Simulated update date
-        responsibilities: [],
       };
-
-      // Create mock jobs in the database
       await JobPost.create(mockJob1);
       await JobPost.create(mockJob2);
 
-      const jobsInDb = await JobPost.find({});
-      console.log("Jobs in DB:", jobsInDb); // Debugging output
-
-      // Make the request to the API
       const res = await request(app)
-        .get("/api/jobs/detailbyloc/Helsinki") // Correct path
+        .get("/api/jobs/detail/:searchTerm/:city/:logo") // Corrected path with prefix (no search term or city)
         .expect(200);
 
-      // Check if the response contains the expected jobs
       expect(res.body.length).toBe(2);
-
-      // Use expect.arrayContaining to match the array of jobs
       expect(res.body).toEqual(
         expect.arrayContaining([
           expect.objectContaining(mockJob1),

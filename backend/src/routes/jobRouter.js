@@ -9,9 +9,7 @@ router.get("/", jobController.getAllJobs);
 // GET/by id
 router.get("/:id", jobController.getJobById);
 // GET/by searchTerm and location
-router.get("/detail/:searchTerm?/:city?", jobController.findJobs); // Matches /jobs/:title/:location
-// GET/by location
-router.get("/detailbyloc/:city", jobController.findJobsByCity); // Matches /jobs/:location
+router.get("/detail/:searchTerm?/:city?/:logo?", jobController.findJobs); // Matches /jobs/:title/:location
 
 router.use(authMiddleware);
 // POST/scrape all jobsites

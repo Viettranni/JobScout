@@ -633,19 +633,24 @@ exports.getJobById = async (req, res) => {
 
 exports.findJobs = async (req, res) => {
   try {
-    const { searchTerm, city } = req.params;
+    const { searchTerm, city, logo } = req.params;
 
     // Build the query object based on provided parameters
     const query = {};
 
     // Match the search term with the job title if provided
-    if (searchTerm && searchTerm.trim()) {
+    if (searchTerm && searchTerm.trim() !== ":searchTerm") {
       query.title = { $regex: new RegExp(searchTerm, "i") }; // Case-insensitive search on title
     }
 
     // Match the city with the location if provided
-    if (city && city.trim()) {
+    if (city && city.trim() !== ":city") {
       query.location = { $regex: new RegExp(city, "i") }; // Case-insensitive search on location
+    }
+
+    // Match the city with the location if provided
+    if (logo && logo.trim() !== ":logo") {
+      query.logo = { $regex: new RegExp(logo, "i") }; // Case-insensitive search on location
     }
     console.log("Query:", query); // Debug: log the constructed query
 
@@ -661,32 +666,6 @@ exports.findJobs = async (req, res) => {
     res.status(200).json(jobs);
   } catch (err) {
     // Log the error for debugging purposes
-    console.error("Error fetching jobs:", err);
-    res.status(500).json({ message: err.message });
-  }
-};
-
-exports.findJobsByCity = async (req, res) => {
-  try {
-    const { city } = req.params;
-
-    // Build the query object
-    const query = {
-      location: { $regex: new RegExp(city, "i") }, // Case-insensitive search on location
-    };
-
-    console.log("Query:", query); // Debug: log the constructed query
-
-    const jobs = await JobPost.find(query);
-
-    if (jobs.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No jobs found matching the criteria" });
-    }
-
-    res.status(200).json(jobs);
-  } catch (err) {
     console.error("Error fetching jobs:", err);
     res.status(500).json({ message: err.message });
   }
