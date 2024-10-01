@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { searchHook } from "@/components/hooks/searchHook";
 
 export function SearchBar() {
-  const { searchTerm, setSearchTerm, handleSubmit } = searchHook();
+  const { searchTerm, setSearchTerm, city, setCity, handleSubmit } =
+    searchHook();
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row mb-6">
@@ -16,6 +17,8 @@ export function SearchBar() {
       <Input
         className="mb-2 sm:mb-0 sm:mr-2"
         placeholder="City or municipality"
+        value={city}
+        onChange={(e) => setCity(e.target.value)}
       />
       <Button
         type="submit"

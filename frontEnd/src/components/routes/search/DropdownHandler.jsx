@@ -20,8 +20,8 @@ export function DropdownHandler({ dropdownData }) {
 
   return (
     <>
-    {/* <div className="flex flex-wrap mb-6 gap-2"> */}
-    
+      {/* <div className="flex flex-wrap mb-6 gap-2"> */}
+
       {dropdownData.map((dropdown, index) => (
         <Dropdown
           key={index}
@@ -31,7 +31,7 @@ export function DropdownHandler({ dropdownData }) {
           onSelect={(value) => handleDropdownSelect(dropdown.label, value)}
         />
       ))}
-    {/* </div> */}
+      {/* </div> */}
     </>
   );
 }

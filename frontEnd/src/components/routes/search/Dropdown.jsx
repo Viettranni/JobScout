@@ -11,7 +11,9 @@ export function Dropdown({ label, options, selectedValue, onSelect }) {
     <DropdownMenu>
       <DropdownMenuTrigger>
         {/* Ensure DropdownMenuTrigger has exactly one child */}
-        <Button variant="outline" className='p-6'>{selectedValue || label}</Button>
+        <Button variant="outline" className="p-6">
+          {selectedValue || label}
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         {options.map((option, index) => (

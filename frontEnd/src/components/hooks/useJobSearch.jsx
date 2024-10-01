@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 export function useJobSearch() {
   const [jobListings, setJobListings] = useState([]);
@@ -7,8 +8,15 @@ export function useJobSearch() {
   const [expandedJob, setExpandedJob] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalJobs, setTotalJobs] = useState(0);
 
-  // Fetch jobs when component mounts or page changes
+  const location = useLocation();
+
+  // Parse searchTerm and city from the query parameters
+  const searchParams = new URLSearchParams(location.search);
+  const searchTerm = searchParams.get("searchTerm") || "";
+  const city = searchParams.get("city") || "";
+
   useEffect(() => {
     const fetchJobs = async () => {
       const token = localStorage.getItem("token");
@@ -18,12 +26,14 @@ export function useJobSearch() {
         return;
       }
 
-      console.log(`Fetching jobs for page ${currentPage}`);
+      console.log(
+        `Fetching jobs for page ${currentPage}, searchTerm: ${searchTerm}, city: ${city}`
+      );
 
       try {
-        // Fetch jobs
+        // Fetch jobs with searchTerm and city
         const jobResponse = await axios.get(
-          `http://localhost:4000/api/jobs?page=${currentPage}&limit=10`,
+          `http://localhost:4000/api/jobs?page=${currentPage}&limit=10&searchTerm=${searchTerm}&city=${city}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -33,42 +43,14 @@ export function useJobSearch() {
 
         setJobListings(jobResponse.data.jobs);
         setTotalPages(jobResponse.data.totalPages);
-
-        // Fetch saved jobs only once (on initial load)
-        const savedResponse = await axios.get(
-          `http://localhost:4000/api/users/favourites`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        // Debugging log for API response
-        console.log("Saved Jobs API Response:", savedResponse.data);
-
-        if (Array.isArray(savedResponse.data.favourites)) {
-          const savedJobsMap = savedResponse.data.favourites.reduce(
-            (acc, job) => {
-              acc[job._id] = true;
-              return acc;
-            },
-            {}
-          );
-          setSavedJobs(savedJobsMap);
-        } else {
-          console.error(
-            "Saved jobs response does not contain an array of favourites:",
-            savedResponse.data
-          );
-        }
+        setTotalJobs(jobResponse.data.totalJobs); // Track total jobs for UI
       } catch (error) {
-        console.error("Failed to fetch jobs or saved jobs:", error);
+        console.error("Failed to fetch jobs:", error);
       }
     };
 
     fetchJobs();
-  }, [currentPage]);
+  }, [currentPage, searchTerm, city]);
 
   const toggleJobExpansion = (jobId) => {
     setExpandedJob((prevId) => (prevId === jobId ? null : jobId));
@@ -125,5 +107,6 @@ export function useJobSearch() {
     toggleJobExpansion,
     toggleSaveJob,
     totalPages,
+    totalJobs, // Return total jobs for UI
   };
 }
