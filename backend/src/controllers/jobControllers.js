@@ -600,12 +600,38 @@ exports.scrapeTePalvelutJobs = async (req, res) => {
   }
 };
 
-// Get all job posts
+// Get all job posts with search and pagination
 exports.getAllJobs = async (req, res) => {
   try {
-    const jobs = await JobPost.find();
-    res.status(200).json(jobs);
-    console.log(jobs);
+    const { page = 1, limit = 10, searchTerm, city, logo } = req.query; // Use default page 1 and limit 10 if not provided
+    const skip = (page - 1) * limit; // Calculate how many jobs to skip
+
+    // Build the filter object for MongoDB query
+    const filter = {};
+
+    // Add searchTerm, city, and logo to the filter if they are provided
+    if (searchTerm) {
+      filter.title = { $regex: searchTerm, $options: "i" }; // Case-insensitive search for the title
+    }
+    if (city) {
+      filter.location = { $regex: city, $options: "i" }; // Case-insensitive search for the location (city)
+    }
+    if (logo) {
+      filter.logo = { $regex: logo, $options: "i" }; // Case-insensitive search for the logo
+    }
+
+    // Execute the query with filtering, pagination, and limit
+    const jobs = await JobPost.find(filter).skip(skip).limit(parseInt(limit));
+
+    const totalJobs = await JobPost.countDocuments(filter); // Get total number of jobs that match the filter
+
+    // Return the jobs along with pagination info
+    res.status(200).json({
+      jobs,
+      totalJobs, // Send the total number of jobs for frontend to calculate total pages
+      totalPages: Math.ceil(totalJobs / limit), // Calculate total pages
+      currentPage: parseInt(page), // Send current page info
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -627,46 +653,6 @@ exports.getJobById = async (req, res) => {
       res.status(404).json({ message: "Job posting not found" });
     }
   } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-exports.findJobs = async (req, res) => {
-  try {
-    const { searchTerm, city, logo } = req.params;
-
-    // Build the query object based on provided parameters
-    const query = {};
-
-    // Match the search term with the job title if provided
-    if (searchTerm && searchTerm.trim() !== ":searchTerm") {
-      query.title = { $regex: new RegExp(searchTerm, "i") }; // Case-insensitive search on title
-    }
-
-    // Match the city with the location if provided
-    if (city && city.trim() !== ":city") {
-      query.location = { $regex: new RegExp(city, "i") }; // Case-insensitive search on location
-    }
-
-    // Match the city with the location if provided
-    if (logo && logo.trim() !== ":logo") {
-      query.logo = { $regex: new RegExp(logo, "i") }; // Case-insensitive search on location
-    }
-    console.log("Query:", query); // Debug: log the constructed query
-
-    // If the query object is empty, return all jobs
-    const jobs = await JobPost.find(Object.keys(query).length > 0 ? query : {});
-
-    if (jobs.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No jobs found matching the criteria" });
-    }
-
-    res.status(200).json(jobs);
-  } catch (err) {
-    // Log the error for debugging purposes
-    console.error("Error fetching jobs:", err);
     res.status(500).json({ message: err.message });
   }
 };

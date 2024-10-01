@@ -165,6 +165,7 @@ describe("Job API", () => {
     beforeEach(async () => {
       await JobPost.deleteMany({}); // Ensure the collection is empty
     });
+
     // Test: Get all jobs
     it("should return all jobs", async () => {
       const now = new Date().toISOString();
@@ -173,6 +174,7 @@ describe("Job API", () => {
           title: "Developer",
           company: "Tech Inc",
           location: "Remote",
+          logo: "TechLogo",
           datePosted: now,
           url: "http://example.com",
           responsibilities: [], // Simulated fields
@@ -181,6 +183,7 @@ describe("Job API", () => {
           title: "Designer",
           company: "Design Co",
           location: "Onsite",
+          logo: "DesignLogo",
           datePosted: now,
           url: "http://example2.com",
           responsibilities: [], // Simulated fields
@@ -190,22 +193,180 @@ describe("Job API", () => {
       // Insert the jobs into the database
       await JobPost.insertMany(mockJobs);
 
-      // Make the GET request
+      // Make the GET request to retrieve all jobs
       const res = await request(app)
         .get("/api/jobs")
         .set("Authorization", `Bearer ${authToken}`)
         .expect(200);
 
       // Verify the response structure, including all fields
-      expect(res.body.length).toBe(mockJobs.length); // Ensure the number of jobs matches
+      expect(res.body.jobs.length).toBe(mockJobs.length); // Ensure the number of jobs matches
 
       // Check if the response body contains the expected job properties
-      expect(res.body).toEqual(
+      expect(res.body.jobs).toEqual(
         expect.arrayContaining([
-          expect.objectContaining(mockJobs[0]),
-          expect.objectContaining(mockJobs[1]),
+          expect.objectContaining({
+            title: "Developer",
+            company: "Tech Inc",
+            location: "Remote",
+          }),
+          expect.objectContaining({
+            title: "Designer",
+            company: "Design Co",
+            location: "Onsite",
+          }),
         ])
       );
+    });
+
+    // Test: Filter jobs by searchTerm (title)
+    it("should filter jobs by searchTerm (case-insensitive)", async () => {
+      const now = new Date().toISOString();
+      const mockJobs = [
+        {
+          title: "Developer",
+          company: "Tech Inc",
+          location: "Remote",
+          logo: "TechLogo",
+          datePosted: now,
+          url: "http://example.com",
+          responsibilities: [],
+        },
+        {
+          title: "Designer",
+          company: "Design Co",
+          location: "Onsite",
+          logo: "DesignLogo",
+          datePosted: now,
+          url: "http://example2.com",
+          responsibilities: [],
+        },
+      ];
+
+      await JobPost.insertMany(mockJobs);
+
+      // Make the GET request to filter jobs by searchTerm 'developer'
+      const res = await request(app)
+        .get("/api/jobs?searchTerm=developer")
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(200);
+
+      // Should return only the Developer job
+      expect(res.body.jobs.length).toBe(1);
+      expect(res.body.jobs[0].title).toBe("Developer");
+    });
+
+    // Test: Filter jobs by city (location)
+    it("should filter jobs by city (case-insensitive)", async () => {
+      const now = new Date().toISOString();
+      const mockJobs = [
+        {
+          title: "Developer",
+          company: "Tech Inc",
+          location: "Remote",
+          logo: "TechLogo",
+          datePosted: now,
+          url: "http://example.com",
+          responsibilities: [],
+        },
+        {
+          title: "Designer",
+          company: "Design Co",
+          location: "Onsite",
+          logo: "DesignLogo",
+          datePosted: now,
+          url: "http://example2.com",
+          responsibilities: [],
+        },
+      ];
+
+      await JobPost.insertMany(mockJobs);
+
+      // Make the GET request to filter jobs by city 'remote'
+      const res = await request(app)
+        .get("/api/jobs?city=remote")
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(200);
+
+      // Should return only the Remote job
+      expect(res.body.jobs.length).toBe(1);
+      expect(res.body.jobs[0].location).toBe("Remote");
+    });
+
+    // Test: Filter jobs by logo
+    it("should filter jobs by logo (case-insensitive)", async () => {
+      const now = new Date().toISOString();
+      const mockJobs = [
+        {
+          title: "Developer",
+          company: "Tech Inc",
+          location: "Remote",
+          logo: "TechLogo",
+          datePosted: now,
+          url: "http://example.com",
+          responsibilities: [],
+        },
+        {
+          title: "Designer",
+          company: "Design Co",
+          location: "Onsite",
+          logo: "DesignLogo",
+          datePosted: now,
+          url: "http://example2.com",
+          responsibilities: [],
+        },
+      ];
+
+      await JobPost.insertMany(mockJobs);
+
+      // Make the GET request to filter jobs by logo 'TechLogo'
+      const res = await request(app)
+        .get("/api/jobs?logo=techlogo")
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(200);
+
+      // Should return only the job with TechLogo
+      expect(res.body.jobs.length).toBe(1);
+      expect(res.body.jobs[0].logo).toBe("TechLogo");
+    });
+
+    // Test: Combined filtering by searchTerm, city, and logo
+    it("should filter jobs by searchTerm, city, and logo combined", async () => {
+      const now = new Date().toISOString();
+      const mockJobs = [
+        {
+          title: "Developer",
+          company: "Tech Inc",
+          location: "Remote",
+          logo: "TechLogo",
+          datePosted: now,
+          url: "http://example.com",
+          responsibilities: [],
+        },
+        {
+          title: "Designer",
+          company: "Design Co",
+          location: "Onsite",
+          logo: "DesignLogo",
+          datePosted: now,
+          url: "http://example2.com",
+          responsibilities: [],
+        },
+      ];
+
+      await JobPost.insertMany(mockJobs);
+
+      // Make the GET request to filter jobs by searchTerm, city, and logo
+      const res = await request(app)
+        .get("/api/jobs?searchTerm=developer&city=remote&logo=techlogo")
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(200);
+
+      // Should return only the Developer job with matching searchTerm, city, and logo
+      expect(res.body.jobs.length).toBe(1);
+      expect(res.body.jobs[0].title).toBe("Developer");
+      expect(res.body.jobs[0].location).toBe("Remote");
+      expect(res.body.jobs[0].logo).toBe("TechLogo");
     });
   });
 
@@ -245,154 +406,6 @@ describe("Job API", () => {
 
       expect(res.body).toHaveProperty("message");
       expect(res.body.message).toContain("Job posting not found");
-    });
-  });
-
-  describe("GET api/jobs/detail/:searchTerm?/:city?/:logo?", () => {
-    // Clean up the database before each test
-    beforeEach(async () => {
-      await JobPost.deleteMany({});
-    });
-
-    it("should return jobs matching the search term and city", async () => {
-      const mockJob = {
-        title: "Developer",
-        company: "Tech Inc",
-        location: "Remote",
-        datePosted: new Date().toISOString(),
-        url: "http://example.com",
-      };
-      await JobPost.create(mockJob);
-
-      const res = await request(app)
-        .get("/api/jobs/detail/Developer/Remote") // Corrected path with prefix
-        .expect(200);
-
-      expect(res.body.length).toBe(1);
-      expect(res.body[0]).toMatchObject(mockJob);
-    });
-
-    it("should return jobs matching only the search term", async () => {
-      const mockJob1 = {
-        title: "Developer",
-        company: "Tech Inc",
-        location: "Remote",
-        datePosted: new Date().toISOString(),
-        url: "http://example.com",
-      };
-      const mockJob2 = {
-        title: "Designer",
-        company: "Design Co",
-        location: "Onsite",
-        datePosted: new Date().toISOString(),
-        url: "http://example2.com",
-      };
-      await JobPost.create(mockJob1);
-      await JobPost.create(mockJob2);
-
-      const res = await request(app)
-        .get("/api/jobs/detail/Developer") // Corrected path with prefix
-        .expect(200);
-
-      expect(res.body.length).toBe(1);
-      expect(res.body[0]).toMatchObject(mockJob1);
-    });
-
-    it("should return jobs matching only the location", async () => {
-      const mockJob1 = {
-        title: "Developer",
-        company: "Tech Inc",
-        location: "Remote",
-        datePosted: new Date().toISOString(),
-        url: "http://example.com",
-        logo: "duunitori",
-      };
-      const mockJob2 = {
-        title: "Designer",
-        company: "Design Co",
-        location: "Helsinki",
-        datePosted: new Date().toISOString(),
-        url: "http://example2.com",
-        logo: "jobly",
-      };
-      await JobPost.create(mockJob1);
-      await JobPost.create(mockJob2);
-
-      const res = await request(app)
-        .get("/api/jobs/detail/:searchTerm/Helsinki") // Corrected path with prefix
-        .expect(200);
-
-      expect(res.body.length).toBe(1);
-      expect(res.body[0]).toMatchObject(mockJob2);
-    });
-
-    it("should return jobs matching only the logo term", async () => {
-      const mockJob1 = {
-        title: "Developer",
-        company: "Tech Inc",
-        location: "Remote",
-        datePosted: new Date().toISOString(),
-        url: "http://example.com",
-        logo: "duunitori",
-      };
-      const mockJob2 = {
-        title: "Designer",
-        company: "Design Co",
-        location: "Onsite",
-        datePosted: new Date().toISOString(),
-        url: "http://example2.com",
-        logo: "jobly",
-      };
-      await JobPost.create(mockJob1);
-      await JobPost.create(mockJob2);
-
-      const res = await request(app)
-        .get("/api/jobs/detail/:searchTerm/:city/jobly") // Corrected path with prefix
-        .expect(200);
-
-      expect(res.body.length).toBe(1);
-      expect(res.body[0]).toMatchObject(mockJob2);
-    });
-
-    it("should return 404 if no jobs found matching the criteria", async () => {
-      const res = await request(app)
-        .get("/api/jobs/detail/NonExistentJob/NonExistentCity") // Corrected path with prefix
-        .expect(404);
-
-      expect(res.body).toEqual({
-        message: "No jobs found matching the criteria",
-      });
-    });
-
-    it("should return all jobs if no search term and city are provided", async () => {
-      const mockJob1 = {
-        title: "Developer",
-        company: "Tech Inc",
-        location: "Remote",
-        datePosted: new Date().toISOString(),
-        url: "http://example.com",
-      };
-      const mockJob2 = {
-        title: "Designer",
-        company: "Design Co",
-        location: "Onsite",
-        datePosted: new Date().toISOString(),
-        url: "http://example2.com",
-      };
-      await JobPost.create(mockJob1);
-      await JobPost.create(mockJob2);
-
-      const res = await request(app)
-        .get("/api/jobs/detail/:searchTerm/:city/:logo") // Corrected path with prefix (no search term or city)
-        .expect(200);
-
-      expect(res.body.length).toBe(2);
-      expect(res.body).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining(mockJob1),
-          expect.objectContaining(mockJob2),
-        ])
-      );
     });
   });
 

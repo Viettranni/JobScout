@@ -8,8 +8,6 @@ const roleMiddleware = require("../middleware/roleMiddleware");
 router.get("/", jobController.getAllJobs);
 // GET/by id
 router.get("/:id", jobController.getJobById);
-// GET/by searchTerm and location
-router.get("/detail/:searchTerm?/:city?/:logo?", jobController.findJobs); // Matches /jobs/:title/:location
 
 router.use(authMiddleware);
 // POST/scrape all jobsites
