@@ -1,74 +1,51 @@
 import { Button } from "@/components/ui/button";
 import { ChevronRightIcon, ChevronLeftIcon } from "lucide-react";
-import ScrollToTop from "../../../ScrollToTop"; // Import the ScrollToTop component
 
 export function Pagination({ currentPage, totalPages, setCurrentPage }) {
-  const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
-  };
-
-  const renderPageNumbers = () => {
-    let startPage, endPage;
-
+  const getDisplayedPages = () => {
     if (totalPages <= 3) {
-      startPage = 1;
-      endPage = totalPages;
+      // If there are less than or equal to 3 pages, show all pages
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    } else if (currentPage === 1) {
+      // If we're on the first page, show [1, 2, 3]
+      return [1, 2, 3];
+    } else if (currentPage === totalPages) {
+      // If we're on the last page, show [totalPages-2, totalPages-1, totalPages]
+      return [totalPages - 2, totalPages - 1, totalPages];
     } else {
-      if (currentPage === 1) {
-        startPage = 1;
-        endPage = 3;
-      } else if (currentPage === totalPages) {
-        startPage = totalPages - 2;
-        endPage = totalPages;
-      } else {
-        startPage = currentPage - 1;
-        endPage = currentPage + 1;
-      }
+      // Show the previous page, current page, and next page
+      return [currentPage - 1, currentPage, currentPage + 1];
     }
-
-    const pageNumbers = [];
-    for (let i = startPage; i <= endPage; i++) {
-      pageNumbers.push(i);
-    }
-    return pageNumbers;
   };
 
-  console.log(`Navigating to page ${currentPage}`);
+  const displayedPages = getDisplayedPages();
 
   return (
     <div className="mt-8 flex justify-between items-center">
-      {/* Inject ScrollToTop and pass currentPage as the trigger */}
-      <ScrollToTop trigger={currentPage} />
-
-      {/* Previous button */}
       <Button
         variant="outline"
-        onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
+        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
         disabled={currentPage === 1}
       >
-        <ChevronLeftIcon className="mr-2 h-4 w-4" /> Previous
+        <ChevronLeftIcon className="h-4 w-4" /> Previous
       </Button>
-
-      {/* Page numbers */}
       <div className="space-x-2">
-        {renderPageNumbers().map((pageNumber) => (
+        {displayedPages.map((page) => (
           <Button
-            key={pageNumber}
-            variant={currentPage === pageNumber ? "default" : "outline"}
-            onClick={() => handlePageChange(pageNumber)}
+            key={page}
+            variant={currentPage === page ? "default" : "outline"}
+            onClick={() => setCurrentPage(page)}
           >
-            {pageNumber}
+            {page}
           </Button>
         ))}
       </div>
-
-      {/* Next button */}
       <Button
         variant="outline"
-        onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
+        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
         disabled={currentPage === totalPages}
       >
-        Next <ChevronRightIcon className="ml-2 h-4 w-4" />
+        Next <ChevronRightIcon className="h-4 w-4" />
       </Button>
     </div>
   );

@@ -84,18 +84,21 @@ export function useJobSearch() {
 
     try {
       if (savedJobs[jobId]) {
+        // Unsave job
         await axios.delete(`http://localhost:4000/api/users/favourites`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          data: { jobPostId: jobId },
+          data: { jobPostId: jobId }, // Send job ID to remove
         });
+        // Update state to reflect unsave
         setSavedJobs((prev) => {
           const updated = { ...prev };
           delete updated[jobId];
           return updated;
         });
       } else {
+        // Save job
         await axios.post(
           `http://localhost:4000/api/users/favourites`,
           { jobPostId: jobId },
@@ -105,6 +108,7 @@ export function useJobSearch() {
             },
           }
         );
+        // Update state to reflect save
         setSavedJobs((prev) => ({ ...prev, [jobId]: true }));
       }
     } catch (error) {
