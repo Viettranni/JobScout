@@ -610,15 +610,22 @@ exports.getAllJobs = async (req, res) => {
     const filter = {};
 
     // Add searchTerm, city, and logo to the filter if they are provided
-    if (searchTerm) {
-      filter.title = { $regex: searchTerm, $options: "i" }; // Case-insensitive search for the title
+    // Validate `searchTerm`
+    if (searchTerm && searchTerm.trim() !== "") {
+      filter.title = { $regex: searchTerm.trim(), $options: "i" }; // Case-insensitive search for title
     }
-    if (city) {
-      filter.location = { $regex: city, $options: "i" }; // Case-insensitive search for the location (city)
+
+    // Validate `city`
+    if (city && city.trim() !== "") {
+      filter.location = { $regex: city.trim(), $options: "i" }; // Case-insensitive search for location (city)
     }
-    if (logo) {
-      filter.logo = { $regex: logo, $options: "i" }; // Case-insensitive search for the logo
+
+    // Validate `logo`
+    if (logo && logo.trim() !== "") {
+      filter.logo = { $regex: logo.trim(), $options: "i" }; // Case-insensitive search for logo
     }
+
+    console.log(filter);
 
     // Execute the query with filtering, pagination, and limit
     const jobs = await JobPost.find(filter).skip(skip).limit(parseInt(limit));
