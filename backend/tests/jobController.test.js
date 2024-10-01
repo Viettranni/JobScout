@@ -3,131 +3,441 @@ const mongoose = require("mongoose");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 const jwt = require("jsonwebtoken");
 const app = require("../app"); // Adjust the path according to your app structure
-const { JobPost } = require("../src/models/JobPost"); // Adjust the path according to your model
+const { JobPost } = require("../src/models/JobPost");
+
+// Mock individual scrapers
+jest.mock("../src/scrapers/duuniTori", () => jest.fn());
+jest.mock("../src/scrapers/indeed", () => jest.fn());
+jest.mock("../src/scrapers/jobly", () => jest.fn());
+jest.mock("../src/scrapers/oikotie", () => jest.fn());
+jest.mock("../src/scrapers/tePalvelut", () => jest.fn());
+
+const duuniTori = require("../src/scrapers/duuniTori");
+const indeed = require("../src/scrapers/indeed");
+const jobly = require("../src/scrapers/jobly");
+const oikotie = require("../src/scrapers/oikotie");
+const tePalvelut = require("../src/scrapers/tePalvelut");
 
 let mongoServer;
-let authToken; // Variable to hold the JWT token for authentication
+let authToken;
 
-// Mock user data for generating JWT
 const mockUser = {
-  id: "userId123", // Example user ID
-  username: "testuser", // Example username
-  // Add any other required user fields here if necessary
+  _id: new mongoose.Types.ObjectId(), // Simulating a MongoDB ObjectId
+  username: "testuser",
+  role: "user",
 };
 
 beforeAll(async () => {
   if (mongoose.connection.readyState !== 0) {
     await mongoose.disconnect();
   }
-  // Start the in-memory MongoDB server
+  // Set up an in-memory MongoDB server
   mongoServer = await MongoMemoryServer.create();
   const uri = mongoServer.getUri();
-  await mongoose.connect(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+  await mongoose.connect(uri);
 
-  // Generate a JWT token for the mock user
   authToken = jwt.sign(mockUser, process.env.JWT_SECRET, { expiresIn: "1h" });
-
-  // Create an initial job post for testing
-  const initialJob = {
-    title: "Software Engineer",
-    company: "Tech Corp",
-    location: "Remote",
-    datePosted: new Date().toISOString(),
-    url: "http://example.com/software-engineer",
-    description: "Developing software solutions.",
-    responsibilities: ["Coding", "Debugging"],
-    logo: "http://example.com/logo.png",
-  };
-
-  // Save the initial job to the database
-  const jobPost = new JobPost(initialJob);
-  await jobPost.save();
 });
 
 afterAll(async () => {
-  // Close the connection and stop the MongoDB server
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
   await mongoServer.stop();
 });
 
 describe("Job API", () => {
-  let jobId; // Variable to hold the job ID for subsequent tests
+  beforeEach(() => {
+    jest.clearAllMocks(); // Clear mocks between tests
+  });
 
-  // Scenario: Create a new job
-  describe("POST /api/jobs/scrape-jobs", () => {
-    it("should create a new job and return the job object", async () => {
-      const newJob = {
-        title: "Backend Developer",
-        company: "Dev Studio",
-        location: "On-site",
-        datePosted: new Date().toISOString(),
-        url: "http://example.com/backend-developer",
-        description: "Building backend services.",
-        responsibilities: ["API development", "Database management"],
-        logo: "http://example.com/backend-logo.png",
-      };
+  describe("POST /api/jobs/allsites/scrape-jobs", () => {
+    // Test: Successful job scraping and saving
+    it("should successfully scrape and save new jobs", async () => {
+      const mockJobs = [
+        {
+          title: "Developer",
+          company: "Tech Inc",
+          location: "Remote",
+          datePosted: new Date().toISOString(),
+          url: "http://example.com",
+        },
+      ];
+
+      // Mock the scrapers to return the jobs
+      duuniTori.mockResolvedValue(mockJobs);
+      indeed.mockResolvedValue(mockJobs);
+      jobly.mockResolvedValue(mockJobs);
+      oikotie.mockResolvedValue(mockJobs);
+      tePalvelut.mockResolvedValue(mockJobs);
 
       const res = await request(app)
         .post("/api/jobs/allsites/scrape-jobs")
-        .set("Authorization", `Bearer ${authToken}`) // Include the JWT token in the header
-        .send(newJob)
-        .expect(201); // Expect Created status
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(201);
 
-      expect(res.body).toHaveProperty("job");
-      expect(res.body.job).toMatchObject(newJob);
-      jobId = res.body.job._id; // Store job ID for later tests
+      expect(res.body).toHaveProperty("message");
+      expect(res.body.message).toContain("5 jobsites scraped");
+      expect(res.body.message).toContain("new job post/s saved");
+    });
+
+    // Test: Handling case when no new jobs are found (duplicates)
+    it("should handle case when no new jobs are found (duplicates)", async () => {
+      const mockJobs = [
+        {
+          title: "Developer",
+          company: "Tech Inc",
+          location: "Remote",
+          datePosted: new Date().toISOString(),
+          url: "http://example.com",
+        },
+      ];
+
+      duuniTori.mockResolvedValue(mockJobs);
+      indeed.mockResolvedValue(mockJobs);
+      jobly.mockResolvedValue(mockJobs);
+      oikotie.mockResolvedValue(mockJobs);
+      tePalvelut.mockResolvedValue(mockJobs);
+
+      // Insert the mock job into the database first
+      await JobPost.insertMany(mockJobs);
+
+      const res = await request(app)
+        .post("/api/jobs/allsites/scrape-jobs")
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(200);
+
+      expect(res.body).toHaveProperty("message");
+      expect(res.body.message).toContain("Database already has the newest.");
+    });
+
+    // Test: Scraper failure but others succeed
+    it("should handle partial scraper failures but still save successful jobs", async () => {
+      const mockJobs = [
+        {
+          title: "Developer",
+          company: "Tech Inc",
+          location: "Remote",
+          datePosted: new Date().toISOString(),
+          url: "http://example.com",
+        },
+      ];
+
+      // Simulate an error in duuniTori scraper
+      duuniTori.mockRejectedValue(new Error("duuniTori error"));
+
+      // Other scrapers succeed
+      indeed.mockResolvedValue(mockJobs);
+      jobly.mockResolvedValue(mockJobs);
+      oikotie.mockResolvedValue(mockJobs);
+      tePalvelut.mockResolvedValue(mockJobs);
+
+      const res = await request(app)
+        .post("/api/jobs/allsites/scrape-jobs")
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(200);
+
+      expect(res.body).toHaveProperty("message");
+      expect(res.body.message).toContain("jobsites scraped");
+      expect(res.body.message).toContain("new job post/s saved");
+      // expect(res.body.message).toContain("Some scrapers failed: duuniTori");
+    });
+
+    // Test: All scrapers fail
+    it("should return 500 if all scrapers fail", async () => {
+      // Simulate all scrapers failing
+      duuniTori.mockRejectedValue(new Error("duuniTori error"));
+      indeed.mockRejectedValue(new Error("indeed error"));
+      jobly.mockRejectedValue(new Error("jobly error"));
+      oikotie.mockRejectedValue(new Error("oikotie error"));
+      tePalvelut.mockRejectedValue(new Error("tePalvelut error"));
+
+      const res = await request(app)
+        .post("/api/jobs/allsites/scrape-jobs")
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(500);
+
+      expect(res.body).toHaveProperty("message");
+      expect(res.body.message).toContain("Job scraping failed");
     });
   });
 
-  // Scenario: Retrieve all jobs
   describe("GET /api/jobs", () => {
+    beforeEach(async () => {
+      await JobPost.deleteMany({}); // Ensure the collection is empty
+    });
+
+    // Test: Get all jobs
     it("should return all jobs", async () => {
-      const res = await request(app).get("/").expect(200); // Expect OK status
+      const now = new Date().toISOString();
+      const mockJobs = [
+        {
+          title: "Developer",
+          company: "Tech Inc",
+          location: "Remote",
+          logo: "TechLogo",
+          datePosted: now,
+          url: "http://example.com",
+          responsibilities: [], // Simulated fields
+        },
+        {
+          title: "Designer",
+          company: "Design Co",
+          location: "Onsite",
+          logo: "DesignLogo",
+          datePosted: now,
+          url: "http://example2.com",
+          responsibilities: [], // Simulated fields
+        },
+      ];
 
-      expect(res.body).toHaveProperty("jobs");
-      expect(Array.isArray(res.body.jobs)).toBe(true);
-      expect(res.body.jobs.length).toBeGreaterThan(0); // Ensure there's at least one job
+      // Insert the jobs into the database
+      await JobPost.insertMany(mockJobs);
+
+      // Make the GET request to retrieve all jobs
+      const res = await request(app)
+        .get("/api/jobs")
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(200);
+
+      // Verify the response structure, including all fields
+      expect(res.body.jobs.length).toBe(mockJobs.length); // Ensure the number of jobs matches
+
+      // Check if the response body contains the expected job properties
+      expect(res.body.jobs).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            title: "Developer",
+            company: "Tech Inc",
+            location: "Remote",
+          }),
+          expect.objectContaining({
+            title: "Designer",
+            company: "Design Co",
+            location: "Onsite",
+          }),
+        ])
+      );
+    });
+
+    // Test: Filter jobs by searchTerm (title)
+    it("should filter jobs by searchTerm (case-insensitive)", async () => {
+      const now = new Date().toISOString();
+      const mockJobs = [
+        {
+          title: "Developer",
+          company: "Tech Inc",
+          location: "Remote",
+          logo: "TechLogo",
+          datePosted: now,
+          url: "http://example.com",
+          responsibilities: [],
+        },
+        {
+          title: "Designer",
+          company: "Design Co",
+          location: "Onsite",
+          logo: "DesignLogo",
+          datePosted: now,
+          url: "http://example2.com",
+          responsibilities: [],
+        },
+      ];
+
+      await JobPost.insertMany(mockJobs);
+
+      // Make the GET request to filter jobs by searchTerm 'developer'
+      const res = await request(app)
+        .get("/api/jobs?searchTerm=developer")
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(200);
+
+      // Should return only the Developer job
+      expect(res.body.jobs.length).toBe(1);
+      expect(res.body.jobs[0].title).toBe("Developer");
+    });
+
+    // Test: Filter jobs by city (location)
+    it("should filter jobs by city (case-insensitive)", async () => {
+      const now = new Date().toISOString();
+      const mockJobs = [
+        {
+          title: "Developer",
+          company: "Tech Inc",
+          location: "Remote",
+          logo: "TechLogo",
+          datePosted: now,
+          url: "http://example.com",
+          responsibilities: [],
+        },
+        {
+          title: "Designer",
+          company: "Design Co",
+          location: "Onsite",
+          logo: "DesignLogo",
+          datePosted: now,
+          url: "http://example2.com",
+          responsibilities: [],
+        },
+      ];
+
+      await JobPost.insertMany(mockJobs);
+
+      // Make the GET request to filter jobs by city 'remote'
+      const res = await request(app)
+        .get("/api/jobs?city=remote")
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(200);
+
+      // Should return only the Remote job
+      expect(res.body.jobs.length).toBe(1);
+      expect(res.body.jobs[0].location).toBe("Remote");
+    });
+
+    // Test: Filter jobs by logo
+    it("should filter jobs by logo (case-insensitive)", async () => {
+      const now = new Date().toISOString();
+      const mockJobs = [
+        {
+          title: "Developer",
+          company: "Tech Inc",
+          location: "Remote",
+          logo: "TechLogo",
+          datePosted: now,
+          url: "http://example.com",
+          responsibilities: [],
+        },
+        {
+          title: "Designer",
+          company: "Design Co",
+          location: "Onsite",
+          logo: "DesignLogo",
+          datePosted: now,
+          url: "http://example2.com",
+          responsibilities: [],
+        },
+      ];
+
+      await JobPost.insertMany(mockJobs);
+
+      // Make the GET request to filter jobs by logo 'TechLogo'
+      const res = await request(app)
+        .get("/api/jobs?logo=techlogo")
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(200);
+
+      // Should return only the job with TechLogo
+      expect(res.body.jobs.length).toBe(1);
+      expect(res.body.jobs[0].logo).toBe("TechLogo");
+    });
+
+    // Test: Combined filtering by searchTerm, city, and logo
+    it("should filter jobs by searchTerm, city, and logo combined", async () => {
+      const now = new Date().toISOString();
+      const mockJobs = [
+        {
+          title: "Developer",
+          company: "Tech Inc",
+          location: "Remote",
+          logo: "TechLogo",
+          datePosted: now,
+          url: "http://example.com",
+          responsibilities: [],
+        },
+        {
+          title: "Designer",
+          company: "Design Co",
+          location: "Onsite",
+          logo: "DesignLogo",
+          datePosted: now,
+          url: "http://example2.com",
+          responsibilities: [],
+        },
+      ];
+
+      await JobPost.insertMany(mockJobs);
+
+      // Make the GET request to filter jobs by searchTerm, city, and logo
+      const res = await request(app)
+        .get("/api/jobs?searchTerm=developer&city=remote&logo=techlogo")
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(200);
+
+      // Should return only the Developer job with matching searchTerm, city, and logo
+      expect(res.body.jobs.length).toBe(1);
+      expect(res.body.jobs[0].title).toBe("Developer");
+      expect(res.body.jobs[0].location).toBe("Remote");
+      expect(res.body.jobs[0].logo).toBe("TechLogo");
     });
   });
 
-  // Scenario: Retrieve a job by ID
-  describe("GET /jobs/:id", () => {
+  describe("GET /api/jobs/:id", () => {
+    // Test: Get job by ID
     it("should return a job by ID", async () => {
-      const res = await request(app).get(`/${jobId}`).expect(200); // Expect OK status
+      const now = new Date().toISOString();
+      const mockJob = {
+        title: "Developer",
+        company: "Tech Inc",
+        location: "Remote",
+        datePosted: now,
+        url: "http://example.com",
+        _id: "66f926d3df518f925e9eb44d", // Simulated ID
+        __v: 0, // Simulated version key
+        createdAt: now, // Simulated creation date
+        updatedAt: now, // Simulated update date
+        responsibilities: [],
+      };
+      const job = await JobPost.create(mockJob);
 
-      expect(res.body).toHaveProperty("job");
-      expect(res.body.job._id).toBe(jobId.toString()); // Verify the job ID matches
+      const res = await request(app)
+        .get(`/api/jobs/${job._id}`)
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(200);
+
+      // Verify the response structure, including all fields
+      expect(res.body).toEqual(expect.objectContaining(mockJob)); // Use objectContaining for partial matching
     });
 
-    it("should return 404 for a non-existent job ID", async () => {
+    // Test: Return 404 if job not found
+    it("should return 404 if job not found", async () => {
       const res = await request(app)
-        .get("/jobs/999999999999999999999999")
-        .expect(404); // Expect Not Found status
-      expect(res.body).toHaveProperty("message", "Job not found"); // Assuming your error message
+        .get("/api/jobs/60e8c68b1d0e5b4a2c4e2e90") // Assuming this ID does not exist
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(404);
+
+      expect(res.body).toHaveProperty("message");
+      expect(res.body.message).toContain("Job posting not found");
     });
   });
 
-  // Scenario: Delete a job
-  describe("DELETE /jobs/:id", () => {
-    it("should delete a job by ID and return 204 status", async () => {
-      const res = await request(app)
-        .delete(`/${jobId}`)
-        .set("Authorization", `Bearer ${authToken}`) // Include the JWT token in the header
-        .expect(204); // Expect No Content status
+  describe("DELETE /api/jobs/:id", () => {
+    // Test: Delete job by ID
+    it("should delete a job by ID", async () => {
+      const mockJob = {
+        title: "Developer",
+        company: "Tech Inc",
+        location: "Remote",
+        datePosted: new Date().toISOString(),
+        url: "http://example.com",
+      };
+      const job = await JobPost.create(mockJob);
 
-      expect(res.body).toEqual({}); // Expect an empty response body
+      const res = await request(app)
+        .delete(`/api/jobs/${job._id}`)
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(204);
+
+      // No response body expected for 204
+      expect(res.body).toEqual({});
     });
 
-    it("should return 404 for deleting a non-existent job ID", async () => {
+    // Test: Return 404 if job not found during delete
+    it("should return 404 if job not found on delete", async () => {
       const res = await request(app)
-        .delete("/jobs/999999999999999999999999")
-        .set("Authorization", `Bearer ${authToken}`) // Include the JWT token in the header
-        .expect(404); // Expect Not Found status
-      expect(res.body).toHaveProperty("message", "Job not found"); // Assuming your error message
+        .delete("/api/jobs/60e8c68b1d0e5b4a2c4e2e90") // Assuming this ID does not exist
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(404);
+
+      expect(res.body).toEqual({ message: "Job posting not found" });
     });
   });
 });

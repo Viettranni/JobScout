@@ -9,47 +9,6 @@ router.get("/", jobController.getAllJobs);
 // GET/by id
 router.get("/:id", jobController.getJobById);
 
-// Routes for Duunitori job posts
-// GET/by id
-router.get("/duunitori/:id", jobController.getJobById);
-// GET/by searchTerm or location
-router.get("/duunitori/detail/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
-// GET/by searchTerm and location
-router.get("/duunitori/detail/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
-
-// Routes for Indeed job posts
-// GET/by id
-router.get("/indeed/:id", jobController.getJobById);
-// GET/by searchTerm or location
-router.get("/indeed/detail/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
-// GET/by searchTerm and location
-router.get("/indeed/detail/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
-
-// Routes for Jobly job posts
-// GET/by id
-router.get("/jobly/:id", jobController.getJobById);
-// GET/by searchTerm or location
-router.get("/jobly/detail/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
-// GET/by searchTerm and location
-router.get("/jobly/detail/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
-
-// Routes for Oikotie job posts
-// GET/by id
-router.get("/oikotie/:id", jobController.getJobById);
-// GET/by searchTerm or location
-router.get("/oikotie/detail/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
-// GET/by searchTerm and location
-router.get("/oikotie/detail/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
-// DELETE
-
-// Routes for Oikotie job posts
-// GET/by id
-router.get("/tepalvelut/:id", jobController.getJobById);
-// GET/by searchTerm or location
-router.get("/tepalvelut/detail/:searchTerm?", jobController.findJobs); // Matches /jobs/:title or /jobs/:title/:location
-// GET/by searchTerm and location
-router.get("/tepalvelut/detail/:searchTerm/:city?", jobController.findJobs); // Matches /jobs/:title/:location
-
 router.use(authMiddleware);
 // POST/scrape all jobsites
 router.post("/allsites/scrape-jobs", jobController.scrapeJobs);
