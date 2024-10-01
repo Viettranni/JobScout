@@ -44,7 +44,7 @@ export function JobCard({
           <img
             src={logoPath}
             alt={`${job.company} logo`}
-            className="w-12 h-12 mr-4 mt-1"
+            className="w-12 h-12 mr-4 mt-1 rounded-sm"
             onError={(e) => {
               e.target.onerror = null; // Prevent infinite loop if the default image also fails
               e.target.src = logos.default; // Fallback to default logo

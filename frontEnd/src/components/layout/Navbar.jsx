@@ -27,7 +27,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 flex justify-between items-center py-4 px-6 bg-white shadow-md">
+    <nav className="sticky top-0 z-50 flex justify-between items-center py-4 px-6 bg-white shadow-md backdrop-blur">
       {/* Logo Section */}
       <a href="/" className="text-2xl font-bold text-blue-900">
         Job$cout
@@ -36,18 +36,19 @@ const Navbar = () => {
       {/* Centered Navigation Links */}
       <div className="flex-grow flex justify-center">
         <PageLinks
-          parentClass="flex space-x-4"
-          itemClass="text-blue-900 hover:text-blue-700 text-lg"
+          parentClass="flex space-x-6"
+          itemClass="text-blue-900 hover:text-blue-700 text-lg font-medium"
+          isSearchButtonSpecial={true}
         />
       </div>
 
       {/* Sign In/Register Button */}
-      <div className="flex space-x-4">
+      <div className="flex space-x-4 font-medium">
         {user ? ( // Check if user exists
           <>
             <span className="text-blue-900 mt-2">{user.firstname}</span>
             <Button
-              className="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-500"
+              className="bg-transparent text-red-700 hover:text-white py-2 px-4 rounded hover:bg-red-700 border border-red-700"
               onClick={handleLogout}
             >
               Logout
