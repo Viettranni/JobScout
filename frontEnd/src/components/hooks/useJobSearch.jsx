@@ -9,11 +9,10 @@ export function useJobSearch() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalJobs, setTotalJobs] = useState(0);
-  const [selectedLogo, setSelectedLogo] = useState("All"); // Store selected logo filter
+  const [selectedLogo, setSelectedLogo] = useState("All");
 
   const location = useLocation();
 
-  // Parse searchTerm and city from the query parameters
   const searchParams = new URLSearchParams(location.search);
   const searchTerm = searchParams.get("searchTerm") || "";
   const city = searchParams.get("city") || "";
@@ -27,12 +26,7 @@ export function useJobSearch() {
         return;
       }
 
-      console.log(
-        `Fetching jobs for page ${currentPage}, searchTerm: ${searchTerm}, city: ${city}, logo: ${selectedLogo}`
-      );
-
       try {
-        // Fetch jobs with searchTerm, city, and logo
         const jobResponse = await axios.get(
           `http://localhost:4000/api/jobs?page=${currentPage}&limit=10&searchTerm=${searchTerm}&city=${city}&logo=${
             selectedLogo !== "All" ? selectedLogo : ""
@@ -46,9 +40,35 @@ export function useJobSearch() {
 
         setJobListings(jobResponse.data.jobs);
         setTotalPages(jobResponse.data.totalPages);
-        setTotalJobs(jobResponse.data.totalJobs); // Track total jobs for UI
+        setTotalJobs(jobResponse.data.totalJobs);
+
+        // Fetch saved jobs only once
+        const savedResponse = await axios.get(
+          `http://localhost:4000/api/users/favourites`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (Array.isArray(savedResponse.data.favourites)) {
+          const savedJobsMap = savedResponse.data.favourites.reduce(
+            (acc, job) => {
+              acc[job._id] = true;
+              return acc;
+            },
+            {}
+          );
+
+          setSavedJobs(savedJobsMap);
+        } else {
+          console.error(
+            "Saved jobs response does not contain an array of favourites."
+          );
+        }
       } catch (error) {
-        console.error("Failed to fetch jobs:", error);
+        console.error("Failed to fetch jobs or saved jobs:", error);
       }
     };
 
@@ -74,9 +94,9 @@ export function useJobSearch() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          data: { jobPostId: jobId }, // Send job ID to remove
+          data: { jobPostId: jobId },
         });
-        // Update state to reflect unsave
+
         setSavedJobs((prev) => {
           const updated = { ...prev };
           delete updated[jobId];
@@ -93,7 +113,7 @@ export function useJobSearch() {
             },
           }
         );
-        // Update state to reflect save
+
         setSavedJobs((prev) => ({ ...prev, [jobId]: true }));
       }
     } catch (error) {
@@ -111,6 +131,6 @@ export function useJobSearch() {
     toggleSaveJob,
     totalPages,
     totalJobs,
-    setSelectedLogo, // Expose setSelectedLogo to be used by DropdownHandler
+    setSelectedLogo,
   };
 }

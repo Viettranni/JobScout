@@ -5,7 +5,7 @@ export function JobList({ jobs, savedJobs, toggleSaveJob }) {
   const [expandedJobId, setExpandedJobId] = useState(null);
 
   const toggleJobExpansion = (jobId) => {
-    setExpandedJobId((prevId) => (prevId === jobId ? null : jobId)); // Expand/collapse logic
+    setExpandedJobId((prevId) => (prevId === jobId ? null : jobId));
   };
 
   if (!jobs || jobs.length === 0) {
@@ -15,7 +15,7 @@ export function JobList({ jobs, savedJobs, toggleSaveJob }) {
   return (
     <div className="space-y-4">
       {jobs
-        .filter((job) => job && job._id) // Only render valid jobs
+        .filter((job) => job && job._id)
         .map((job) => (
           <JobCard
             key={job._id}

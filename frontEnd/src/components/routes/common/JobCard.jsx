@@ -36,7 +36,6 @@ export function JobCard({
 }) {
   // Determine which logo to show based on job.logo or fallback to default
   const logoPath = logos[job.logo] || logos.default;
-  console.log(job.logo);
 
   return (
     <Card>
