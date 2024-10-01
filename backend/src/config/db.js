@@ -6,7 +6,7 @@ const connectDB = async () => {
     const mongoURI =
       process.env.NODE_ENV === "test"
         ? "mongodb://localhost:27017/testdb" // Placeholder for test DB (this will be overridden by MongoMemoryServer in your tests)
-        : process.env.MONGO_URI; // Use MongoDB Atlas in development/production
+        : process.env.MONGODB_URI; // Use MongoDB Atlas in development/production
 
     const conn = await mongoose.connect(mongoURI, {});
     console.log(`MongoDB Connected: ${conn.connection.host}`);
