@@ -22,6 +22,7 @@ export default function JobSearch() {
     setCurrentPage,
     toggleJobExpansion,
     toggleSaveJob,
+    setSelectedLogo, // Get the function to update the selected logo
   } = useJobSearch();
 
   const location = useLocation();
@@ -33,9 +34,13 @@ export default function JobSearch() {
       <div className="flex flex-wrap mb-6 gap-2">
         <div className="mr-5">
           <h2 className="text-xl font-semibold">{totalJobs} Jobs results</h2>
-          <p className="text-l font-semibold">for: "{query}"</p>
+          <p className="text-l font-semibold">for: {query}</p>
         </div>
-        <DropdownHandler dropdownData={dropdownData} />
+        {/* Pass setSelectedLogo to DropdownHandler */}
+        <DropdownHandler
+          dropdownData={dropdownData}
+          handleLogoSelect={setSelectedLogo}
+        />
       </div>
 
       <JobList

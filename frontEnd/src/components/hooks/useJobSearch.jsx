@@ -9,6 +9,7 @@ export function useJobSearch() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalJobs, setTotalJobs] = useState(0);
+  const [selectedLogo, setSelectedLogo] = useState("All"); // Store selected logo filter
 
   const location = useLocation();
 
@@ -27,13 +28,15 @@ export function useJobSearch() {
       }
 
       console.log(
-        `Fetching jobs for page ${currentPage}, searchTerm: ${searchTerm}, city: ${city}`
+        `Fetching jobs for page ${currentPage}, searchTerm: ${searchTerm}, city: ${city}, logo: ${selectedLogo}`
       );
 
       try {
-        // Fetch jobs with searchTerm and city
+        // Fetch jobs with searchTerm, city, and logo
         const jobResponse = await axios.get(
-          `http://localhost:4000/api/jobs?page=${currentPage}&limit=10&searchTerm=${searchTerm}&city=${city}`,
+          `http://localhost:4000/api/jobs?page=${currentPage}&limit=10&searchTerm=${searchTerm}&city=${city}&logo=${
+            selectedLogo !== "All" ? selectedLogo : ""
+          }`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -50,7 +53,7 @@ export function useJobSearch() {
     };
 
     fetchJobs();
-  }, [currentPage, searchTerm, city]);
+  }, [currentPage, searchTerm, city, selectedLogo]);
 
   const toggleJobExpansion = (jobId) => {
     setExpandedJob((prevId) => (prevId === jobId ? null : jobId));
@@ -107,6 +110,7 @@ export function useJobSearch() {
     toggleJobExpansion,
     toggleSaveJob,
     totalPages,
-    totalJobs, // Return total jobs for UI
+    totalJobs,
+    setSelectedLogo, // Expose setSelectedLogo to be used by DropdownHandler
   };
 }

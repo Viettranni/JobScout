@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Dropdown } from "./Dropdown";
 
-export function DropdownHandler({ dropdownData }) {
+export function DropdownHandler({ dropdownData, handleLogoSelect }) {
   // Initialize state dynamically for all dropdowns
   const [dropdownState, setDropdownState] = useState(
     dropdownData.reduce((acc, dropdown) => {
@@ -16,12 +16,15 @@ export function DropdownHandler({ dropdownData }) {
       ...prevState,
       [label]: value,
     }));
+
+    // Call the parent function when the logo dropdown is selected
+    if (label === "Job Source") {
+      handleLogoSelect(value); // This will send the selected logo value to the parent component
+    }
   };
 
   return (
     <>
-      {/* <div className="flex flex-wrap mb-6 gap-2"> */}
-
       {dropdownData.map((dropdown, index) => (
         <Dropdown
           key={index}
@@ -31,7 +34,6 @@ export function DropdownHandler({ dropdownData }) {
           onSelect={(value) => handleDropdownSelect(dropdown.label, value)}
         />
       ))}
-      {/* </div> */}
     </>
   );
 }

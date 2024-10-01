@@ -9,7 +9,23 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
 } from "lucide-react";
-import defaultJob from "../../../assets/defaultJob.png";
+
+import indeedLogo from "../../../assets/indeed.png";
+import duunitoriLogo from "../../../assets/duunitori.png";
+import joblyLogo from "../../../assets/jobly.jpg";
+import oikotieLogo from "../../../assets/oikotie.png";
+import tePalvelutLogo from "../../../assets/tePalvelut.png";
+import defaultLogo from "../../../assets/default.png";
+
+// Fallback and dynamic logos
+const logos = {
+  indeed: indeedLogo,
+  duunitori: duunitoriLogo,
+  jobly: joblyLogo,
+  oikotie: oikotieLogo,
+  tePalvelut: tePalvelutLogo,
+  default: defaultLogo, // Default logo for fallback
+};
 
 export function JobCard({
   job,
@@ -18,14 +34,22 @@ export function JobCard({
   isExpanded,
   toggleExpand,
 }) {
+  // Determine which logo to show based on job.logo or fallback to default
+  const logoPath = logos[job.logo] || logos.default;
+  console.log(job.logo);
+
   return (
     <Card>
       <CardContent className="p-4">
         <div className="flex items-start">
           <img
-            src={defaultJob /*job.logo*/}
+            src={logoPath}
             alt={`${job.company} logo`}
             className="w-12 h-12 mr-4 mt-1"
+            onError={(e) => {
+              e.target.onerror = null; // Prevent infinite loop if the default image also fails
+              e.target.src = logos.default; // Fallback to default logo
+            }}
           />
           <div className="flex-grow">
             <div className="flex justify-between items-start">
@@ -36,11 +60,11 @@ export function JobCard({
               <Button
                 variant="ghost"
                 className="p-2"
-                onClick={toggleSave} // Make sure the toggleSave prop is passed correctly
+                onClick={toggleSave}
                 aria-label={isSaved ? "Unsave job" : "Save job"}
               >
                 <BookmarkIcon
-                  className={`w-5 h-5 ${isSaved ? "fill-primary" : ""}`} // Style changes based on save state
+                  className={`w-5 h-5 ${isSaved ? "fill-primary" : ""}`}
                 />
               </Button>
             </div>
