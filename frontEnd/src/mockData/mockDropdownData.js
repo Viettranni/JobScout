@@ -2,7 +2,7 @@
 export const dropdownData = [
   {
     label: "Job Source",
-    options: ["All", "duunitori", "indeed", "tepalvelut", "oikotie", "jobly"],
+    options: ["All", "Duunitori", "Indeed", "TePalvelut", "Oikotie", "Jobly"],
   },
   // {
   //   label: "Job Type",
