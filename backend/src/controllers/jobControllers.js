@@ -1,10 +1,13 @@
 const { JobPost } = require("../models/JobPost");
+
 const duuniTori = require("../scrapers/duuniTori");
 const indeed = require("../scrapers/indeed");
 const jobly = require("../scrapers/jobly");
 const oikotie = require("../scrapers/oikotie");
-const mongoose = require("mongoose");
 const tePalvelut = require("../scrapers/tePalvelut");
+
+const mongoose = require("mongoose");
+
 
 // Scrape jobs from all the websites
 exports.scrapeJobs = async (req, res) => {

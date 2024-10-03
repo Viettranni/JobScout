@@ -7,6 +7,7 @@ const cors = require("cors");
 const adminRoutes = require("./src/routes/adminRouter");
 const jobRoutes = require("./src/routes/jobRouter");
 const userRoutes = require("./src/routes/userRouter");
+const aiModelRouter = require("./src/routes/aiModelRouter");
 const {
   requestLogger,
   unknownEndpoint,
@@ -34,6 +35,7 @@ connectDB();
 app.use("/api/admin", adminRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/jobs", jobRoutes);
+app.use("/api/coverLetter", aiModelRouter);
 
 // Example route that throws an error
 app.get("/error", (req, res, next) => {
