@@ -48,7 +48,7 @@ router.delete(
   adminUserController.removeFromFavourites
 ); // Route to remove a job post from user's favourites
 router.get(
-  "/favourites",
+  "/:id/favourites",
   authMiddleware,
   roleMiddleware("admin"),
   adminUserController.getUserWithFavourites

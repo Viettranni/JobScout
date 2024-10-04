@@ -7,7 +7,8 @@
     "dev": "nodemon server.js",
     "test": "jest --detectOpenHandles",
     "usercontrollertest": "cross-env NODE_ENV=test jest userController.test.js --detectOpenHandles",
-    "jobcontrollertest": "cross-env NODE_ENV=test jest jobController.test.js --detectOpenHandles"
+    "jobcontrollertest": "cross-env NODE_ENV=test jest jobController.test.js --detectOpenHandles",
+    "admincontrollertest": "cross-env NODE_ENV=test jest adminController.test.js --detectOpenHandles"
   },
   "keywords": [],
   "author": "",

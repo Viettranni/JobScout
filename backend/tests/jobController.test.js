@@ -50,6 +50,27 @@ describe("Job API", () => {
     jest.clearAllMocks(); // Clear mocks between tests
   });
 
+  describe("Authentication scenarios", () => {
+    it("should return 401 if no token is provided", async () => {
+      const res = await request(app)
+        .post("/api/jobs/duunitori/scrape-jobs")
+        .query({ page: 1, city: "Helsinki", searchTerm: "Engineer" });
+
+      expect(res.statusCode).toBe(401);
+      expect(res.body.message).toBe("No token provided");
+    });
+
+    it("should return 401 if an invalid token is provided", async () => {
+      const res = await request(app)
+        .post("/api/jobs/duunitori/scrape-jobs")
+        .set("Authorization", "Bearer invalidtoken")
+        .query({ page: 1, city: "Helsinki", searchTerm: "Engineer" });
+
+      expect(res.statusCode).toBe(401);
+      expect(res.body.message).toBe("Invalid token");
+    });
+  });
+
   describe("POST /api/jobs/allsites/scrape-jobs", () => {
     // Test: Successful job scraping and saving
     it("should successfully scrape and save new jobs", async () => {
@@ -158,6 +179,77 @@ describe("Job API", () => {
 
       expect(res.body).toHaveProperty("message");
       expect(res.body.message).toContain("Job scraping failed");
+    });
+  });
+
+  describe("POST /duunitori/scrape-jobs", () => {
+    // Test: Successful job scraping and saving
+    it("should successfully scrape and save new DuuniTori jobs", async () => {
+      const mockJobs = [
+        {
+          title: "Engineer",
+          company: "Duuni Corp",
+          location: "Helsinki",
+          datePosted: new Date().toISOString(),
+          url: "http://duunitori.com/job1",
+        },
+      ];
+
+      // Mock the DuuniTori scraper to return the jobs
+      duuniTori.mockResolvedValue(mockJobs);
+
+      const res = await request(app)
+        .post("/api/jobs/duunitori/scrape-jobs")
+        .set("Authorization", `Bearer ${authToken}`)
+        .query({ page: 1, city: "Helsinki", searchTerm: "Engineer" })
+        .expect(201);
+
+      expect(res.body).toHaveProperty("message");
+      expect(res.body.message).toContain("1 page/s scraped");
+      expect(res.body.message).toContain("new job post/s saved");
+    });
+
+    // Test: Handling case when no new DuuniTori jobs are found (duplicates)
+    it("should handle case when no new DuuniTori jobs are found (duplicates)", async () => {
+      const mockJobs = [
+        {
+          title: "Engineer",
+          company: "Duuni Corp",
+          location: "Helsinki",
+          datePosted: new Date().toISOString(),
+          url: "http://duunitori.com/job1",
+        },
+      ];
+
+      // Mock the DuuniTori scraper to return the jobs
+      duuniTori.mockResolvedValue(mockJobs);
+
+      // Insert the mock job into the database first
+      await JobPost.insertMany(mockJobs);
+
+      const res = await request(app)
+        .post("/api/jobs/duunitori/scrape-jobs")
+        .set("Authorization", `Bearer ${authToken}`)
+        .query({ page: 1, city: "Helsinki", searchTerm: "Engineer" })
+        .expect(200);
+
+      expect(res.body).toHaveProperty("message");
+      expect(res.body.message).toContain("Database already has the newest.");
+    });
+
+    // Test: DuuniTori scraper failure
+    it("should return 500 if DuuniTori scraper fails", async () => {
+      // Simulate an error in the DuuniTori scraper
+      duuniTori.mockRejectedValue(new Error("DuuniTori scraper error"));
+
+      const res = await request(app)
+        .post("/api/jobs/duunitori/scrape-jobs")
+        .set("Authorization", `Bearer ${authToken}`)
+        .query({ page: 1, city: "Helsinki", searchTerm: "Engineer" })
+        .expect(500);
+
+      expect(res.body).toHaveProperty("message");
+      expect(res.body.message).toContain("Error scraping jobs.");
     });
   });
 
