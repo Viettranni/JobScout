@@ -137,15 +137,15 @@ describe("User routes with /api/users", () => {
     });
   });
 
-  describe("POST /api/users/favourites", () => {
+  describe("PATCH /api/users/favourites", () => {
     it("should add a job to the user's favourites", async () => {
       const jobId = new mongoose.Types.ObjectId();
       const res = await request(app)
-        .post("/api/users/favourites")
+        .patch("/api/users/favourites")
         .set("Authorization", `Bearer ${token}`)
         .send({ jobPostId: jobId });
 
-      expect(res.statusCode).toBe(201);
+      expect(res.statusCode).toBe(200);
       expect(res.body).toContainEqual(jobId.toString());
     });
 
@@ -153,13 +153,13 @@ describe("User routes with /api/users", () => {
       const jobId = new mongoose.Types.ObjectId();
       // Add job first time
       await request(app)
-        .post("/api/users/favourites")
+        .patch("/api/users/favourites")
         .set("Authorization", `Bearer ${token}`)
         .send({ jobPostId: jobId });
 
       // Try adding it again
       const res = await request(app)
-        .post("/api/users/favourites")
+        .patch("/api/users/favourites")
         .set("Authorization", `Bearer ${token}`)
         .send({ jobPostId: jobId });
 

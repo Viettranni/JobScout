@@ -141,7 +141,7 @@ exports.addToFavourites = async (req, res) => {
     user.favourites.push(jobPostId);
     await user.save();
 
-    res.status(201).json(user.favourites);
+    res.status(200).json(user.favourites);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -13,7 +13,7 @@ router.get("/profile", authMiddleware, userController.getUserById); // Get curre
 router.patch("/profile", authMiddleware, userController.updateUser); // Update current user's profile (no :id needed)
 router.delete("/profile", authMiddleware, userController.deleteUser); // Delete current user's account (no :id needed)
 
-router.post("/favourites", authMiddleware, userController.addToFavourites); // Add job to current user's favourites
+router.patch("/favourites", authMiddleware, userController.addToFavourites); // Add job to current user's favourites
 router.delete(
   "/favourites",
   authMiddleware,

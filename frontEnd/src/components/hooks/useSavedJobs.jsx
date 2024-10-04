@@ -62,7 +62,7 @@ export function useSavedJobs() {
         setSavedJobs((prev) => prev.filter((job) => job._id !== jobId));
       } else {
         // Save the job
-        await axios.post(
+        await axios.patch(
           `http://localhost:4000/api/users/favourites`,
           { jobPostId: jobId },
           {

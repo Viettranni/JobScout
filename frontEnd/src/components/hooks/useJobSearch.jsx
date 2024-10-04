@@ -104,7 +104,7 @@ export function useJobSearch() {
         });
       } else {
         // Save job
-        await axios.post(
+        await axios.patch(
           `http://localhost:4000/api/users/favourites`,
           { jobPostId: jobId },
           {
