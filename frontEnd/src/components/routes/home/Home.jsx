@@ -1,14 +1,15 @@
 import React, { useEffect } from "react";
-import JobSearchComponent from "./SearchComponent";
+import JobSearchComponent from "./JobSearchComponent";
 
 function Home() {
+  useEffect(() => {
+    document.title = "Job$cout";
+  }, []);
 
-  useEffect(() => {document.title = 'Job$cout'}, [])
-
-  return(
+  return (
     <div>
-        <JobSearchComponent />
-    </div>   
+      <JobSearchComponent />
+    </div>
   );
 }
 

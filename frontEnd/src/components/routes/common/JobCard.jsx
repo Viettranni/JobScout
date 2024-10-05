@@ -72,7 +72,7 @@ export function JobCard({
                 <p className="text-sm text-muted-foreground flex items-center mr-4">
                   <MapPinIcon className="w-4 h-4 mr-1" /> {job.location}
                 </p>
-                <div className="flex flex-wrap gap-2">
+                {/* <div className="flex flex-wrap gap-2">
                   {Array.isArray(job.types) && job.types.length > 0 ? (
                     job.types.map((type, index) => (
                       <Badge key={index} variant="secondary">
@@ -82,7 +82,7 @@ export function JobCard({
                   ) : (
                     <p>No Types</p> // Fallback if types array is undefined or empty
                   )}
-                </div>
+                </div> */}
               </div>
               <div className="flex items-center space-x-2 mt-2 sm:mt-0">
                 <Button onClick={toggleExpand} variant="outline" size="sm">

@@ -3,6 +3,7 @@ import { JobList } from "../common/JobList";
 import { Pagination } from "../common/Pagination";
 import { ProfileSection } from "./ProfileSection";
 import { useSavedJobs } from "../../hooks/useSavedJobs"; // Hook to fetch saved jobs
+import ScrollToTop from "../common/ScrollToTop";
 
 export default function Cabinet() {
   const {
@@ -29,6 +30,7 @@ export default function Cabinet() {
 
   return (
     <div className="container mx-auto px-4 py-8 lg:w-4/5">
+      <ScrollToTop trigger={currentPage} />
       {/* Profile Section */}
       <ProfileSection />
 

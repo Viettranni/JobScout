@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-import ScrollToTop from "./ScrollToTop";
+import ScrollToTop from "./components/routes/common/ScrollToTop";
 import PageTransition from "./transition";
 import React from "react";
 import "./index.css";
@@ -11,7 +11,7 @@ import Search from "./components/routes/search/Search";
 import Cabinet from "./components/routes/cabinet/Cabinet";
 import About from "./components/routes/about/About"; // in own dir
 import Profile from "./components/routes/profile/Profile";
-import NotFound from "./components/routes/NotFound";
+import NotFound from "./components/routes/common/NotFound";
 
 const AnimatedRoutes = () => {
   const location = useLocation();

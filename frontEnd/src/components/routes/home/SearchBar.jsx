@@ -1,9 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { searchHook } from "@/components/hooks/searchHook";
 import SearchButton from "./SearchButton";
 
-function SearchBar() {
+function SearchBar({ initialSearchTerm = "" }) {
   const { searchTerm, setSearchTerm, handleSubmit } = searchHook();
+
+  // Set the initial search term if provided
+  useEffect(() => {
+    if (initialSearchTerm) {
+      setSearchTerm(initialSearchTerm);
+    }
+  }, [initialSearchTerm, setSearchTerm]);
 
   return (
     <form

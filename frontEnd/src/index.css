@@ -1,10 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @layer base {
   :root {
     --hover: 244, 55%, 41%;
-    /* --button: 231, 60%, 18%;  not registret yet  */
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
@@ -31,6 +31,7 @@
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
@@ -57,13 +58,15 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
-}
-@layer base {
-  * {
-    @apply border-border;
-  }
+
+  /* Global styling */
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Apply border color globally */
+  * {
+    @apply border-border;
   }
 }
 
@@ -88,4 +91,9 @@
 /* Thumb hover: Changes color when hovered */
 ::-webkit-scrollbar-thumb:hover {
   background: #2563eb; /* Brighter blue on hover */
+}
+
+/* Cursor */
+.job-card-cursor {
+  cursor: url("/custom-pointer.svg"), auto; /* Replace with the actual path to your SVG */
 }
