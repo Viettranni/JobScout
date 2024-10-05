@@ -15,6 +15,8 @@ import oikotieLogo from "../../../assets/oikotie.png";
 import tePalvelutLogo from "../../../assets/tePalvelut.png";
 import defaultLogo from "../../../assets/default.png";
 
+import { useGenerateCoverLetter } from "@/components/hooks/useGenerateCoverLetter";
+
 // Fallback and dynamic logos
 const logos = {
   indeed: indeedLogo,
@@ -32,12 +34,18 @@ export function JobCard({
   isExpanded,
   toggleExpand,
 }) {
+  const { isGenerating, errorMessage, generateCoverLetter } =
+    useGenerateCoverLetter(); // Custom Hook
   // Determine which logo to show based on job.logo or fallback to default
   const logoPath = logos[job.logo] || logos.default;
 
   // Check if user is authenticated
   const token = localStorage.getItem("token");
   const isAuthenticated = !!token;
+
+  const text = job.description
+
+  
 
   return (
     <Card>
@@ -98,9 +106,10 @@ export function JobCard({
                   variant="outline"
                   size="sm"
                   className="bg-white border-indigo-400 hover:bg-hover hover:text-white"
-                  onClick={() => console.log("Generate Cover Letter clicked")}
+                  onClick={() => generateCoverLetter(text)} // Pass job description to the hook
+                  disabled={isGenerating} // Disable button while generating
                 >
-                  Generate Cover Letter
+                  {isGenerating ? "Generating..." : "Generate Cover Letter"}
                 </Button>
 
                 {/* Apply Now Button */}

@@ -12,6 +12,7 @@ import Cabinet from "./components/routes/cabinet/Cabinet";
 import About from "./components/routes/about/About"; // in own dir
 import Profile from "./components/routes/profile/Profile";
 import NotFound from "./components/routes/common/NotFound";
+import CoverLetterDisplay from "./components/routes/profile/CoverLetterDisplay";
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -60,6 +61,14 @@ const AnimatedRoutes = () => {
               </PageTransition>
             }
           />
+          <Route 
+          path="/cover-letter" 
+          element={
+            <PageTransition>
+              <CoverLetterDisplay />
+            </PageTransition>
+          }
+          />
           <Route
             path="*"
             element={
@@ -69,6 +78,7 @@ const AnimatedRoutes = () => {
             }
           />
         </Route>
+        
       </Routes>
     </AnimatePresence>
   );
