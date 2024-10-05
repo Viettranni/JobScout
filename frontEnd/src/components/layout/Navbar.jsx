@@ -24,6 +24,7 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.removeItem("token"); // Remove token from local storage
     setUser(null); // Reset user state
+    window.location.reload();
   };
 
   return (
@@ -46,7 +47,9 @@ const Navbar = () => {
       <div className="flex space-x-4 font-medium">
         {user ? ( // Check if user exists
           <>
-            <a href="/profile" className="text-blue-900 mt-2" >Profile</a>
+            <a href="/profile" className="text-blue-900 mt-2">
+              Profile
+            </a>
             <span className="text-blue-900 mt-2">{user.firstname}</span>
             <Button
               className="bg-transparent text-red-700 hover:text-white py-2 px-4 rounded hover:bg-red-700 border border-red-700"
