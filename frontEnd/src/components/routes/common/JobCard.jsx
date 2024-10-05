@@ -78,6 +78,7 @@ export function JobCard({
                 </p>
               </div>
               <div className="flex items-center space-x-2 mt-2 sm:mt-0">
+                {/* View Listing Button */}
                 <Button onClick={toggleExpand} variant="outline" size="sm">
                   {isExpanded ? (
                     <>
@@ -91,6 +92,18 @@ export function JobCard({
                     </>
                   )}
                 </Button>
+
+                {/* Generate Cover Letter Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="bg-white border-indigo-400 hover:bg-hover hover:text-white"
+                  onClick={() => console.log("Generate Cover Letter clicked")}
+                >
+                  Generate Cover Letter
+                </Button>
+
+                {/* Apply Now Button */}
                 <Button asChild className="bg-primary hover:bg-hover" size="sm">
                   <Link to={`${job.url}`} target="_blank">
                     Apply Now
