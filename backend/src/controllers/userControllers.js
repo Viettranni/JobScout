@@ -238,7 +238,7 @@ exports.registerUser = async (req, res) => {
     const token = jwt.sign(
       { id: newUser._id, firstname: newUser.firstname },
       process.env.JWT_SECRET,
-      { expiresIn: "30m" }
+      { expiresIn: "1m" }
     );
 
     res.status(201).json({ message: "User created successfully!", token }); // Sending the Token to the client
@@ -261,7 +261,7 @@ exports.loginUser = async (req, res) => {
         role: loggedInUser.role,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "30m" }
+      { expiresIn: "1m" }
     );
 
     res.status(200).json({
@@ -288,25 +288,26 @@ exports.userData = async (req, res) => {
     const user = await User.findById(userId);
 
     console.log(user);
-    
 
     if (!user) {
       console.log("User hasnt been found");
-      
-      return res.status(404).json({ message: 'User not found' });
+
+      return res.status(404).json({ message: "User not found" });
     }
 
     // Merge existing userData with new data
     user.userData = {
       ...user.userData, // Preserve existing userData
-      ...userData,      // Update/overwrite with new data
+      ...userData, // Update/overwrite with new data
     };
 
     await user.save(); // Save the updated user document
 
-    return res.status(200).json({ message: 'User data updated successfully', user });
+    return res
+      .status(200)
+      .json({ message: "User data updated successfully", user });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
