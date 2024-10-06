@@ -23,4 +23,6 @@ router.delete(
 // Fetch all saved jobs (favourites) for the authenticated user
 router.get("/favourites", authMiddleware, userController.getUserWithFavourites);
 
+router.post("/userData", authMiddleware, userController.userData);
+
 module.exports = router;

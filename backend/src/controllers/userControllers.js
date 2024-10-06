@@ -26,10 +26,10 @@ exports.getUserById = async (req, res) => {
     }
 
     // Return only the necessary fields
-    const { _id, firstname, lastname, email, favourites, role } = user;
+    const { _id, firstname, lastname, email, favourites, role, userData } = user;
     res
       .status(200)
-      .json({ id: _id, firstname, lastname, email, favourites, role });
+      .json({ id: _id, firstname, lastname, email, favourites, role, userData });
   } catch (err) {
     res
       .status(500)
@@ -274,5 +274,40 @@ exports.loginUser = async (req, res) => {
   } catch (error) {
     console.error("Error in loginUser:", error.message); // Log error message
     res.status(400).json({ error: error.message });
+  }
+};
+
+exports.userData = async (req, res) => {
+  const { userData } = req.body;
+
+  try {
+    // Assuming you have user ID from authentication
+    const userId = req.user.id;
+
+    // Find the user by ID
+    const user = await User.findById(userId);
+
+    console.log(user);
+
+    if (!user) {
+      console.log("User hasnt been found");
+
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Merge existing userData with new data
+    user.userData = {
+      ...user.userData, // Preserve existing userData
+      ...userData, // Update/overwrite with new data
+    };
+
+    await user.save(); // Save the updated user document
+
+    return res
+      .status(200)
+      .json({ message: "User data updated successfully", user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
   }
 };

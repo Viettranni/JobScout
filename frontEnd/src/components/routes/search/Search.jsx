@@ -6,6 +6,7 @@ import { DropdownHandler } from "./DropdownHandler";
 import { useLocation } from "react-router-dom";
 import { dropdownData } from "../../../mockData/mockDropdownData";
 import { useEffect } from "react";
+import ScrollToTop from "../common/ScrollToTop";
 
 export default function JobSearch() {
   useEffect(() => {
@@ -26,15 +27,20 @@ export default function JobSearch() {
   } = useJobSearch();
 
   const location = useLocation();
-  const query = new URLSearchParams(location.search).get("q") || "";
+  const params = new URLSearchParams(location.search);
+  const searchTerm = params.get("searchTerm") || "";
+  const city = params.get("city") || "";
 
   return (
     <div className="container mx-auto px-4 py-8 lg:w-4/5">
-      <SearchBar />
+      <ScrollToTop trigger={currentPage} />
+      <SearchBar initialSearchTerm={searchTerm} />
       <div className="flex flex-wrap mb-6 gap-2">
         <div className="mr-5">
-          <h2 className="text-xl font-semibold">{totalJobs} Jobs results</h2>
-          <p className="text-l font-semibold">for: {query}</p>
+          <h2 className="text-xl font-semibold">{totalJobs} Jobs Results</h2>
+          <p className="text-l font-semibold">
+            for: {searchTerm} {city && `in ${city}`}
+          </p>
         </div>
         {/* Pass setSelectedLogo to DropdownHandler */}
         <DropdownHandler

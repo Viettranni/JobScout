@@ -12,37 +12,35 @@ export function useJobSearch() {
   const [selectedLogo, setSelectedLogo] = useState("All");
 
   const location = useLocation();
-
   const searchParams = new URLSearchParams(location.search);
   const searchTerm = searchParams.get("searchTerm") || "";
   const city = searchParams.get("city") || "";
 
   useEffect(() => {
     const fetchJobs = async () => {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        console.error("No token found, user is not authenticated.");
-        return;
-      }
-
       try {
         const jobResponse = await axios.get(
           `http://localhost:4000/api/jobs?page=${currentPage}&limit=10&searchTerm=${searchTerm}&city=${city}&logo=${
             selectedLogo !== "All" ? selectedLogo : ""
-          }`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          }`
         );
 
         setJobListings(jobResponse.data.jobs);
         setTotalPages(jobResponse.data.totalPages);
         setTotalJobs(jobResponse.data.totalJobs);
+      } catch (error) {
+        console.error("Failed to fetch jobs:", error);
+      }
+    };
 
-        // Fetch saved jobs only once
+    const fetchSavedJobs = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        // User is not authenticated, skip fetching saved jobs
+        return;
+      }
+
+      try {
         const savedResponse = await axios.get(
           `http://localhost:4000/api/users/favourites`,
           {
@@ -68,11 +66,12 @@ export function useJobSearch() {
           );
         }
       } catch (error) {
-        console.error("Failed to fetch jobs or saved jobs:", error);
+        console.error("Failed to fetch saved jobs:", error);
       }
     };
 
     fetchJobs();
+    fetchSavedJobs();
   }, [currentPage, searchTerm, city, selectedLogo]);
 
   const toggleJobExpansion = (jobId) => {

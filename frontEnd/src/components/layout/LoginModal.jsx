@@ -24,10 +24,33 @@ const ModalContext = createContext({
 // Custom hook to use the modal context
 const useModalContext = () => useContext(ModalContext);
 
+// Function to calculate password strength based on criteria
+const calculatePasswordStrength = (password) => {
+  let strength = 0;
+
+  // Check for length of at least 6 characters
+  if (password.length >= 6) strength += 1;
+
+  // Check for the presence of uppercase letter
+  if (/[A-Z]/.test(password)) strength += 1;
+
+  // Check for the presence of lowercase letter
+  if (/[a-z]/.test(password)) strength += 1;
+
+  // Check for the presence of a number
+  if (/[0-9]/.test(password)) strength += 1;
+
+  // Check for the presence of a special character
+  if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+
+  return strength;
+};
+
 // Modal content component
 function ModalContent() {
   const navigate = useNavigate();
   const { setIsOpen } = useModalContext();
+
   const [formData, setFormData] = useState({
     firstname: "",
     lastname: "",
@@ -41,10 +64,17 @@ function ModalContent() {
     password: "",
   });
 
+  const [passwordStrength, setPasswordStrength] = useState(0); // Password strength state
   const [error, setError] = useState("");
 
   const handleRegisterChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+
+    // Update password strength only when password field changes
+    if (e.target.name === "password") {
+      const strength = calculatePasswordStrength(e.target.value); // Calculate password strength
+      setPasswordStrength(strength);
+    }
   };
 
   const handleLoginChange = (e) => {
@@ -61,12 +91,11 @@ function ModalContent() {
     }
 
     try {
-      // Instead of Fetch, Axios automatically converts the JSON responses, saving the need to call json() separately
       const response = await axios.post(
         "http://localhost:4000/api/users/register",
         formData
       );
-      alert(response.data.message); // Show success message
+      alert(response.data.message);
       const { token } = response.data;
 
       localStorage.setItem("token", token);
@@ -85,12 +114,10 @@ function ModalContent() {
       });
     } catch (error) {
       console.error("Registration error:", error);
-
-      // Ensure the response and data exist before trying to alert
       if (error.response && error.response.data && error.response.data.error) {
-        setError(error.response.data.error); // Show error message from server
+        setError(error.response.data.error);
       } else {
-        setError("An unexpected error occurred."); // Fallback message for other errors
+        setError("An unexpected error occurred.");
       }
     }
   };
@@ -103,8 +130,6 @@ function ModalContent() {
         "http://localhost:4000/api/users/login",
         loginData
       );
-      console.log(response);
-
       const { token } = response.data;
 
       localStorage.setItem("token", token);
@@ -112,20 +137,18 @@ function ModalContent() {
       navigate("/");
       window.location.reload();
 
-      setIsOpen(false); // Close modal on successful login
-      setError(""); // Reset error message
+      setIsOpen(false);
+      setError("");
       setLoginData({
         email: "",
         password: "",
-      }); // Clear login form after success
-
-      // alert(response.data.message); // Show success message
+      });
     } catch (error) {
       console.error("Full error:", error);
       if (error.response && error.response.data && error.response.data.error) {
-        setError(error.response.data.error); // Set error message from backend
+        setError(error.response.data.error);
       } else {
-        setError("An unexpected error occurred."); // Set fallback error
+        setError("An unexpected error occurred.");
       }
     }
   };
@@ -199,7 +222,7 @@ function ModalContent() {
                 type="text"
                 name="lastname"
                 onChange={handleRegisterChange}
-                placeholder="lastname"
+                placeholder="Lastname"
                 required
               />
             </div>
@@ -214,16 +237,54 @@ function ModalContent() {
                 required
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="register-password">Password</Label>
-              <Input
+            <div className="space-y-2 relative">
+              <Label htmlFor="register-email">Password</Label>
+              <input
                 id="register-password"
                 type="password"
                 name="password"
                 onChange={handleRegisterChange}
+                className="rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                placeholder="Password"
                 required
               />
+
+              {/* Password strength indicator */}
+              <div className="grid w-full h-1 grid-cols-12 gap-4 mt-3">
+                <div
+                  className={`h-full col-span-3 ${
+                    passwordStrength >= 2 ? "bg-green-500" : "bg-gray-200"
+                  } rounded`}
+                ></div>
+                <div
+                  className={`h-full col-span-3 ${
+                    passwordStrength >= 3 ? "bg-green-500" : "bg-gray-200"
+                  } rounded`}
+                ></div>
+                <div
+                  className={`h-full col-span-3 ${
+                    passwordStrength >= 4 ? "bg-green-500" : "bg-gray-200"
+                  } rounded`}
+                ></div>
+                <div
+                  className={`h-full col-span-3 ${
+                    passwordStrength === 5 ? "bg-green-500" : "bg-gray-200"
+                  } rounded`}
+                ></div>
+              </div>
+
+              {/* Password validation message */}
+              {formData.password && (
+                <div
+                  className={`mt-2 ${
+                    passwordStrength === 5 ? "text-green-500" : "text-red-500"
+                  }`}
+                >
+                  {passwordStrength === 5 ? "Strong password" : "Weak password"}
+                </div>
+              )}
             </div>
+
             <div className="space-y-2">
               <Label htmlFor="confirm-password">Confirm Password</Label>
               <Input

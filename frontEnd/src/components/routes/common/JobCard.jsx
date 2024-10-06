@@ -2,20 +2,20 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
-
 import {
   BookmarkIcon,
   MapPinIcon,
   ChevronDownIcon,
   ChevronUpIcon,
 } from "lucide-react";
-
 import indeedLogo from "../../../assets/indeed.png";
 import duunitoriLogo from "../../../assets/duunitori.png";
 import joblyLogo from "../../../assets/jobly.jpg";
 import oikotieLogo from "../../../assets/oikotie.png";
 import tePalvelutLogo from "../../../assets/tePalvelut.png";
 import defaultLogo from "../../../assets/default.png";
+
+import { useGenerateCoverLetter } from "@/components/hooks/useGenerateCoverLetter";
 
 // Fallback and dynamic logos
 const logos = {
@@ -24,7 +24,7 @@ const logos = {
   jobly: joblyLogo,
   oikotie: oikotieLogo,
   tePalvelut: tePalvelutLogo,
-  default: defaultLogo, // Default logo for fallback
+  default: defaultLogo,
 };
 
 export function JobCard({
@@ -34,8 +34,18 @@ export function JobCard({
   isExpanded,
   toggleExpand,
 }) {
+  const { isGenerating, errorMessage, generateCoverLetter } =
+    useGenerateCoverLetter(); // Custom Hook
   // Determine which logo to show based on job.logo or fallback to default
   const logoPath = logos[job.logo] || logos.default;
+
+  // Check if user is authenticated
+  const token = localStorage.getItem("token");
+  const isAuthenticated = !!token;
+
+  const text = job.description
+
+  
 
   return (
     <Card>
@@ -46,7 +56,7 @@ export function JobCard({
             alt={`${job.company} logo`}
             className="w-12 h-12 mr-4 mt-1 rounded-sm"
             onError={(e) => {
-              e.target.onerror = null; // Prevent infinite loop if the default image also fails
+              e.target.onerror = null;
               e.target.src = logos.default; // Fallback to default logo
             }}
           />
@@ -56,35 +66,27 @@ export function JobCard({
                 <h3 className="text-lg font-semibold">{job.title}</h3>
                 <p className="text-muted-foreground">{job.company}</p>
               </div>
-              <Button
-                variant="ghost"
-                className="p-2"
-                onClick={toggleSave}
-                aria-label={isSaved ? "Unsave job" : "Save job"}
-              >
-                <BookmarkIcon
-                  className={`w-5 h-5 ${isSaved ? "fill-primary" : ""}`}
-                />
-              </Button>
+              {isAuthenticated && (
+                <Button
+                  variant="ghost"
+                  className="p-2"
+                  onClick={toggleSave}
+                  aria-label={isSaved ? "Unsave job" : "Save job"}
+                >
+                  <BookmarkIcon
+                    className={`w-5 h-5 ${isSaved ? "fill-primary" : ""}`}
+                  />
+                </Button>
+              )}
             </div>
             <div className="flex flex-wrap items-center justify-between mt-2">
               <div className="flex flex-wrap items-center">
                 <p className="text-sm text-muted-foreground flex items-center mr-4">
                   <MapPinIcon className="w-4 h-4 mr-1" /> {job.location}
                 </p>
-                <div className="flex flex-wrap gap-2">
-                  {Array.isArray(job.types) && job.types.length > 0 ? (
-                    job.types.map((type, index) => (
-                      <Badge key={index} variant="secondary">
-                        {type}
-                      </Badge>
-                    ))
-                  ) : (
-                    <p>No Types</p> // Fallback if types array is undefined or empty
-                  )}
-                </div>
               </div>
               <div className="flex items-center space-x-2 mt-2 sm:mt-0">
+                {/* View Listing Button */}
                 <Button onClick={toggleExpand} variant="outline" size="sm">
                   {isExpanded ? (
                     <>
@@ -98,6 +100,19 @@ export function JobCard({
                     </>
                   )}
                 </Button>
+
+                {/* Generate Cover Letter Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="bg-white border-indigo-400 hover:bg-hover hover:text-white"
+                  onClick={() => generateCoverLetter(text)} // Pass job description to the hook
+                  disabled={isGenerating} // Disable button while generating
+                >
+                  {isGenerating ? "Generating..." : "Generate Cover Letter"}
+                </Button>
+
+                {/* Apply Now Button */}
                 <Button asChild className="bg-primary hover:bg-hover" size="sm">
                   <Link to={`${job.url}`} target="_blank">
                     Apply Now
