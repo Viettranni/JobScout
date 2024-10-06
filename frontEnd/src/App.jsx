@@ -61,13 +61,13 @@ const AnimatedRoutes = () => {
               </PageTransition>
             }
           />
-          <Route 
-          path="/cover-letter" 
-          element={
-            <PageTransition>
-              <CoverLetterDisplay />
-            </PageTransition>
-          }
+          <Route
+            path="/cover-letter"
+            element={
+              <PageTransition>
+                <CoverLetterDisplay />
+              </PageTransition>
+            }
           />
           <Route
             path="*"
@@ -78,7 +78,6 @@ const AnimatedRoutes = () => {
             }
           />
         </Route>
-        
       </Routes>
     </AnimatePresence>
   );

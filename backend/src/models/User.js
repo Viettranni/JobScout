@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema(
       default: "user", // Default role for all new users
     },
     userData: {
-      name: { type: String, required: false },
+      phone: { type: String, required: false },
       skills: [{ type: String, required: false }],
       education: { type: String, required: false },
       experience: { type: String, required: false },
