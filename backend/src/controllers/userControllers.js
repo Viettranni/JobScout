@@ -288,25 +288,26 @@ exports.userData = async (req, res) => {
     const user = await User.findById(userId);
 
     console.log(user);
-    
 
     if (!user) {
       console.log("User hasnt been found");
-      
-      return res.status(404).json({ message: 'User not found' });
+
+      return res.status(404).json({ message: "User not found" });
     }
 
     // Merge existing userData with new data
     user.userData = {
       ...user.userData, // Preserve existing userData
-      ...userData,      // Update/overwrite with new data
+      ...userData, // Update/overwrite with new data
     };
 
     await user.save(); // Save the updated user document
 
-    return res.status(200).json({ message: 'User data updated successfully', user });
+    return res
+      .status(200)
+      .json({ message: "User data updated successfully", user });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };

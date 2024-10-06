@@ -1,6 +1,9 @@
 import React from "react";
 import { FaLinkedin, FaGithub } from "react-icons/fa";
-import defaultImage from "../../../assets/profile.png";
+import avatarSaed from "../../../assets/avatar1.png";
+import avatarViet from "../../../assets/avatar2.png";
+import avatarPavel from "../../../assets/avatar3.png";
+import avatarIvan from "../../../assets/avatar7.png";
 
 export default function Component() {
   const teamMembers = [
@@ -10,7 +13,7 @@ export default function Component() {
       linkedin: "#",
       github: "#",
       color: "bg-blue-500",
-      image: defaultImage,
+      image: avatarSaed,
     },
     {
       name: "Ivan Budanov",
@@ -18,7 +21,7 @@ export default function Component() {
       linkedin: "#",
       github: "https://github.com/BudaOP",
       color: "bg-purple-500",
-      image: defaultImage,
+      image: avatarIvan,
     },
     {
       name: "Viet Tran",
@@ -26,7 +29,7 @@ export default function Component() {
       linkedin: "#",
       github: "#",
       color: "bg-green-500",
-      image: defaultImage,
+      image: avatarViet,
     },
     {
       name: "Pavel Degterev",
@@ -34,7 +37,7 @@ export default function Component() {
       linkedin: "#",
       github: "#",
       color: "bg-red-500",
-      image: defaultImage,
+      image: avatarPavel,
     },
   ];
 
