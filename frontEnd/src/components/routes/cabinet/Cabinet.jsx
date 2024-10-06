@@ -4,6 +4,7 @@ import { Pagination } from "../common/Pagination";
 import { ProfileSection } from "./ProfileSection";
 import { useSavedJobs } from "../../hooks/useSavedJobs"; // Hook to fetch saved jobs
 import ScrollToTop from "../common/ScrollToTop";
+import EmptyState from "./EmptyState";
 
 export default function Cabinet() {
   const {
@@ -13,8 +14,8 @@ export default function Cabinet() {
     currentPage,
     totalPages,
     setCurrentPage,
-    toggleSaveJob, // Make sure this function is available in the hook
-  } = useSavedJobs(); // Ensure toggleSaveJob is returned from the hook
+    toggleSaveJob,
+  } = useSavedJobs();
 
   useEffect(() => {
     document.title = "Camp Locker";
@@ -31,28 +32,41 @@ export default function Cabinet() {
   return (
     <div className="container mx-auto px-4 py-8 lg:w-4/5">
       <ScrollToTop trigger={currentPage} />
+
       {/* Profile Section */}
       <ProfileSection />
 
-      {/* Saved Jobs Header */}
-      <h2 className="text-2xl font-bold mb-4">Saved Jobs</h2>
+      {/* Conditionally render the EmptyState if no saved jobs */}
+      {savedJobs.length === 0 ? (
+        <EmptyState
+          title="Your Cabinet is Empty"
+          message="You haven't saved any jobs yet. Start browsing jobs and save the ones that catch your interest!"
+          actionText="Browse Jobs"
+          onAction={() => (window.location.href = "/jobs")} // Redirect to job listings page
+        />
+      ) : (
+        <>
+          {/* Saved Jobs Header */}
+          <h2 className="text-2xl font-bold mb-4">Saved Jobs</h2>
 
-      {/* Job List Component */}
-      <JobList
-        jobs={savedJobs || []} // Pass the saved jobs to JobList
-        savedJobs={(savedJobs || []).reduce(
-          (acc, job) => ({ ...acc, [job._id]: true }),
-          {}
-        )} // Create a map of saved jobs
-        toggleSaveJob={toggleSaveJob} // Ensure this function is passed
-      />
+          {/* Job List Component */}
+          <JobList
+            jobs={savedJobs || []}
+            savedJobs={(savedJobs || []).reduce(
+              (acc, job) => ({ ...acc, [job._id]: true }),
+              {}
+            )}
+            toggleSaveJob={toggleSaveJob}
+          />
 
-      {/* Pagination Component */}
-      <Pagination
-        currentPage={currentPage} // Pass current page state
-        totalPages={totalPages} // Pass total pages calculated from the hook
-        setCurrentPage={setCurrentPage} // Set the current page
-      />
+          {/* Pagination Component */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            setCurrentPage={setCurrentPage}
+          />
+        </>
+      )}
     </div>
   );
 }
