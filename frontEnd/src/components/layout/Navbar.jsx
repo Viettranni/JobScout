@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import PageLinks from "./PageLinks";
 import { Button } from "../ui/button";
 import LoginModal from "./LoginModal";
-import { jwtDecode } from "jwt-decode"; // Make sure it's imported correctly
+import { jwtDecode } from "jwt-decode";
 
 const Navbar = () => {
   const [user, setUser] = useState(null);

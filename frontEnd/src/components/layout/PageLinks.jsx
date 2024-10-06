@@ -1,5 +1,6 @@
 import PageLink from "./PageLink";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 const pageLinks = [
   { id: 1, href: "/", text: "Home" },
@@ -23,27 +24,40 @@ const PageLinks = ({
   const searchButtonClass =
     "inline-flex items-center justify-center text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br shadow-lg shadow-blue-500/50 font-medium rounded-lg text-lg px-5 py-2";
 
+  // State to track if the user is authenticated
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    // Check if the user is authenticated by checking the token in localStorage
+    const token = localStorage.getItem("token");
+    setIsAuthenticated(!!token); // Convert the token to boolean to indicate authentication status
+  }, []);
+
   return (
     <div className={`flex items-center ${parentClass}`}>
-      {pageLinks.map((link) => {
-        const isSearchLink = link.text === "Search"; // Check if the current link is Search
+      {pageLinks
+        .filter((link) => link.text !== "Cabinet" || isAuthenticated) // Filter out Cabinet link if user is not authenticated
+        .map((link) => {
+          const isSearchLink = link.text === "Search"; // Check if the current link is Search
 
-        // Apply special class only for the "Search" button when isSearchButtonSpecial is true
-        const appliedClass =
-          isSearchLink && isSearchButtonSpecial ? searchButtonClass : itemClass;
+          // Apply special class only for the "Search" button when isSearchButtonSpecial is true
+          const appliedClass =
+            isSearchLink && isSearchButtonSpecial
+              ? searchButtonClass
+              : itemClass;
 
-        return (
-          <motion.div
-            key={link.id}
-            variants={linkAnimation}
-            initial="rest"
-            whileHover="hover"
-            className="inline-block"
-          >
-            <PageLink link={link} itemClass={appliedClass} />
-          </motion.div>
-        );
-      })}
+          return (
+            <motion.div
+              key={link.id}
+              variants={linkAnimation}
+              initial="rest"
+              whileHover="hover"
+              className="inline-block"
+            >
+              <PageLink link={link} itemClass={appliedClass} />
+            </motion.div>
+          );
+        })}
     </div>
   );
 };

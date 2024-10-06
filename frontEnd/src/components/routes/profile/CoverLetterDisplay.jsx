@@ -18,31 +18,31 @@ const CoverLetterDisplay = () => {
 
   const handleSaveAsPDF = () => {
     const doc = new jsPDF();
-    const pageHeight = doc.internal.pageSize.height; 
-    const margin = 10; 
-    const fontSize = 12; 
+    const pageHeight = doc.internal.pageSize.height;
+    const margin = 10;
+    const fontSize = 12;
     const lineHeight = 8;
-    const textWidth = 260; 
-    const textLines = doc.splitTextToSize(coverLetter, textWidth); 
+    const textWidth = 260;
+    const textLines = doc.splitTextToSize(coverLetter, textWidth);
     let y = margin;
-  
+
     // Set font and size
-    doc.setFont("Times", "normal"); 
-    doc.setFontSize(fontSize); 
-  
+    doc.setFont("Times", "normal");
+    doc.setFontSize(fontSize);
+
     // Add lines to the PDF
     textLines.forEach((line) => {
-      if (y + lineHeight > pageHeight - margin) { // Check if the next line would overflow the page
+      if (y + lineHeight > pageHeight - margin) {
+        // Check if the next line would overflow the page
         doc.addPage();
         y = margin; // Reset y position to the top for the new page
       }
       doc.text(line, margin, y); // Use margin for x position
       y += lineHeight; // Move down for the next line, adjusted for line height
     });
-  
+
     doc.save("cover_letter.pdf");
   };
-  
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
