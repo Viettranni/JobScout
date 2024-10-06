@@ -238,7 +238,7 @@ exports.registerUser = async (req, res) => {
     const token = jwt.sign(
       { id: newUser._id, firstname: newUser.firstname },
       process.env.JWT_SECRET,
-      { expiresIn: "1m" }
+      { expiresIn: "30m" }
     );
 
     res.status(201).json({ message: "User created successfully!", token }); // Sending the Token to the client
@@ -261,7 +261,7 @@ exports.loginUser = async (req, res) => {
         role: loggedInUser.role,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "1m" }
+      { expiresIn: "30m" }
     );
 
     res.status(200).json({
