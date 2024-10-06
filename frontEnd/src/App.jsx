@@ -1,4 +1,10 @@
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import {
+  BrowserRouter,
+  Route,
+  Routes,
+  useLocation,
+  Navigate,
+} from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import ScrollToTop from "./components/routes/common/ScrollToTop";
 import PageTransition from "./transition";
@@ -13,6 +19,9 @@ import About from "./components/routes/about/About"; // in own dir
 import Profile from "./components/routes/profile/Profile";
 import NotFound from "./components/routes/common/NotFound";
 import CoverLetterDisplay from "./components/routes/profile/CoverLetterDisplay";
+
+import { ProtectedRoute } from "./components/context/ProtectedRoute";
+import { AuthProvider } from "./components/context/contextProvider";
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -40,9 +49,11 @@ const AnimatedRoutes = () => {
           <Route
             path="cabinet"
             element={
-              <PageTransition>
-                <Cabinet />
-              </PageTransition>
+              <ProtectedRoute>
+                <PageTransition>
+                  <Cabinet />
+                </PageTransition>
+              </ProtectedRoute>
             }
           />
           <Route
@@ -56,27 +67,32 @@ const AnimatedRoutes = () => {
           <Route
             path="profile"
             element={
-              <PageTransition>
-                <Profile />
-              </PageTransition>
+              <ProtectedRoute>
+                <PageTransition>
+                  <Profile />
+                </PageTransition>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/cover-letter"
             element={
-              <PageTransition>
-                <CoverLetterDisplay />
-              </PageTransition>
+              <ProtectedRoute>
+                <PageTransition>
+                  <CoverLetterDisplay />
+                </PageTransition>
+              </ProtectedRoute>
             }
           />
           <Route
-            path="*"
+            path="/not-found"
             element={
               <PageTransition>
                 <NotFound />
               </PageTransition>
             }
           />
+          <Route path="*" element={<Navigate to="/not-found" replace />} />
         </Route>
       </Routes>
     </AnimatePresence>
@@ -85,10 +101,12 @@ const AnimatedRoutes = () => {
 
 function App() {
   return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <AnimatedRoutes />
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <ScrollToTop />
+        <AnimatedRoutes />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

@@ -2,50 +2,11 @@ import React, { useEffect, useState } from "react";
 import PageLinks from "./PageLinks";
 import { Button } from "../ui/button";
 import LoginModal from "./LoginModal";
-import { jwtDecode } from "jwt-decode";
+import useAutoLogout from "../context/useAutoLogout";
 
 const Navbar = () => {
-  const [user, setUser] = useState(null);
-  const [isSessionExpired, setIsSessionExpired] = useState(false); // State to manage session expiration modal visibility
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      try {
-        const decodedToken = jwtDecode(token);
-        setUser({ firstname: decodedToken.firstname });
-
-        // Check if the token is expired
-        const currentTime = Date.now();
-        if (decodedToken.exp * 1000 <= currentTime) {
-          handleLogout();
-        } else {
-          // Set up a timer to show the modal when the token expires
-          const timeLeft = decodedToken.exp * 1000 - currentTime;
-
-          setTimeout(() => {
-            setIsSessionExpired(true); // Show session expiration modal when token expires
-          }, timeLeft);
-        }
-      } catch (error) {
-        console.error("Token decoding failed:", error);
-      }
-    }
-  }, []); // Run this effect once on component mount
-
-  // Logout logic
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
-    window.location.reload();
-  };
-
-  // Handle session expired modal button click
-  const handleSessionExpired = () => {
-    setIsSessionExpired(false);
-    handleLogout();
-  };
+  const { user, isSessionExpired, handleLogout, handleSessionExpired } =
+    useAutoLogout();
 
   return (
     <>

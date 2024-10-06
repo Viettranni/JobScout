@@ -26,10 +26,19 @@ exports.getUserById = async (req, res) => {
     }
 
     // Return only the necessary fields
-    const { _id, firstname, lastname, email, favourites, role, userData } = user;
+    const { _id, firstname, lastname, email, favourites, role, userData } =
+      user;
     res
       .status(200)
-      .json({ id: _id, firstname, lastname, email, favourites, role, userData });
+      .json({
+        id: _id,
+        firstname,
+        lastname,
+        email,
+        favourites,
+        role,
+        userData,
+      });
   } catch (err) {
     res
       .status(500)

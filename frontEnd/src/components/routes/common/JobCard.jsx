@@ -43,9 +43,7 @@ export function JobCard({
   const token = localStorage.getItem("token");
   const isAuthenticated = !!token;
 
-  const text = job.description
-
-  
+  const text = job.description;
 
   return (
     <Card>
@@ -102,15 +100,17 @@ export function JobCard({
                 </Button>
 
                 {/* Generate Cover Letter Button */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="bg-white border-indigo-400 hover:bg-hover hover:text-white"
-                  onClick={() => generateCoverLetter(text)} // Pass job description to the hook
-                  disabled={isGenerating} // Disable button while generating
-                >
-                  {isGenerating ? "Generating..." : "Generate Cover Letter"}
-                </Button>
+                {isAuthenticated && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-white border-indigo-400 hover:bg-hover hover:text-white"
+                    onClick={() => generateCoverLetter(text)} // Pass job description to the hook
+                    disabled={isGenerating} // Disable button while generating
+                  >
+                    {isGenerating ? "Generating..." : "Generate Cover Letter"}
+                  </Button>
+                )}
 
                 {/* Apply Now Button */}
                 <Button asChild className="bg-primary hover:bg-hover" size="sm">
