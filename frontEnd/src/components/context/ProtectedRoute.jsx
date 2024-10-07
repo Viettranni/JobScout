@@ -1,7 +1,6 @@
 import { useAuth } from "./contextProvider";
 import { Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 
 export function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuth();
