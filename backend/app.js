@@ -16,15 +16,15 @@ const {
 const statusMonitor = require("express-status-monitor");
 const morgan = require("morgan");
 const swaggerUi = require("swagger-ui-express");
-const fs = require("fs");
 const YAML = require("yamljs");
 const swaggerDocument = YAML.load("./swagger/swagger.yaml"); // Load the YAML file
 
 const app = express();
 
+// CORS configuration
 app.use(
   cors({
-    origin: "http://localhost:5173", // Allowing the Frontend to interact with backend
+    origin: process.env.CORS_ORIGIN || "http://localhost:5173", // Allowing the Frontend to interact with backend
   })
 );
 

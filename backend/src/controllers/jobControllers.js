@@ -8,7 +8,6 @@ const tePalvelut = require("../scrapers/tePalvelut");
 
 const mongoose = require("mongoose");
 
-
 // Scrape jobs from all the websites
 exports.scrapeJobs = async (req, res) => {
   const { page, city, searchTerm } = req.query;
