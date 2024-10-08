@@ -10,12 +10,13 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     favourites: [{ type: mongoose.Schema.Types.ObjectId, ref: "JobPost" }],
-    appliedJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: "JobPost" }], // Array of JobPost references
+    appliedJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: "JobPost" }],
     role: {
       type: String,
       enum: ["user", "admin", "moderator"],
-      default: "user", // Default role for all new users
+      default: "user",
     },
+    profileImage: { type: String, default: "" }, // Add this field for the profile image
     userData: {
       skills: [{ type: String, required: false }],
       education: { type: String, required: false },

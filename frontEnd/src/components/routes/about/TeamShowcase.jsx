@@ -1,9 +1,9 @@
 import React from "react";
 import { FaLinkedin, FaGithub } from "react-icons/fa";
-import avatarSaed from "../../../assets/avatar1.png";
-import avatarViet from "../../../assets/avatar2.png";
-import avatarPavel from "../../../assets/avatar3.png";
-import avatarIvan from "../../../assets/avatar7.png";
+import avatarSaed from "../../../assets/default.png";
+import avatarViet from "../../../assets/default.png";
+import avatarPavel from "../../../assets/default.png";
+import avatarIvan from "../../../assets/default.png";
 
 export default function Component() {
   const teamMembers = [

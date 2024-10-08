@@ -11,26 +11,16 @@ import {
 } from "@/components/ui/card";
 import axios from "axios";
 
-// Avatar imports
-import avatar1 from "../../../assets/avatar1.png";
-import avatar2 from "../../../assets/avatar2.png";
-import avatar3 from "../../../assets/avatar3.png";
-import avatar4 from "../../../assets/avatar4.png";
-import avatar5 from "../../../assets/avatar5.png";
-import avatar6 from "../../../assets/avatar6.png";
-import avatar7 from "../../../assets/avatar7.png";
-import avatar8 from "../../../assets/avatar8.png";
-
-// Array of default avatar images
+// Array of default avatar image URLs
 const defaultAvatars = [
-  avatar1,
-  avatar2,
-  avatar3,
-  avatar4,
-  avatar5,
-  avatar6,
-  avatar7,
-  avatar8,
+  "/assets/avatars/avatar1.png",
+  "/assets/avatars/avatar2.png",
+  "/assets/avatars/avatar3.png",
+  "/assets/avatars/avatar4.png",
+  "/assets/avatars/avatar5.png",
+  "/assets/avatars/avatar6.png",
+  "/assets/avatars/avatar7.png",
+  "/assets/avatars/avatar8.png",
 ];
 
 export default function ProfilePage() {
@@ -38,7 +28,7 @@ export default function ProfilePage() {
     firstname: "",
     lastname: "",
     email: "",
-    avatar: defaultAvatars[0],
+    avatar: defaultAvatars[0], // Default avatar if no avatar selected/uploaded
   });
 
   const [formData, setFormData] = useState({
@@ -49,32 +39,43 @@ export default function ProfilePage() {
 
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
+  const [updateMessage, setUpdateMessage] = useState(""); // New state for update messages
   const fileInputRef = useRef(null);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      const token = localStorage.getItem("token");
-      try {
-        const response = await axios.get(
-          "http://localhost:4000/api/users/profile", // Fetch user profile
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        if (response.status === 200) {
-          const { firstname, lastname, email, userData } = response.data;
-          setProfile({ firstname, lastname, email, avatar: defaultAvatars[0] });
-          setFormData({
-            skills: userData.skills.join(", "),
-            experience: userData.experience,
-            education: userData.education,
-          });
+  const fetchProfile = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.get(
+        "http://localhost:4000/api/users/profile", // Fetch user profile
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
-      } catch (error) {
-        console.error("Error fetching profile data:", error);
-      }
-    };
+      );
+      if (response.status === 200) {
+        const { firstname, lastname, email, profileImage, userData } =
+          response.data;
 
+        // Set avatar: if profileImage exists, use it; otherwise use the default
+        setProfile({
+          firstname,
+          lastname,
+          email,
+          avatar: profileImage
+            ? `http://localhost:4000${profileImage}`
+            : defaultAvatars[0], // Ensure URL points to server
+        });
+        setFormData({
+          skills: userData.skills.join(", "),
+          experience: userData.experience,
+          education: userData.education,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching profile data:", error);
+    }
+  };
+
+  useEffect(() => {
     fetchProfile();
   }, []);
 
@@ -86,23 +87,82 @@ export default function ProfilePage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleAvatarChange = (newAvatar) => {
-    setProfile({ ...profile, avatar: newAvatar });
-    setShowAvatarSelector(false);
-  };
+  const handleAvatarChange = async (newAvatar) => {
+    setProfile({ ...profile, avatar: newAvatar }); // Change avatar in state immediately
 
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        handleAvatarChange(reader.result);
-      };
-      reader.readAsDataURL(file);
+    // API call to update avatar
+    const payload = {
+      profileImage: newAvatar,
+    };
+
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.patch(
+        "http://localhost:4000/api/users/profile",
+        payload,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.status === 200) {
+        setUpdateMessage("Profile picture updated successfully!"); // Show confirmation message
+        setTimeout(() => setUpdateMessage(""), 3000); // Clear message after 3 seconds
+
+        // Fetch the updated profile to ensure that everything is consistent with the server
+        await fetchProfile();
+      } else {
+        console.error("Profile picture update failed.");
+      }
+    } catch (error) {
+      console.error("Error updating profile picture:", error);
     }
+
+    setShowAvatarSelector(false); // Close avatar selector after selection
   };
 
-  // Updated handleSubmit to include profile data and userData
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append("avatar", file); // 'avatar' matches the multer fieldname
+
+    // Show the image preview immediately using URL.createObjectURL
+    const previewURL = URL.createObjectURL(file);
+    setProfile({ ...profile, avatar: previewURL });
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        "http://localhost:4000/api/users/upload-avatar",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setProfile({ ...profile, avatar: response.data.profileImage });
+        setUpdateMessage("Profile picture updated successfully!"); // Show confirmation message
+        setTimeout(() => setUpdateMessage(""), 3000); // Clear message after 3 seconds
+
+        // Fetch the updated profile to ensure consistency with the server
+        await fetchProfile();
+
+        // Close avatar selector after the successful upload
+        setShowAvatarSelector(false);
+      }
+      console.log("File upload response:", response.data);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+
+    // Reset the file input (optional)
+    fileInputRef.current.value = "";
+  };
+
   const handleSubmit = async (e) => {
     if (e && e.preventDefault) {
       e.preventDefault(); // Only call preventDefault if there's an event
@@ -112,6 +172,7 @@ export default function ProfilePage() {
       firstname: profile.firstname,
       lastname: profile.lastname,
       email: profile.email,
+      profileImage: profile.avatar, // Save the selected or uploaded avatar
       userData: {
         skills: formData.skills.split(",").map((skill) => skill.trim()),
         experience: formData.experience,
@@ -122,7 +183,7 @@ export default function ProfilePage() {
     const token = localStorage.getItem("token");
     try {
       const response = await axios.patch(
-        "http://localhost:4000/api/users/profile", // Adjust the URL to your backend endpoint
+        "http://localhost:4000/api/users/profile",
         payload,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -138,6 +199,8 @@ export default function ProfilePage() {
           email: response.data.email,
         });
         setIsEditingProfile(false); // Stop editing mode after successful update
+        setUpdateMessage("Profile updated successfully!"); // Show confirmation message
+        setTimeout(() => setUpdateMessage(""), 3000); // Clear message after 3 seconds
       } else {
         console.error("Profile update failed.");
       }
@@ -201,6 +264,9 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 )}
+                {updateMessage && (
+                  <p className="text-green-500 text-sm">{updateMessage}</p>
+                )}
                 {isEditingProfile ? (
                   <>
                     <Input
@@ -240,7 +306,7 @@ export default function ProfilePage() {
                 className="hover:bg-hover"
                 onClick={() => {
                   if (isEditingProfile) {
-                    handleSubmit(); // Call handleSubmit  without an event object
+                    handleSubmit(); // Call handleSubmit without an event object
                   } else {
                     setIsEditingProfile(true); // Enable edit mode
                   }

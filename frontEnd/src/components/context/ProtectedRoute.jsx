@@ -12,7 +12,8 @@ export function ProtectedRoute({ children }) {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      toast.error("Please log in or register to access this page.");
+      // toast.error("Please log in or register to access this page.");
+      console.error("Please log in or register to access this page.");
     }
 
     // Simulate a delay for token checking to avoid premature redirect

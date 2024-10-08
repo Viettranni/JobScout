@@ -2,15 +2,19 @@ const User = require("../models/User");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 
+// For multer (changing profile picture)
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+
 // GET/ user by token id
 exports.getUserById = async (req, res) => {
-  // Ensure req.user exists after authMiddleware
   if (!req.user || !req.user.id) {
     return res
       .status(401)
       .json({ message: "Invalid user or user not authenticated" });
   }
-  const userId = req.user.id; // Extracted from JWT
+  const userId = req.user.id;
 
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     return res.status(400).json({ message: "Invalid user ID" });
@@ -18,27 +22,34 @@ exports.getUserById = async (req, res) => {
 
   try {
     const user = await User.findById(userId)
-      .populate("favourites") // Populate with necessary relations
-      .select("-password"); // Exclude the password field
+      .populate("favourites")
+      .select("-password");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Return only the necessary fields
-    const { _id, firstname, lastname, email, favourites, role, userData } =
-      user;
-    res
-      .status(200)
-      .json({
-        id: _id,
-        firstname,
-        lastname,
-        email,
-        favourites,
-        role,
-        userData,
-      });
+    const {
+      _id,
+      firstname,
+      lastname,
+      email,
+      profileImage,
+      favourites,
+      role,
+      userData,
+    } = user;
+
+    res.status(200).json({
+      id: _id,
+      firstname,
+      lastname,
+      email,
+      profileImage, // Add profileImage to response
+      favourites,
+      role,
+      userData,
+    });
   } catch (err) {
     res
       .status(500)
@@ -318,5 +329,44 @@ exports.userData = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Set up multer to store uploaded files in a directory
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Folder to store uploaded images
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    // Use path.extname to get the file extension and append it to the filename
+    const extension = path.extname(file.originalname); // Get the file extension
+    cb(null, file.fieldname + "-" + uniqueSuffix + extension); // Append extension
+  },
+});
+
+const upload = multer({ storage });
+
+// Handle avatar upload
+exports.uploadAvatar = async (req, res) => {
+  const userId = req.user.id;
+
+  // Check if a file was uploaded
+  if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+
+  // Log the file information
+  console.log("Uploaded file information:", req.file);
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Set profileImage to the uploaded file's path
+    user.profileImage = `/uploads/${req.file.filename}`; // Save the file path to profileImage field
+    await user.save();
+
+    res.status(200).json({ avatar: user.profileImage });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating avatar", error });
   }
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import profileImage from "../../../assets/profile.png";
+import defaultProfileImage from "../../../assets/profile.png";
 import axios from "axios";
 import { Link } from "react-router-dom"; // Make sure you are using React Router
 import Loading from "../common/Loading";
@@ -33,12 +33,17 @@ export function ProfileSection() {
     return <Loading message="Loading user data..." />;
   }
 
+  // Determine the profile image to use: user's uploaded image or the default one
+  const profileImageUrl = user.profileImage
+    ? `http://localhost:4000${user.profileImage}`
+    : defaultProfileImage;
+
   // Render user profile
   return (
     <div className="bg-blue-600 text-white p-6 rounded-lg mb-8">
       <div className="flex items-center">
         <img
-          src={profileImage}
+          src={profileImageUrl}
           alt={`${user.firstname} ${user.lastname}`}
           width={80}
           height={80}

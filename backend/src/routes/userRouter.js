@@ -4,6 +4,9 @@ const adminUserController = require("../controllers/adminUserControllers");
 const userController = require("../controllers/userControllers");
 const authMiddleware = require("../middleware/authMiddleware");
 
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
+
 // Unprotected Register and Login routes for all
 router.post("/register", userController.registerUser); // Registers new user
 router.post("/login", userController.loginUser); // Login user
@@ -24,5 +27,13 @@ router.delete(
 router.get("/favourites", authMiddleware, userController.getUserWithFavourites);
 
 router.post("/userData", authMiddleware, userController.userData);
+
+// Avatar upload route
+router.post(
+  "/upload-avatar",
+  authMiddleware,
+  upload.single("avatar"),
+  userController.uploadAvatar
+);
 
 module.exports = router;
