@@ -45,7 +45,6 @@ export default function ProfilePage() {
     skills: "",
     experience: "",
     education: "",
-    phone: "",
   });
 
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -63,10 +62,9 @@ export default function ProfilePage() {
           }
         );
         if (response.status === 200) {
-          const { firstname, lastname, email, phone, userData } = response.data;
+          const { firstname, lastname, email, userData } = response.data;
           setProfile({ firstname, lastname, email, avatar: defaultAvatars[0] });
           setFormData({
-            phone,
             skills: userData.skills.join(", "),
             experience: userData.experience,
             education: userData.education,
@@ -115,7 +113,6 @@ export default function ProfilePage() {
       lastname: profile.lastname,
       email: profile.email,
       userData: {
-        phone: formData.phone,
         skills: formData.skills.split(",").map((skill) => skill.trim()),
         experience: formData.experience,
         education: formData.education,
@@ -240,9 +237,10 @@ export default function ProfilePage() {
             </CardContent>
             <CardFooter className="flex justify-center">
               <Button
+                className="hover:bg-hover"
                 onClick={() => {
                   if (isEditingProfile) {
-                    handleSubmit(); // Call handleSubmit without an event object
+                    handleSubmit(); // Call handleSubmit  without an event object
                   } else {
                     setIsEditingProfile(true); // Enable edit mode
                   }
@@ -263,17 +261,6 @@ export default function ProfilePage() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number:
-                  </label>
-                  <Input
-                    name="phone"
-                    value={formData.phone || ""}
-                    onChange={handleFormChange}
-                    required
-                  />
-                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Skills (comma-separated):
@@ -305,11 +292,11 @@ export default function ProfilePage() {
                     value={formData.experience || ""}
                     onChange={handleFormChange}
                     required
-                    rows="5"
+                    rows="8"
                     className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:border-blue-500"
                   />
                 </div>
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full hover:bg-hover">
                   Submit Profile
                 </Button>
               </form>
