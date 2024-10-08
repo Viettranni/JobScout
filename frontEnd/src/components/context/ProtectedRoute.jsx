@@ -1,6 +1,7 @@
 import { useAuth } from "./contextProvider";
 import { Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import Loading from "../../components/routes/common/Loading";
 
 export function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuth();
@@ -22,7 +23,7 @@ export function ProtectedRoute({ children }) {
 
   if (isCheckingAuth) {
     // Return a loading indicator or null while checking the auth status
-    return <div>Loading...</div>;
+    return <Loading message="Checking authentication..." />;
   }
 
   if (!isAuthenticated) {

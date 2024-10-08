@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import profileImage from "../../../assets/profile.png";
 import axios from "axios";
 import { Link } from "react-router-dom"; // Make sure you are using React Router
+import Loading from "../common/Loading";
 
 export function ProfileSection() {
   const [user, setUser] = useState(null);
@@ -29,7 +30,7 @@ export function ProfileSection() {
 
   // If user data is not yet available, show a loading message
   if (!user) {
-    return <p>Loading user data...</p>;
+    return <Loading message="Loading user data..." />;
   }
 
   // Render user profile
