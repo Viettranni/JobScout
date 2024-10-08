@@ -99,12 +99,12 @@ export function JobCard({
                   )}
                 </Button>
 
-                {/* Generate Cover Letter Button */}
+                {/* Generate Cover Letter Button - hidden on small screens */}
                 {isAuthenticated && (
                   <Button
                     variant="outline"
                     size="sm"
-                    className="bg-white border-indigo-400 hover:bg-hover hover:text-white"
+                    className="bg-white border-indigo-400 hover:bg-hover hover:text-white hidden sm:block" // Hidden on screens smaller than `md`
                     onClick={() => generateCoverLetter(text)} // Pass job description to the hook
                     disabled={isGenerating} // Disable button while generating
                   >
