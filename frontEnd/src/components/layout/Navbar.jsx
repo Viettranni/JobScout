@@ -5,9 +5,11 @@ import { Button } from "../ui/button";
 import LoginModal from "./LoginModal";
 import useAutoLogout from "../context/useAutoLogout";
 import { Menu, X } from "lucide-react";
+import { useUser } from "../context/UserContext"; // Import the user context
 
 export default function Navbar() {
-  const { user, isSessionExpired, handleLogout, handleSessionExpired } =
+  const { user } = useUser(); // Access user from context
+  const { isSessionExpired, handleLogout, handleSessionExpired } =
     useAutoLogout();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -39,9 +41,8 @@ export default function Navbar() {
               {user ? (
                 <>
                   <Link to="/profile" className="text-blue-900">
-                    Profile
+                    {user.firstname} {user.lastname}
                   </Link>
-                  <span className="text-blue-900">{user.firstname}</span>
                   <Button
                     className="bg-transparent text-red-700 hover:text-white py-2 px-4 rounded hover:bg-red-700 border border-red-700"
                     onClick={handleLogout}
@@ -89,11 +90,8 @@ export default function Navbar() {
                     to="/profile"
                     className="text-blue-900 block px-3 py-2 rounded-md"
                   >
-                    Profile
+                    {user.firstname} {user.lastname}
                   </Link>
-                  <span className="text-blue-900 block px-3 py-2">
-                    {user.firstname}
-                  </span>
                   <Button
                     className="bg-transparent text-red-700 hover:text-white py-2 px-4 rounded hover:bg-red-700 border border-red-700 w-full"
                     onClick={handleLogout}

@@ -22,6 +22,7 @@ import CoverLetterDisplay from "./components/routes/profile/CoverLetterDisplay";
 
 import { ProtectedRoute } from "./components/context/ProtectedRoute";
 import { AuthProvider } from "./components/context/contextProvider";
+import { UserProvider } from "./components/context/UserContext";
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -102,10 +103,12 @@ const AnimatedRoutes = () => {
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <ScrollToTop />
-        <AnimatedRoutes />
-      </BrowserRouter>
+      <UserProvider>
+        <BrowserRouter>
+          <ScrollToTop />
+          <AnimatedRoutes />
+        </BrowserRouter>
+      </UserProvider>
     </AuthProvider>
   );
 }

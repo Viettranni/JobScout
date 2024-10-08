@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import axios from "axios";
+import { useUser } from "../../context/UserContext";
 
 // Array of default avatar image URLs
 const defaultAvatars = [
@@ -172,7 +173,6 @@ export default function ProfilePage() {
       firstname: profile.firstname,
       lastname: profile.lastname,
       email: profile.email,
-      profileImage: profile.avatar, // Save the selected or uploaded avatar
       userData: {
         skills: formData.skills.split(",").map((skill) => skill.trim()),
         experience: formData.experience,
@@ -192,15 +192,22 @@ export default function ProfilePage() {
 
       if (response.status === 200) {
         console.log("Profile updated successfully!");
-        setProfile({
-          ...profile,
+
+        // Only update firstname, lastname, email fields while keeping the avatar unchanged
+        setProfile((prevProfile) => ({
+          ...prevProfile,
           firstname: response.data.firstname,
           lastname: response.data.lastname,
           email: response.data.email,
-        });
+        }));
+
         setIsEditingProfile(false); // Stop editing mode after successful update
         setUpdateMessage("Profile updated successfully!"); // Show confirmation message
         setTimeout(() => setUpdateMessage(""), 3000); // Clear message after 3 seconds
+
+        // Update the global user context to keep everything in sync
+        const { setUser } = useUser();
+        setUser(response.data);
       } else {
         console.error("Profile update failed.");
       }
