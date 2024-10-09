@@ -1,6 +1,7 @@
 import { useAuth } from "./contextProvider";
 import { Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import Loading from "../../components/routes/common/Loading";
 
 export function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuth();
@@ -11,7 +12,8 @@ export function ProtectedRoute({ children }) {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      toast.error("Please log in or register to access this page.");
+      // toast.error("Please log in or register to access this page.");
+      console.error("Please log in or register to access this page.");
     }
 
     // Simulate a delay for token checking to avoid premature redirect
@@ -22,7 +24,7 @@ export function ProtectedRoute({ children }) {
 
   if (isCheckingAuth) {
     // Return a loading indicator or null while checking the auth status
-    return <div>Loading...</div>;
+    return <Loading message="Checking authentication..." />;
   }
 
   if (!isAuthenticated) {

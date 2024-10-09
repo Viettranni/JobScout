@@ -19,6 +19,8 @@ const swaggerUi = require("swagger-ui-express");
 const YAML = require("yamljs");
 const swaggerDocument = YAML.load("./swagger/swagger.yaml"); // Load the YAML file
 
+const path = require("path");
+
 const app = express();
 
 // CORS configuration
@@ -41,6 +43,12 @@ app.use("/api/users", userRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/coverLetter", aiModelRouter);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// Serve static files from the uploads folder
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// Serve static files from frontend/public/assets (e.g., default avatars)
+const staticPath = path.join(__dirname, "../frontend/public/assets");
+console.log("Serving static files from:", staticPath);
+app.use("/assets", express.static(staticPath));
 
 // Example route that throws an error
 app.get("/error", (req, res, next) => {
@@ -48,6 +56,7 @@ app.get("/error", (req, res, next) => {
   const error = new Error("Something went wrong!");
   next(error);
 });
+
 // Use the unknownEndpoint middleware for handling undefined routes
 app.use(unknownEndpoint);
 // Use the errorHandler middleware for handling errors

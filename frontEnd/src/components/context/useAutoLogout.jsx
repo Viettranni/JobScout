@@ -15,7 +15,6 @@ const useAutoLogout = () => {
     // Function to handle session expiration
     function handleSessionExpiration(decodedToken) {
       const currentTime = Date.now();
-      console.log(decodedToken.exp, currentTime);
 
       if (decodedToken.exp * 1000 <= currentTime) {
         handleLogout();

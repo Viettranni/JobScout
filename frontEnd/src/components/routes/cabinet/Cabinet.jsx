@@ -5,6 +5,7 @@ import { ProfileSection } from "./ProfileSection";
 import { useSavedJobs } from "../../hooks/useSavedJobs"; // Hook to fetch saved jobs
 import ScrollToTop from "../common/ScrollToTop";
 import EmptyState from "./EmptyState";
+import Loading from "../common/Loading";
 
 export default function Cabinet() {
   const {
@@ -22,7 +23,7 @@ export default function Cabinet() {
   }, []);
 
   if (loading) {
-    return <p>Loading saved jobs...</p>;
+    return <Loading message="Loading saved jobs..." />;
   }
 
   if (error) {

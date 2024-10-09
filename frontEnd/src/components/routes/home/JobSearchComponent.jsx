@@ -17,32 +17,35 @@ const jobCategories = [
   {
     icon: <MonitorIcon className="w-8 h-8" />,
     title: "Design",
-    description: "147 new jobs posted last week",
+    description: "Browse creative design roles and find your next opportunity.",
   },
   {
     icon: <CircuitBoardIcon className="w-8 h-8" />,
     title: "Technology",
-    description: "263 new jobs posted last week",
+    description: "Explore cutting-edge tech jobs tailored to your skills.",
   },
   {
     icon: <MessageSquareIcon className="w-8 h-8" />,
     title: "Marketing",
-    description: "47 new jobs posted last week",
+    description:
+      "Discover exciting opportunities in marketing and communications.",
   },
   {
     icon: <BarChartIcon className="w-8 h-8" />,
     title: "Finance",
-    description: "78 new jobs posted last week",
+    description:
+      "Find rewarding careers in the world of finance and economics.",
   },
   {
     icon: <BookOpenIcon className="w-8 h-8" />,
     title: "Education",
-    description: "92 new jobs posted last week",
+    description:
+      "Connect with teaching and educational administration positions.",
   },
   {
     icon: <MoreHorizontalIcon className="w-8 h-8" />,
     title: "Find More",
-    description: "",
+    description: "Explore more job categories to find your perfect match.",
   },
 ];
 
@@ -83,8 +86,8 @@ function JobSearchComponent() {
           paddingBottom: "20%",
         }}
       >
-        <div className="w-full max-w-4xl">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center text-white leading-tight mb-8 sm:mb-12">
+        <div className="w-full max-w-5xl">
+          <h1 className="text-3xl sm:text-3xl md:text-4xl lg:text-5xl text-center text-white leading-tight mb-8 sm:mb-12">
             The all-in-one place to find the job of your dreams
           </h1>
           <SearchBar />
