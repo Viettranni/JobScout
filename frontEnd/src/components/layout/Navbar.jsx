@@ -6,19 +6,28 @@ import LoginModal from "./LoginModal";
 import useAutoLogout from "../context/useAutoLogout";
 import { Menu, X } from "lucide-react";
 import { useUser } from "../context/UserContext"; // Import the user context
+import Loading from "../routes/common/Loading";
 
 export default function Navbar() {
-  const { user } = useUser(); // Access user from context
+  const { user, loading } = useUser(); // Access user and loading state from context
   const { isSessionExpired, handleLogout, handleSessionExpired } =
     useAutoLogout();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
+  if (loading) {
+    return <Loading message="Loading user data..." />;
+  }
+
+  const profileImageUrl = user?.profileImage
+    ? `http://localhost:4000${user.profileImage}`
+    : "/assets/avatars/avatar1.png";
+
   return (
     <>
       <nav className="sticky top-0 z-50 bg-white shadow-md backdrop-blur">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo Section */}
             <div className="flex-shrink-0">
@@ -36,12 +45,20 @@ export default function Navbar() {
               />
             </div>
 
-            {/* Desktop Sign In/Register Button */}
+            {/* Desktop Sign In/Register Section */}
             <div className="hidden md:flex items-center space-x-4 font-medium">
               {user ? (
-                <>
-                  <Link to="/profile" className="text-blue-900">
-                    {user.firstname} {user.lastname}
+                <div className="flex items-center space-x-4">
+                  <Link
+                    to="/profile"
+                    className="flex items-center space-x-2 text-blue-900"
+                  >
+                    <span className="text-lg">{user.firstname}</span>
+                    <img
+                      src={profileImageUrl}
+                      alt={`${user.firstname} ${user.lastname}`}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
                   </Link>
                   <Button
                     className="bg-transparent text-red-700 hover:text-white py-2 px-4 rounded hover:bg-red-700 border border-red-700"
@@ -49,7 +66,7 @@ export default function Navbar() {
                   >
                     Logout
                   </Button>
-                </>
+                </div>
               ) : (
                 <LoginModal
                   trigger={
@@ -88,9 +105,14 @@ export default function Navbar() {
                 <div className="flex flex-col items-center space-y-2">
                   <Link
                     to="/profile"
-                    className="text-blue-900 block px-3 py-2 rounded-md"
+                    className="flex items-center space-x-2 text-blue-900"
                   >
-                    {user.firstname} {user.lastname}
+                    <span>{user.firstname}</span>
+                    <img
+                      src={profileImageUrl}
+                      alt={`${user.firstname} ${user.lastname}`}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
                   </Link>
                   <Button
                     className="bg-transparent text-red-700 hover:text-white py-2 px-4 rounded hover:bg-red-700 border border-red-700 w-full"

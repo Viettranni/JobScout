@@ -1,48 +1,58 @@
 import React from "react";
 import { FaLinkedin, FaGithub } from "react-icons/fa";
-import avatarSaed from "../../../assets/default.png";
-import avatarViet from "../../../assets/default.png";
-import avatarPavel from "../../../assets/default.png";
-import avatarIvan from "../../../assets/default.png";
+import avatarSaed from "../../../assets/Saed-profile.png";
+import avatarViet from "../../../assets/Viet-profile.jpeg";
+import avatarPavel from "../../../assets/Pavel-profile.jpg";
+import avatarIvan from "../../../assets/Ivan-profile.jpg";
 
 export default function Component() {
   const teamMembers = [
     {
       name: "Saed Abukar",
       role: "Backend Developer",
-      linkedin: "#",
-      github: "#",
+      linkedin: "https://www.linkedin.com/in/saed-abukar-a1bb592b5/",
+      github: "https://github.com/SaedAbukar",
       color: "bg-blue-500",
       image: avatarSaed,
+      email: "saed.a.abukar@gmail.com", // Replace with Saed's email
     },
     {
       name: "Ivan Budanov",
       role: "Frontend Developer",
-      linkedin: "#",
+      linkedin: "https://www.linkedin.com/in/ivan-budanov/",
       github: "https://github.com/BudaOP",
       color: "bg-purple-500",
       image: avatarIvan,
+      email: "ivan.budanov@example.com", // Replace with Ivan's email
     },
     {
       name: "Viet Tran",
       role: "Backend Developer",
-      linkedin: "#",
-      github: "#",
+      linkedin: "https://www.linkedin.com/in/viet-tran-826399262/",
+      github: "https://github.com/Viettranni",
       color: "bg-green-500",
       image: avatarViet,
+      email: "vttranviett@gmail.com", // Replace with Viet's email
     },
     {
       name: "Pavel Degterev",
       role: "Frontend Developer",
-      linkedin: "#",
-      github: "#",
+      linkedin: "https://www.linkedin.com/in/pavel-degterev/",
+      github: "https://github.com/Pawaffle",
       color: "bg-red-500",
       image: avatarPavel,
+      email: "pdegterev@gmail.com", // Replace with Pavel's email
     },
   ];
 
   return (
-    <div className="container mx-auto px-4 py-8 flex justify-center">
+    <div className="container mx-auto px-4 py-8 flex flex-col items-center">
+      {/* Section Title */}
+      <h2 className="text-3xl font-bold text-center mb-12 text-indigo-950">
+        Meet Our Team
+      </h2>
+
+      {/* Team Member Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-16 relative">
         {teamMembers.map((member, index) => (
           <div
@@ -89,9 +99,14 @@ export default function Component() {
                     <FaGithub size={24} />
                   </a>
                 </div>
-                <button className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded">
-                  Contact
-                </button>
+                {/* Contact Button with mailto: link */}
+                <a
+                  href={`mailto:${member.email}?subject=Hello%20${member.name}`}
+                >
+                  <button className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded">
+                    Contact
+                  </button>
+                </a>
               </div>
             </div>
           </div>

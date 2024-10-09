@@ -110,6 +110,8 @@ export default function ProfilePage() {
         setUpdateMessage("Profile picture updated successfully!"); // Show confirmation message
         setTimeout(() => setUpdateMessage(""), 3000); // Clear message after 3 seconds
 
+        window.location.reload();
+
         // Fetch the updated profile to ensure that everything is consistent with the server
         await fetchProfile();
       } else {
@@ -148,6 +150,8 @@ export default function ProfilePage() {
         setProfile({ ...profile, avatar: response.data.profileImage });
         setUpdateMessage("Profile picture updated successfully!"); // Show confirmation message
         setTimeout(() => setUpdateMessage(""), 3000); // Clear message after 3 seconds
+
+        window.location.reload();
 
         // Fetch the updated profile to ensure consistency with the server
         await fetchProfile();
@@ -204,6 +208,7 @@ export default function ProfilePage() {
         setIsEditingProfile(false); // Stop editing mode after successful update
         setUpdateMessage("Profile updated successfully!"); // Show confirmation message
         setTimeout(() => setUpdateMessage(""), 3000); // Clear message after 3 seconds
+        window.location.reload();
 
         // Update the global user context to keep everything in sync
         const { setUser } = useUser();
@@ -257,8 +262,11 @@ export default function ProfilePage() {
                         />
                       </div>
                     ))}
-                    <div className="w-full flex justify-center mt-4">
-                      <Button onClick={() => fileInputRef.current.click()}>
+                    <div className="w-full flex justify-center mt-4 ">
+                      <Button
+                        className="hover:bg-hover"
+                        onClick={() => fileInputRef.current.click()}
+                      >
                         Upload Custom
                       </Button>
                       <input
