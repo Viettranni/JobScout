@@ -137,7 +137,9 @@ export function JobCard({
                   aria-label={isSaved ? "Unsave job" : "Save job"}
                 >
                   <BookmarkIcon
-                    className={`w-5 h-5 ${isSaved ? "fill-primary" : ""}`}
+                    className={`w-5 h-5 ${
+                      isSaved ? "fill-primary text-primary" : ""
+                    }`}
                   />
                 </Button>
               )}

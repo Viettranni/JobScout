@@ -3,6 +3,8 @@ import Step1 from "../../../assets/opp1.png";
 import Step2 from "../../../assets/opp2.png";
 import Step3 from "../../../assets/opp3.png";
 import Gif1 from "../../../assets/step1video.gif";
+import Gif2 from "../../../assets/step2video.gif";
+import Gif3 from "../../../assets/step3video.gif";
 
 const FeatureCard = ({ staticImage, gifImage, title, description }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -24,7 +26,7 @@ const FeatureCard = ({ staticImage, gifImage, title, description }) => {
           />
         </div>
         <h2 className="mt-7 leading-[50px]">{title}</h2>
-        <p className="self-stretch mt-5 font-light">{description}</p>
+        <p className="self-stretch mt-5 font-normal">{description}</p>
       </div>
     </article>
   );
@@ -40,14 +42,14 @@ const features = [
   },
   {
     staticImage: Step2,
-    gifImage: Gif1,
+    gifImage: Gif2,
     title: "Explore Jobs You Need",
     description:
       "Browse and filter job listings tailored to your skills and career goals.",
   },
   {
     staticImage: Step3,
-    gifImage: Gif1,
+    gifImage: Gif3,
     title: "View Your Saved Jobs",
     description:
       "Keep track of jobs you’ve saved and revisit them in the Cabinet page.",
@@ -60,8 +62,8 @@ const JobOpportunities = () => {
       <h1 className="text-4xl font-bold leading-none text-center text-indigo-950 max-md:mr-2 max-md:max-w-full">
         Stay ahead—be the first to discover new job opportunities.
       </h1>
-      <section className="mt-16 max-md:mt-10 max-md:max-w-full ">
-        <div className="flex gap-5 max-md:flex-col items-stretch ">
+      <section className="mt-16 max-md:mt-10 max-md:max-w-full">
+        <div className="flex gap-5 max-md:flex-col items-stretch">
           {features.map((feature, index) => (
             <FeatureCard
               key={index}

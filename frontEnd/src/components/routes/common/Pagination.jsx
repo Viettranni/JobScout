@@ -34,6 +34,9 @@ export function Pagination({ currentPage, totalPages, setCurrentPage }) {
           <Button
             key={page}
             variant={currentPage === page ? "default" : "outline"}
+            className={
+              currentPage === page ? "hover:bg-hover hover:text-white" : ""
+            }
             onClick={() => setCurrentPage(page)}
           >
             {page}

@@ -86,8 +86,8 @@ function JobSearchComponent() {
           paddingBottom: "20%",
         }}
       >
-        <div className="w-full max-w-4xl">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center text-white leading-tight mb-8 sm:mb-12">
+        <div className="w-full max-w-5xl">
+          <h1 className="text-3xl sm:text-3xl md:text-4xl lg:text-5xl text-center text-white leading-tight mb-8 sm:mb-12">
             The all-in-one place to find the job of your dreams
           </h1>
           <SearchBar />

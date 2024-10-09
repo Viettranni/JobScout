@@ -107,15 +107,12 @@ export default function Navbar() {
                     to="/profile"
                     className="flex items-center space-x-2 text-blue-900"
                   >
-                    <span>{user.firstname}</span>
-                    <img
-                      src={profileImageUrl}
-                      alt={`${user.firstname} ${user.lastname}`}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
+                    <span className="font-bold">
+                      {user.firstname} {user.lastname}
+                    </span>
                   </Link>
                   <Button
-                    className="bg-transparent text-red-700 hover:text-white py-2 px-4 rounded hover:bg-red-700 border border-red-700 w-full"
+                    className="bg-transparent text-red-700 hover:text-white py-2 px-4 rounded hover:bg-red-700 border border-red-700 w-[90%]"
                     onClick={handleLogout}
                   >
                     Logout

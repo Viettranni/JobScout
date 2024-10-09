@@ -4,6 +4,10 @@ import avatarSaed from "../../../assets/Saed-profile.png";
 import avatarViet from "../../../assets/Viet-profile.jpeg";
 import avatarPavel from "../../../assets/Pavel-profile.jpg";
 import avatarIvan from "../../../assets/Ivan-profile.jpg";
+import Saedback from "../../../assets/saedback.png";
+import Vietback from "../../../assets/vietback.png";
+import Pavelback from "../../../assets/pavelback.png";
+import Ivanback from "../../../assets/ivanback.png";
 
 export default function Component() {
   const teamMembers = [
@@ -12,7 +16,7 @@ export default function Component() {
       role: "Backend Developer",
       linkedin: "https://www.linkedin.com/in/saed-abukar-a1bb592b5/",
       github: "https://github.com/SaedAbukar",
-      color: "bg-blue-500",
+      background: Saedback,
       image: avatarSaed,
       email: "saed.a.abukar@gmail.com", // Replace with Saed's email
     },
@@ -21,7 +25,7 @@ export default function Component() {
       role: "Frontend Developer",
       linkedin: "https://www.linkedin.com/in/ivan-budanov/",
       github: "https://github.com/BudaOP",
-      color: "bg-purple-500",
+      background: Ivanback,
       image: avatarIvan,
       email: "ivan.budanov@example.com", // Replace with Ivan's email
     },
@@ -30,7 +34,7 @@ export default function Component() {
       role: "Backend Developer",
       linkedin: "https://www.linkedin.com/in/viet-tran-826399262/",
       github: "https://github.com/Viettranni",
-      color: "bg-green-500",
+      background: Vietback,
       image: avatarViet,
       email: "vttranviett@gmail.com", // Replace with Viet's email
     },
@@ -39,7 +43,7 @@ export default function Component() {
       role: "Frontend Developer",
       linkedin: "https://www.linkedin.com/in/pavel-degterev/",
       github: "https://github.com/Pawaffle",
-      color: "bg-red-500",
+      background: Pavelback,
       image: avatarPavel,
       email: "pdegterev@gmail.com", // Replace with Pavel's email
     },
@@ -70,7 +74,11 @@ export default function Component() {
             } mb-8`} // Adds bottom space between cards
           >
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <div className={`h-28 ${member.color}`}></div>
+              {/* Background image for card header */}
+              <div
+                className="h-28 w-full bg-cover bg-top"
+                style={{ backgroundImage: `url(${member.background})` }}
+              ></div>
               <div className="px-6 py-6 flex items-center">
                 <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-white -mt-20 mr-4">
                   <img
