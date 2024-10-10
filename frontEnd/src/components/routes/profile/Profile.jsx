@@ -186,8 +186,8 @@ export default function ProfilePage() {
 
     const token = localStorage.getItem("token");
     try {
-      const response = await axios.post(
-        "https://jobscout-api-f8ep.onrender.com/api/users/userData",
+      const response = await axios.patch(
+        "https://jobscout-api-f8ep.onrender.com/api/users/profile",
         payload,
         {
           headers: { Authorization: `Bearer ${token}` },

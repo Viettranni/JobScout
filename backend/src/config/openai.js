@@ -33,7 +33,7 @@ async function generateCoverLetter(userData, jobData) {
           - Experience: ${experience}.
           - Education: ${education}.
           Generate the cover letter while taking notes from the job post's description: ${jobData.description}.
-          Include a professional introduction and a closing paragraph that shows enthusiasm for the position. Make it so it doesn't seem like it's LLM generated.
+          Include a professional introduction and a closing paragraph that shows enthusiasm for the position. Make it so it doesn't seem like it's LLM generated. Please make the document only 200-230 words long and on the top of the file include only the appliers info not the receivers. 
         `,
       },
     ];
