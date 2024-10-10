@@ -20,7 +20,7 @@ export function useJobSearch() {
     const fetchJobs = async () => {
       try {
         const jobResponse = await axios.get(
-          `http://localhost:4000/api/jobs?page=${currentPage}&limit=10&searchTerm=${searchTerm}&city=${city}&logo=${
+          `https://jobscout-api-f8ep.onrender.com/api/jobs?page=${currentPage}&limit=10&searchTerm=${searchTerm}&city=${city}&logo=${
             selectedLogo !== "All" ? selectedLogo : ""
           }`
         );
@@ -42,7 +42,7 @@ export function useJobSearch() {
 
       try {
         const savedResponse = await axios.get(
-          `http://localhost:4000/api/users/favourites`,
+          `https://jobscout-api-f8ep.onrender.com/api/users/favourites`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -89,7 +89,7 @@ export function useJobSearch() {
     try {
       if (savedJobs[jobId]) {
         // Unsave job
-        await axios.delete(`http://localhost:4000/api/users/favourites`, {
+        await axios.delete(`https://jobscout-api-f8ep.onrender.com/api/users/favourites`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -104,7 +104,7 @@ export function useJobSearch() {
       } else {
         // Save job
         await axios.patch(
-          `http://localhost:4000/api/users/favourites`,
+          `https://jobscout-api-f8ep.onrender.com/api/users/favourites`,
           { jobPostId: jobId },
           {
             headers: {

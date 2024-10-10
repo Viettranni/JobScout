@@ -11,7 +11,7 @@ export function ProfileSection() {
     const fetchProfile = async () => {
       try {
         const profileResponse = await axios.get(
-          "http://localhost:4000/api/users/profile",
+          "https://jobscout-api-f8ep.onrender.com/api/users/profile",
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`, // Add Authorization header with token

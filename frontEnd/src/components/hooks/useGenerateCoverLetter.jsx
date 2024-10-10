@@ -19,7 +19,7 @@ export function useGenerateCoverLetter() {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/api/coverLetter", // Backend endpoint
+        "https://jobscout-api-f8ep.onrender.com/api/coverLetter", // Backend endpoint
         { jobData: { description: jobDescription } }, // Send job description
         {
           headers: { Authorization: `Bearer ${token}` },

@@ -92,7 +92,7 @@ function ModalContent() {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/api/users/register",
+        "https://jobscout-api-f8ep.onrender.com/api/users/register",
         formData
       );
       alert(response.data.message);
@@ -127,7 +127,7 @@ function ModalContent() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:4000/api/users/login",
+        "https://jobscout-api-f8ep.onrender.com/api/users/login",
         loginData
       );
       const { token } = response.data;
