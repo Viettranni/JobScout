@@ -59,6 +59,25 @@
     --chart-5: 340 75% 55%;
   }
 
+  /* Bold - Weight 700 */
+  @font-face {
+    font-family: "SinkinSans";
+    font-style: normal;
+    font-weight: 700; /* This rule applies to bold font weight */
+    font-display: swap;
+    src: url("/fonts/SinkinSans-700Bold.woff2") format("woff2"),
+      url("/fonts/SinkinSans-700Bold.woff") format("woff");
+  }
+
+  /* SemiBold - Weight 600 */
+  @font-face {
+    font-family: "SinkinSans";
+    font-style: normal;
+    font-weight: 600; /* This rule applies to semi-bold font weight */
+    font-display: swap;
+    src: url("/fonts/SinkinSans-600SemiBold.woff") format("woff");
+  }
+
   /* Global styling */
   body {
     @apply bg-background text-foreground;
@@ -68,6 +87,11 @@
   * {
     @apply border-border;
   }
+}
+
+h1 {
+  font-family: "SinkinSans", sans-serif;
+  font-weight: 600;
 }
 
 /* Base scrollbar styling */

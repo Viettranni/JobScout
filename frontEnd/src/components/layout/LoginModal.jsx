@@ -15,6 +15,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+import { useAuth } from "../context/contextProvider";
+
 // Create a context to manage the modal's open state
 const ModalContext = createContext({
   isOpen: false,
@@ -50,6 +52,7 @@ const calculatePasswordStrength = (password) => {
 function ModalContent() {
   const navigate = useNavigate();
   const { setIsOpen } = useModalContext();
+  const { login } = useAuth();
 
   const [formData, setFormData] = useState({
     firstname: "",
@@ -100,7 +103,7 @@ function ModalContent() {
 
       localStorage.setItem("token", token);
 
-      navigate("/");
+      login();
       window.location.reload();
 
       setIsOpen(false);
@@ -125,6 +128,7 @@ function ModalContent() {
   // Handling the LOGIN submit
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
+
     try {
       const response = await axios.post(
         "https://jobscout-api-f8ep.onrender.com/api/users/login",
@@ -133,8 +137,6 @@ function ModalContent() {
       const { token } = response.data;
 
       localStorage.setItem("token", token);
-
-      navigate("/");
       window.location.reload();
 
       setIsOpen(false);
@@ -143,6 +145,7 @@ function ModalContent() {
         email: "",
         password: "",
       });
+      login();
     } catch (error) {
       console.error("Full error:", error);
       if (error.response && error.response.data && error.response.data.error) {
