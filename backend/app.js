@@ -56,6 +56,10 @@ app.get("/error", (req, res, next) => {
   next(error);
 });
 
+app.get('/', (req, res) => {
+  res.json({ message: "API is Running!" });
+});
+
 // Use the unknownEndpoint middleware for handling undefined routes
 app.use(unknownEndpoint);
 // Use the errorHandler middleware for handling errors

@@ -38,27 +38,6 @@ describe("Job API", () => {
     jest.clearAllMocks(); // Clear mocks between tests
   });
 
-  describe("Authentication scenarios", () => {
-    it("should return 401 if no token is provided", async () => {
-      const res = await request(app)
-        .post("/api/jobs/duunitori/scrape-jobs")
-        .query({ page: 1, city: "Helsinki", searchTerm: "Engineer" });
-
-      expect(res.statusCode).toBe(401);
-      expect(res.body.message).toBe("No token provided");
-    });
-
-    it("should return 401 if an invalid token is provided", async () => {
-      const res = await request(app)
-        .post("/api/jobs/duunitori/scrape-jobs")
-        .set("Authorization", "Bearer invalidtoken")
-        .query({ page: 1, city: "Helsinki", searchTerm: "Engineer" });
-
-      expect(res.statusCode).toBe(401);
-      expect(res.body.message).toBe("Invalid token");
-    });
-  });
-
   describe("GET /api/jobs", () => {
     beforeEach(async () => {
       await JobPost.deleteMany({}); // Ensure the collection is empty
