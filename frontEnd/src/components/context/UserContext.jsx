@@ -15,7 +15,7 @@ export const UserProvider = ({ children }) => {
       try {
         setLoading(true);
         const response = await axios.get(
-          "http://localhost:4000/api/users/profile",
+          "https://jobscout-api-f8ep.onrender.com/api/users/profile",
           {
             headers: {
               Authorization: `Bearer ${token}`,

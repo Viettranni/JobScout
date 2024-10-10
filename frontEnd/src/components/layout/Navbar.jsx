@@ -21,7 +21,7 @@ export default function Navbar() {
   }
 
   const profileImageUrl = user?.profileImage
-    ? `http://localhost:4000${user.profileImage}`
+    ? `https://jobscout-api-f8ep.onrender.com/${user.profileImage}`
     : "/assets/avatars/avatar1.png";
 
   return (

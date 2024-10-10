@@ -13,7 +13,7 @@ export function ProfileSection() {
   }
 
   const profileImageUrl = user.profileImage
-    ? `http://localhost:4000${user.profileImage}`
+    ? `https://jobscout-api-f8ep.onrender.com/${user.profileImage}`
     : defaultProfileImage;
 
   // Render user profile
