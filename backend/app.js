@@ -25,7 +25,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // Allowing the Frontend to interact with backend
+    origin: "https://jobscout-frontend.onrender.com", // Allowing the Frontend to interact with backend
   })
 );
 
