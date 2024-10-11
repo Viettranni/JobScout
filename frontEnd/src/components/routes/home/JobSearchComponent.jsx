@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import JobCategoryCard from "./JobCategoryCard"; // Use JobCategoryCard instead of CategoryCard
 import SearchBar from "./SearchBar";
-import jobScoutImg from "../../../assets/jobs";
+import jobScoutImg from "../../../assets/JobScoutLandingImg.png";
 import {
   MonitorIcon,
   CircuitBoardIcon,
