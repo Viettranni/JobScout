@@ -2,6 +2,8 @@ require("dotenv").config();
 const connectDB = require("../backend/src/config/db");
 const express = require("express");
 const mongoose = require("mongoose");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 const cors = require("cors");
 // const authRoutes = require("./src/routes/authRouter");
 const adminRoutes = require("./src/routes/adminRouter");
@@ -28,6 +30,14 @@ app.use(
     origin: "https://jobscout-frontend.onrender.com", // Allowing the Frontend to interact with backend
   })
 );
+
+app.use(helmet()); // Adding Helmet for security
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: "Too many requests, please try again later.",
+});
 
 app.use(express.json());
 
@@ -56,7 +66,7 @@ app.get("/error", (req, res, next) => {
   next(error);
 });
 
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   res.json({ message: "API is Running!" });
 });
 
