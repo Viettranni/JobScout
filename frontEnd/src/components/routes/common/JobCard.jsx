@@ -50,6 +50,17 @@ const parseDatePosted = (datePosted, source) => {
     }
   }
 
+  // Handle Jobly closing date case
+  if (source === "jobly") {
+    const teRegex = /(\d{2}\.\d{2}\.\d{4})/; // Extract date like "11.10.2024"
+
+    const match = datePosted.match(teRegex);
+    if (match) {
+      const dateString = match[1]; // Combine date and time
+      return parse(dateString, "dd.MM.yyyy", new Date());
+    }
+  }
+
   // For any other source or unrecognized format, return null
   return null;
 };
