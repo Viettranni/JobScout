@@ -50,17 +50,6 @@ const parseDatePosted = (datePosted, source) => {
     }
   }
 
-  // Handle Jobly closing date case
-  if (source === "jobly") {
-    const teRegex = /(\d{2}\.\d{2}\.\d{4})/; // Extract date like "11.10.2024"
-
-    const match = datePosted.match(teRegex);
-    if (match) {
-      const dateString = match[1]; // Combine date and time
-      return parse(dateString, "dd.MM.yyyy", new Date());
-    }
-  }
-
   // For any other source or unrecognized format, return null
   return null;
 };
@@ -123,8 +112,8 @@ export function JobCard({
 
   return (
     <Card>
-      <CardContent className="p-4">
-        <div className="flex items-start">
+      <CardContent className="p-4 overflow-hidden">
+        <div className="flex items-start flex-wrap">
           <img
             src={logoPath}
             alt={`${job.company} logo`}
@@ -134,11 +123,15 @@ export function JobCard({
               e.target.src = logos.default; // Fallback to default logo
             }}
           />
-          <div className="flex-grow">
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="text-lg font-semibold">{job.title}</h3>
-                <p className="text-muted-foreground">{job.company}</p>
+          <div className="flex-grow min-w-0">
+            <div className="flex justify-between items-start flex-wrap">
+              <div className="min-w-0">
+                <h3 className="text-lg font-semibold break-words">
+                  {job.title}
+                </h3>
+                <p className="text-muted-foreground break-words">
+                  {job.company}
+                </p>
               </div>
               {isAuthenticated && (
                 <Button
@@ -157,13 +150,13 @@ export function JobCard({
             </div>
             <div className="flex flex-wrap items-center justify-between mt-2">
               <div className="flex flex-wrap items-center">
-                <p className="text-sm text-muted-foreground flex items-center mr-4">
-                  <MapPinIcon className="w-4 h-4 mr-1" /> {job.location}
+                <p className="text-sm text-muted-foreground flex items-center mr-4 break-words">
+                  <MapPinIcon className="w-4 h-4 mr-1 flex-shrink-0" />{" "}
+                  {job.location}
                 </p>
-                <p className="text-sm text-muted-foreground flex items-center">
-                  <ClockIcon className="w-4 h-4 mr-1" /> {timeAgo}
-                </p>{" "}
-                {/* Displaying the posted or closing date */}
+                <p className="text-sm text-muted-foreground flex items-center break-words">
+                  <ClockIcon className="w-4 h-4 mr-1 flex-shrink-0" /> {timeAgo}
+                </p>
               </div>
               <div className="flex flex-wrap items-center gap-2 mt-2 sm:mt-0">
                 <Button
@@ -213,7 +206,7 @@ export function JobCard({
         {isExpanded && (
           <div className="mt-4 p-4 bg-muted rounded-md">
             <h4 className="font-semibold mb-2">Job Description</h4>
-            <p>{job.description}</p>
+            <p className="whitespace-pre-wrap">{job.description}</p>
           </div>
         )}
       </CardContent>
