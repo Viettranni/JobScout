@@ -1,7 +1,6 @@
 const { JobPost } = require("../models/JobPost");
 const mongoose = require("mongoose");
 
-
 // Get all job posts with search and pagination
 exports.getAllJobs = async (req, res) => {
   try {
@@ -30,7 +29,10 @@ exports.getAllJobs = async (req, res) => {
     console.log(filter);
 
     // Execute the query with filtering, pagination, and limit
-    const jobs = await JobPost.find(filter).skip(skip).limit(parseInt(limit));
+    const jobs = await JobPost.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
 
     const totalJobs = await JobPost.countDocuments(filter); // Get total number of jobs that match the filter
 
@@ -84,7 +86,10 @@ exports.findJobs = async (req, res) => {
       query.location = { $regex: new RegExp(city, "i") };
     }
 
-    const jobs = await JobPost.find(query).skip(skip).limit(limit);
+    const jobs = await JobPost.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
     const total = await JobPost.countDocuments(query); // Count based on search query
 
     if (jobs.length === 0) {

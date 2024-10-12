@@ -50,6 +50,17 @@ const parseDatePosted = (datePosted, source) => {
     }
   }
 
+  // Handle Jobly closing date case
+  if (source === "jobly") {
+    const teRegex = /(\d{2}\.\d{2}\.\d{4})/; // Extract date like "11.10.2024"
+
+    const match = datePosted.match(teRegex);
+    if (match) {
+      const dateString = match[1]; // Combine date and time
+      return parse(dateString, "dd.MM.yyyy", new Date());
+    }
+  }
+
   // For any other source or unrecognized format, return null
   return null;
 };
@@ -154,8 +165,13 @@ export function JobCard({
                 </p>{" "}
                 {/* Displaying the posted or closing date */}
               </div>
-              <div className="flex items-center space-x-2 mt-2 sm:mt-0">
-                <Button onClick={toggleExpand} variant="outline" size="sm">
+              <div className="flex flex-wrap items-center gap-2 mt-2 sm:mt-0">
+                <Button
+                  onClick={toggleExpand}
+                  variant="outline"
+                  size="sm"
+                  className="w-full sm:w-auto"
+                >
                   {isExpanded ? (
                     <>
                       Hide Details
@@ -173,7 +189,7 @@ export function JobCard({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="bg-white border-indigo-400 hover:bg-hover hover:text-white hidden sm:block"
+                    className="w-full sm:w-auto bg-white border-indigo-400 hover:bg-hover hover:text-white"
                     onClick={() => generateCoverLetter(text)}
                     disabled={isGenerating}
                   >
@@ -181,7 +197,11 @@ export function JobCard({
                   </Button>
                 )}
 
-                <Button asChild className="bg-primary hover:bg-hover" size="sm">
+                <Button
+                  asChild
+                  className="w-full sm:w-auto bg-primary hover:bg-hover"
+                  size="sm"
+                >
                   <Link to={`${job.url}`} target="_blank">
                     Apply Now
                   </Link>
