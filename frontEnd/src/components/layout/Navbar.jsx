@@ -95,7 +95,7 @@ export default function Navbar() {
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
               <PageLinks
-                parentClass="flex justify-center space-x-4"
+                parentClass="flex justify-center space-x-4" // deleted space-y-2 from here to fix the misalignment in mobile screens
                 itemClass="text-blue-900 hover:text-blue-700 text-lg font-medium block px-3 py-2 rounded-md"
                 isSearchButtonSpecial={false}
               />
