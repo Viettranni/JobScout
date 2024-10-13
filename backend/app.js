@@ -4,6 +4,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 // const authRoutes = require("./src/routes/authRouter");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 const adminRoutes = require("./src/routes/adminRouter");
 const jobRoutes = require("./src/routes/jobRouter");
 const userRoutes = require("./src/routes/userRouter");
@@ -28,6 +30,16 @@ app.use(
     origin: "http://localhost:5173", // Allowing the Frontend to interact with backend
   })
 );
+
+app.use(helmet()); // Adding Helmet for security
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: "Too many requests, please try again later.",
+});
+
+app.use(limiter); // Applying rate limiting to all requests
 
 app.use(express.json());
 
