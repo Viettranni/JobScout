@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+const url = "http://localhost:4000";
+
 export function useSavedJobs() {
   const [savedJobs, setSavedJobs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +23,7 @@ export function useSavedJobs() {
 
       try {
         const response = await axios.get(
-          `https://jobscout-api-f8ep.onrender.com/api/users/favourites?page=${currentPage}&limit=${jobsPerPage}`,
+          `${url}/api/users/favourites?page=${currentPage}&limit=${jobsPerPage}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -52,7 +54,7 @@ export function useSavedJobs() {
     try {
       if (savedJobs.some((job) => job._id === jobId)) {
         // Unsave the job
-        await axios.delete(`https://jobscout-api-f8ep.onrender.com/api/users/favourites`, {
+        await axios.delete(`${url}/api/users/favourites`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -63,7 +65,7 @@ export function useSavedJobs() {
       } else {
         // Save the job
         await axios.patch(
-          `https://jobscout-api-f8ep.onrender.com/api/users/favourites`,
+          `${url}/api/users/favourites`,
           { jobPostId: jobId },
           {
             headers: {
@@ -73,7 +75,7 @@ export function useSavedJobs() {
         );
 
         const jobResponse = await axios.get(
-          `https://jobscout-api-f8ep.onrender.com/api/jobs/${jobId}`,
+          `${url}/api/jobs/${jobId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

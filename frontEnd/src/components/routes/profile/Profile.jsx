@@ -12,6 +12,8 @@ import {
 import axios from "axios";
 import { useUser } from "../../context/UserContext";
 
+const url = "http://localhost:4000";
+
 // Array of default avatar image URLs
 const defaultAvatars = [
   "/assets/avatars/avatar1.png",
@@ -47,7 +49,7 @@ export default function ProfilePage() {
     const token = localStorage.getItem("token");
     try {
       const response = await axios.get(
-        "https://jobscout-api-f8ep.onrender.com/api/users/profile", // Fetch user profile
+        `${url}/api/users/profile`, // Fetch user profile
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -62,7 +64,7 @@ export default function ProfilePage() {
           lastname,
           email,
           avatar: profileImage
-            ? `https://jobscout-api-f8ep.onrender.com${profileImage}`
+            ? `${url}/${profileImage}` // TODO
             : defaultAvatars[0], // Ensure URL points to server
         });
         setFormData({
@@ -99,7 +101,7 @@ export default function ProfilePage() {
     const token = localStorage.getItem("token");
     try {
       const response = await axios.patch(
-        "https://jobscout-api-f8ep.onrender.com/api/users/profile",
+        `${url}/api/users/profile`,
         payload,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -136,7 +138,7 @@ export default function ProfilePage() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        "https://jobscout-api-f8ep.onrender.com/api/users/upload-avatar",
+        `${url}/api/users/upload-avatar`,
         formData,
         {
           headers: {
@@ -187,7 +189,7 @@ export default function ProfilePage() {
     const token = localStorage.getItem("token");
     try {
       const response = await axios.patch(
-        "https://jobscout-api-f8ep.onrender.com/api/users/profile",
+        `${url}/api/users/profile`,
         payload,
         {
           headers: { Authorization: `Bearer ${token}` },

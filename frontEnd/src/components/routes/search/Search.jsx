@@ -16,6 +16,7 @@ export default function JobSearch() {
   const {
     expandedJob,
     savedJobs,
+    appliedJobs,
     currentPage,
     totalPages,
     totalJobs, // Get the total number of jobs from the hook
@@ -23,6 +24,7 @@ export default function JobSearch() {
     setCurrentPage,
     toggleJobExpansion,
     toggleSaveJob,
+    toggleAppliedJobs,
     setSelectedLogo, // Get the function to update the selected logo
   } = useJobSearch();
 
@@ -53,6 +55,8 @@ export default function JobSearch() {
         jobs={jobListings}
         expandedJob={expandedJob}
         toggleJobExpansion={toggleJobExpansion}
+        appliedJobs={appliedJobs}
+        toggleAppliedJobs={toggleAppliedJobs}
         savedJobs={savedJobs}
         toggleSaveJob={toggleSaveJob}
       />

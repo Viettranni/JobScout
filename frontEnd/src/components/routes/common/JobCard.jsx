@@ -67,6 +67,8 @@ const parseDatePosted = (datePosted, source) => {
 
 export function JobCard({
   job,
+  isApplied,
+  toggleApplied,
   isSaved,
   toggleSave,
   isExpanded,
@@ -145,18 +147,32 @@ export function JobCard({
                 </p>
               </div>
               {isAuthenticated && (
-                <Button
-                  variant="ghost"
-                  className="p-2"
-                  onClick={toggleSave}
-                  aria-label={isSaved ? "Unsave job" : "Save job"}
-                >
-                  <BookmarkIcon
-                    className={`w-5 h-5 ${
-                      isSaved ? "fill-primary text-primary" : ""
-                    }`}
-                  />
-                </Button>
+                <>
+                  <Button
+                    variant="ghost"
+                    className="p-2"
+                    onClick={toggleApplied}
+                    aria-label={isApplied ? "Unapply job" : "Apply job"}
+                  >
+                    <BookmarkIcon
+                      className={`w-5 h-5 ${
+                        isApplied ? "fill-primary text-primary" : ""
+                      }`}
+                    />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="p-2"
+                    onClick={toggleSave}
+                    aria-label={isSaved ? "Unsave job" : "Save job"}
+                  >
+                    <BookmarkIcon
+                      className={`w-5 h-5 ${
+                        isSaved ? "fill-primary text-primary" : ""
+                      }`}
+                    />
+                  </Button>
+                </>
               )}
             </div>
             <div className="flex flex-wrap items-center justify-between mt-2">

@@ -17,6 +17,8 @@ import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../context/contextProvider";
 
+const url = "http://localhost:4000";
+
 // Create a context to manage the modal's open state
 const ModalContext = createContext({
   isOpen: false,
@@ -95,7 +97,7 @@ function ModalContent() {
 
     try {
       const response = await axios.post(
-        "https://jobscout-api-f8ep.onrender.com/api/users/register",
+        `${url}/api/users/register`,
         formData
       );
       alert(response.data.message);
@@ -131,7 +133,7 @@ function ModalContent() {
 
     try {
       const response = await axios.post(
-        "https://jobscout-api-f8ep.onrender.com/api/users/login",
+        `${url}/api/users/login`,
         loginData
       );
       const { token } = response.data;

@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+const url = "http://localhost:4000";
+
 export function useGenerateCoverLetter() {
   const navigate = useNavigate();
   const [isGenerating, setIsGenerating] = useState(false); // State for loading
@@ -19,7 +21,7 @@ export function useGenerateCoverLetter() {
 
     try {
       const response = await axios.post(
-        "https://jobscout-api-f8ep.onrender.com/api/coverLetter", // Backend endpoint
+        "${url}/api/coverLetter", // Backend endpoint
         { jobData: { description: jobDescription } }, // Send job description
         {
           headers: { Authorization: `Bearer ${token}` },

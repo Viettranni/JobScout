@@ -3,6 +3,8 @@ import axios from "axios";
 
 const UserContext = createContext();
 
+const url = "http://localhost:4000";
+
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -15,7 +17,7 @@ export const UserProvider = ({ children }) => {
       try {
         setLoading(true);
         const response = await axios.get(
-          "https://jobscout-api-f8ep.onrender.com/api/users/profile",
+          "${url}/api/users/profile",
           {
             headers: {
               Authorization: `Bearer ${token}`,

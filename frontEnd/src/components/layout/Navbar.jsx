@@ -8,6 +8,8 @@ import { Menu, X } from "lucide-react";
 import { useUser } from "../context/UserContext"; // Import the user context
 import Loading from "../routes/common/Loading";
 
+const url = "http://localhost:4000";
+
 export default function Navbar() {
   const { user, loading } = useUser(); // Access user and loading state from context
   const { isSessionExpired, handleLogout, handleSessionExpired } =
@@ -21,7 +23,7 @@ export default function Navbar() {
   }
 
   const profileImageUrl = user?.profileImage
-    ? `https://jobscout-api-f8ep.onrender.com/${user.profileImage}`
+    ? `${url}/${user.profileImage}`
     : "/assets/avatars/avatar1.png";
 
   return (
