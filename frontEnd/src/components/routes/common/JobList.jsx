@@ -23,7 +23,7 @@ export function JobList({ jobs, savedJobs, toggleSaveJob, appliedJobs = {}, togg
             isSaved={!!savedJobs[job._id]} // Check if the job is saved
             toggleSave={() => toggleSaveJob(job._id)} // Call toggleSaveJob correctly
             isApplied={!!appliedJobs[job._id]} // Check if the job is applied, fallback to empty object
-            toggleApply={() => toggleAppliedJobs(job._id)} // Safely call toggleAppliedJobs for applying/unapplying
+            toggleApplied={() => toggleAppliedJobs(job._id)} // Safely call toggleAppliedJobs for applying/unapplying
             isExpanded={expandedJobId === job._id} // Handle expansion
             toggleExpand={() => toggleJobExpansion(job._id)} // Handle job expansion
           />

@@ -43,7 +43,7 @@ export function useAppliedJobs() {
     fetchAppliedJobs();
   }, [currentPageApplied]);
 
-  const toggleAppliedJobs = async (jobId) => {
+  const toggleApplied = async (jobId) => {
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -94,6 +94,6 @@ export function useAppliedJobs() {
     currentPageApplied,
     totalPagesApplied,
     setCurrentPageApplied,
-    toggleAppliedJobs,
+    toggleApplied,
   };
 }
