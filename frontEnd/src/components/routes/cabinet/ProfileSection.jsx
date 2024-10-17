@@ -4,7 +4,7 @@ import { Link } from "react-router-dom"; // Make sure you are using React Router
 import Loading from "../common/Loading";
 import { useUser } from "../../context/UserContext";
 
-const url = process.env.REACT_APP_API_URL || "http://localhost:4000";
+const url = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 export function ProfileSection() {
   const { user } = useUser(); // Use the global user context

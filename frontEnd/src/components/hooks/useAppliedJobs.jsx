@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const url = process.env.REACT_APP_API_URL || "http://localhost:4000";
+const url = import.meta.env.VITE_API_URL || "http://localhost:4000";
  
 
 export function useAppliedJobs() {

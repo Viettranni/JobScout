@@ -12,7 +12,7 @@ import {
 import axios from "axios";
 import { useUser } from "../../context/UserContext";
 
-const url = process.env.REACT_APP_API_URL || "http://localhost:4000";
+const url = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 
 // Array of default avatar image URLs

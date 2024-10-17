@@ -8,7 +8,7 @@ import { Menu, X } from "lucide-react";
 import { useUser } from "../context/UserContext"; // Import the user context
 import Loading from "../routes/common/Loading";
 
-const url = process.env.REACT_APP_API_URL || "http://localhost:4000";
+const url = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 
 export default function Navbar() {
