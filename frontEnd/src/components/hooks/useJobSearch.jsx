@@ -17,9 +17,8 @@ export function useJobSearch() {
   const searchTerm = searchParams.get("searchTerm") || "";
   const city = searchParams.get("city") || "";
 
-  const url =  "http://localhost:4000";
+  const url = import.meta.env.VITE_API_URL || "http://localhost:4000";
   
-  // "https://jobscout-api-f8ep.onrender.com"
 
   useEffect(() => {
     const fetchJobs = async () => {
