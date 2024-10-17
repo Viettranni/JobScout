@@ -2,7 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const url = "http://localhost:4000";
+const url = process.env.REACT_APP_API_URL || "http://localhost:4000";
+
 
 export function useGenerateCoverLetter() {
   const navigate = useNavigate();

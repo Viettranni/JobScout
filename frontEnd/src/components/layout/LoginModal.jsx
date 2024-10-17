@@ -17,7 +17,8 @@ import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../context/contextProvider";
 
-const url = "http://localhost:4000";
+const url = process.env.REACT_APP_API_URL || "http://localhost:4000";
+
 
 // Create a context to manage the modal's open state
 const ModalContext = createContext({

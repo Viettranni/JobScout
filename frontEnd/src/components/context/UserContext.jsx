@@ -3,7 +3,8 @@ import axios from "axios";
 
 const UserContext = createContext();
 
-const url = "http://localhost:4000";
+const url = process.env.REACT_APP_API_URL || "http://localhost:4000";
+
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -17,7 +18,7 @@ export const UserProvider = ({ children }) => {
       try {
         setLoading(true);
         const response = await axios.get(
-          "${url}/api/users/profile",
+          `${url}/api/users/profile`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
