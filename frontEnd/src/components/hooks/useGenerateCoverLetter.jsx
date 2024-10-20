@@ -22,7 +22,7 @@ export function useGenerateCoverLetter() {
 
     try {
       const response = await axios.post(
-        "${url}/api/coverLetter", // Backend endpoint
+        `${url}/api/coverLetter`, // Backend endpoint
         { jobData: { description: jobDescription } }, // Send job description
         {
           headers: { Authorization: `Bearer ${token}` },
