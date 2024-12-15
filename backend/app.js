@@ -6,6 +6,8 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const cors = require("cors");
 // const authRoutes = require("./src/routes/authRouter");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 const adminRoutes = require("./src/routes/adminRouter");
 const jobRoutes = require("./src/routes/jobRouter");
 const userRoutes = require("./src/routes/userRouter");
@@ -42,6 +44,7 @@ const limiter = rateLimit({
   max: 100, // Limit each IP to 100 requests per windowMs. Currently per 15min
   message: "Too many requests, please try again later.",
 });
+
 
 app.use(express.json());
 
