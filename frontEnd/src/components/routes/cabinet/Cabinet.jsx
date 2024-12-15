@@ -2,7 +2,8 @@ import React, { useEffect } from "react";
 import { JobList } from "../common/JobList";
 import { Pagination } from "../common/Pagination";
 import { ProfileSection } from "./ProfileSection";
-import { useSavedJobs } from "../../hooks/useSavedJobs"; // Hook to fetch saved jobs
+import { useSavedJobs } from "../../hooks/useSavedJobs"; // Hook to fetch saved jobs 
+import { useJobSearch } from "../../hooks/useJobSearch"; // Hook to fetch applied jobs
 import ScrollToTop from "../common/ScrollToTop";
 import EmptyState from "./EmptyState";
 import Loading from "../common/Loading";
@@ -10,24 +11,42 @@ import Loading from "../common/Loading";
 export default function Cabinet() {
   const {
     savedJobs,
-    loading,
-    error,
+    loading: loadingSaved,
+    error: errorSaved,
     currentPage,
     totalPages,
     setCurrentPage,
     toggleSaveJob,
   } = useSavedJobs();
 
+  // const {
+  //   appliedJobs,
+  //   loading: loadingApplied,
+  //   error: errorApplied,
+  //   currentPage: currentPageApplied,
+  //   totalPages: totalPagesApplied,
+  //   setCurrentPage: setCurrentPageApplied,
+  //   toggleAppliedJobs,
+  // } = useAppliedJobs();
+
+  const {
+    expandedJob,
+    appliedJobs,
+    toggleAppliedJobs,
+  } = useJobSearch();
+
   useEffect(() => {
     document.title = "Camp Locker";
   }, []);
 
-  if (loading) {
+  // Handle loading state for saved jobs
+  if (loadingSaved) {
     return <Loading message="Loading saved jobs..." />;
   }
 
-  if (error) {
-    return <p>{error}</p>;
+  // Handle error state for saved jobs
+  if (errorSaved) {
+    return <p>{errorSaved}</p>;
   }
 
   return (
@@ -58,6 +77,8 @@ export default function Cabinet() {
               {}
             )}
             toggleSaveJob={toggleSaveJob}
+            appliedJobs={appliedJobs}
+            toggleAppliedJobs={toggleAppliedJobs}
           />
 
           {/* Pagination Component */}

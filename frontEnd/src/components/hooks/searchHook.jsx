@@ -27,3 +27,5 @@ export function searchHook() {
     handleSubmit,
   };
 }
+
+// Test for automatic deploy

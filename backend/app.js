@@ -2,6 +2,8 @@ require("dotenv").config();
 const connectDB = require("../backend/src/config/db");
 const express = require("express");
 const mongoose = require("mongoose");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 const cors = require("cors");
 // const authRoutes = require("./src/routes/authRouter");
 const helmet = require("helmet");
@@ -27,7 +29,11 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // Allowing the Frontend to interact with backend
+    origin: [
+      "http://localhost:5173", // Local frontend
+      "https://jobscout-frontend.onrender.com", // Deployed frontend (if applicable)
+    ],
+    credentials: true, // Required if sending cookies or using sessions
   })
 );
 
@@ -35,11 +41,10 @@ app.use(helmet()); // Adding Helmet for security
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: 100, // Limit each IP to 100 requests per windowMs. Currently per 15min
   message: "Too many requests, please try again later.",
 });
 
-app.use(limiter); // Applying rate limiting to all requests
 
 app.use(express.json());
 
@@ -66,6 +71,10 @@ app.get("/error", (req, res, next) => {
   // Trigger an error
   const error = new Error("Something went wrong!");
   next(error);
+});
+
+app.get("/", (req, res) => {
+  res.json({ message: "API is Running!" });
 });
 
 // Use the unknownEndpoint middleware for handling undefined routes

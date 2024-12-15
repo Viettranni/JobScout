@@ -3,6 +3,9 @@ import axios from "axios";
 
 const UserContext = createContext();
 
+const url = import.meta.env.VITE_API_URL || "http://localhost:4000";
+
+
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -15,7 +18,7 @@ export const UserProvider = ({ children }) => {
       try {
         setLoading(true);
         const response = await axios.get(
-          "http://localhost:4000/api/users/profile",
+          `${url}/api/users/profile`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

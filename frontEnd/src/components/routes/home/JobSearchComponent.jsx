@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import JobCategoryCard from "./JobCategoryCard"; // Use JobCategoryCard instead of CategoryCard
 import SearchBar from "./SearchBar";
-import jobScoutImg from "../../../assets/JobScoutLandingImg.png";
 import {
   MonitorIcon,
   CircuitBoardIcon,
@@ -79,7 +78,7 @@ function JobSearchComponent() {
       <section
         className="flex-grow flex flex-col items-center px-4 sm:px-8 md:px-16 lg:px-20 py-8 sm:py-12 md:py-16 lg:py-20 bg-indigo-950 rounded-b-xl"
         style={{
-          backgroundImage: `url(${jobScoutImg})`,
+          backgroundImage: `url(/assets/jobScoutImg.png)`,
           backgroundSize: "100%",
           backgroundPosition: "bottom center",
           backgroundRepeat: "no-repeat",

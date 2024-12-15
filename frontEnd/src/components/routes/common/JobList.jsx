@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { JobCard } from "./JobCard";
 
-export function JobList({ jobs, savedJobs, toggleSaveJob }) {
+export function JobList({ jobs, savedJobs, toggleSaveJob, appliedJobs = {}, toggleAppliedJobs = () => {} }) {
   const [expandedJobId, setExpandedJobId] = useState(null);
 
   const toggleJobExpansion = (jobId) => {
@@ -22,6 +22,8 @@ export function JobList({ jobs, savedJobs, toggleSaveJob }) {
             job={job}
             isSaved={!!savedJobs[job._id]} // Check if the job is saved
             toggleSave={() => toggleSaveJob(job._id)} // Call toggleSaveJob correctly
+            isApplied={!!appliedJobs[job._id]} // Check if the job is applied, fallback to empty object
+            toggleApplied={() => toggleAppliedJobs(job._id)} // Safely call toggleAppliedJobs for applying/unapplying
             isExpanded={expandedJobId === job._id} // Handle expansion
             toggleExpand={() => toggleJobExpansion(job._id)} // Handle job expansion
           />

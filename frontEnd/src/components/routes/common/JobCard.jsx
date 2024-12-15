@@ -50,12 +50,25 @@ const parseDatePosted = (datePosted, source) => {
     }
   }
 
+  // Handle Jobly closing date case
+  if (source === "jobly") {
+    const teRegex = /(\d{2}\.\d{2}\.\d{4})/; // Extract date like "11.10.2024"
+
+    const match = datePosted.match(teRegex);
+    if (match) {
+      const dateString = match[1]; // Combine date and time
+      return parse(dateString, "dd.MM.yyyy", new Date());
+    }
+  }
+
   // For any other source or unrecognized format, return null
   return null;
 };
 
 export function JobCard({
   job,
+  isApplied,
+  toggleApplied,
   isSaved,
   toggleSave,
   isExpanded,
@@ -134,18 +147,32 @@ export function JobCard({
                 </p>
               </div>
               {isAuthenticated && (
-                <Button
-                  variant="ghost"
-                  className="p-2"
-                  onClick={toggleSave}
-                  aria-label={isSaved ? "Unsave job" : "Save job"}
-                >
-                  <BookmarkIcon
-                    className={`w-5 h-5 ${
-                      isSaved ? "fill-primary text-primary" : ""
-                    }`}
-                  />
-                </Button>
+                <>
+                  <Button
+                    variant="ghost"
+                    className="p-2"
+                    onClick={toggleApplied}
+                    aria-label={isApplied ? "Unapply job" : "Apply job"}
+                  >
+                    <BookmarkIcon
+                      className={`w-5 h-5 ${
+                        isApplied ? "fill-primary text-primary" : ""
+                      }`}
+                    />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="p-2"
+                    onClick={toggleSave}
+                    aria-label={isSaved ? "Unsave job" : "Save job"}
+                  >
+                    <BookmarkIcon
+                      className={`w-5 h-5 ${
+                        isSaved ? "fill-primary text-primary" : ""
+                      }`}
+                    />
+                  </Button>
+                </>
               )}
             </div>
             <div className="flex flex-wrap items-center justify-between mt-2">
@@ -211,5 +238,6 @@ export function JobCard({
         )}
       </CardContent>
     </Card>
+    // test
   );
 }

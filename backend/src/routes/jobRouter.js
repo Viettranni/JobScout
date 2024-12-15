@@ -10,18 +10,7 @@ router.get("/", jobController.getAllJobs);
 router.get("/:id", jobController.getJobById);
 
 router.use(authMiddleware);
-// POST/scrape all jobsites
-router.post("/allsites/scrape-jobs", jobController.scrapeJobs);
-// POST/scrape
-router.post("/duunitori/scrape-jobs", jobController.scrapeDuuniToriJobs);
-// POST/scrape
-router.post("/indeed/scrape-jobs", jobController.scrapeIndeedJobs);
-// POST/scrape
-router.post("/jobly/scrape-jobs", jobController.scrapeJoblyJobs);
-// POST/scrape
-router.post("/oikotie/scrape-jobs", jobController.scrapeOikotieJobs);
-// POST/scrape
-router.post("/tepalvelut/scrape-jobs", jobController.scrapeTePalvelutJobs);
+
 // DELETE
 router.delete("/:id", jobController.deleteJob);
 // DELETE

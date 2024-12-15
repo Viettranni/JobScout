@@ -17,14 +17,16 @@ router.patch("/profile", authMiddleware, userController.updateUser); // Update c
 router.delete("/profile", authMiddleware, userController.deleteUser); // Delete current user's account (no :id needed)
 
 router.patch("/favourites", authMiddleware, userController.addToFavourites); // Add job to current user's favourites
-router.delete(
-  "/favourites",
-  authMiddleware,
-  userController.removeFromFavourites
-); // Remove job from current user's favourites
+router.delete("/favourites", authMiddleware, userController.removeFromFavourites); // Remove job from current user's favourites
+
+router.patch("/appliedJobs", authMiddleware, userController.addToAppliedJobs); // Add job to current user's applied jobs
+router.delete("/appliedJobs", authMiddleware, userController.removeFromAppliedJobs); // Remove job from current user's applied jobs
 
 // Fetch all saved jobs (favourites) for the authenticated user
 router.get("/favourites", authMiddleware, userController.getUserWithFavourites);
+
+// Fetch all saved jobs (appliedJobs) for the authenticated user
+router.get("/appliedJobs", authMiddleware, userController.getUserWithAppliedJobs);
 
 router.post("/userData", authMiddleware, userController.userData);
 

@@ -200,6 +200,117 @@ exports.removeFromFavourites = async (req, res) => {
   }
 };
 
+// POST/ add applied jobs to user
+exports.addToAppliedJobs = async (req, res) => {
+  // Ensure req.user exists after authMiddleware
+  if (!req.user || !req.user.id) {
+    return res
+      .status(401)
+      .json({ message: "Invalid user or user not authenticated" });
+  }
+  const userId = req.user.id; // Extracted from JWT
+  const { jobPostId } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(jobPostId)) {
+    return res.status(400).json({ message: "Invalid job post ID" });
+  }
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (user.appliedJobs.includes(jobPostId)) {
+      return res.status(400).json({ message: "Job already in applied jobs" });
+    }
+
+    user.appliedJobs.push(jobPostId);
+    await user.save();
+
+    res.status(200).json(user.appliedJobs);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// DELETE/ delete favourites from user
+exports.removeFromAppliedJobs = async (req, res) => {
+  // Ensure req.user exists after authMiddleware
+  if (!req.user || !req.user.id) {
+    return res
+      .status(401)
+      .json({ message: "Invalid user or user not authenticated" });
+  }
+  const userId = req.user.id; // Extracted from JWT
+  const { jobPostId } = req.body;
+
+  if (
+    !mongoose.Types.ObjectId.isValid(userId) ||
+    !mongoose.Types.ObjectId.isValid(jobPostId)
+  ) {
+    return res.status(400).json({ message: "Invalid user ID or jobPostId" });
+  }
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.appliedJobs = user.appliedJobs.filter(
+      (jobPost) => jobPost.toString() !== jobPostId
+    );
+
+    await user.save();
+    res.status(200).json(user.appliedJobs);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// GET/ return only user's applied jobs with pagination support
+exports.getUserWithAppliedJobs = async (req, res) => {
+  if (!req.user || !req.user.id) {
+    return res
+      .status(401)
+      .json({ message: "Invalid user or user not authenticated" });
+  }
+
+  const userId = req.user.id;
+
+  const { page = 1, limit = 10 } = req.query;
+  const skip = (page - 1) * limit;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
+
+  try {
+    // Fetch the total number of applied jobs
+    const user = await User.findById(userId).populate("appliedJobs");
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const totalAppliedJobs = user.appliedJobs.length;
+
+    // Fetch paginated favourites
+    const paginatedAppliedJobs = await User.findById(userId)
+      .populate({
+        path: "appliedJobs",
+        options: { skip: skip, limit: parseInt(limit) },
+      })
+      .lean();
+
+    res.status(200).json({
+      appliedJobs: paginatedAppliedJobs.appliedJobs || [],
+      totalPages: Math.ceil(totalAppliedJobs / limit),
+      totalAppliedJobs,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 // GET/ return only user's favourites with pagination support
 exports.getUserWithFavourites = async (req, res) => {
   if (!req.user || !req.user.id) {

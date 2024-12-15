@@ -8,6 +8,9 @@ import { Menu, X } from "lucide-react";
 import { useUser } from "../context/UserContext"; // Import the user context
 import Loading from "../routes/common/Loading";
 
+const url = import.meta.env.VITE_API_URL || "http://localhost:4000";
+
+
 export default function Navbar() {
   const { user, loading } = useUser(); // Access user and loading state from context
   const { isSessionExpired, handleLogout, handleSessionExpired } =
@@ -21,7 +24,7 @@ export default function Navbar() {
   }
 
   const profileImageUrl = user?.profileImage
-    ? `http://localhost:4000${user.profileImage}`
+    ? `${url}/${user.profileImage}`
     : "/assets/avatars/avatar1.png";
 
   return (
@@ -95,7 +98,8 @@ export default function Navbar() {
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
               <PageLinks
-                parentClass="flex justify-center space-x-4"
+                parentClass="flex justify-center space-x-4" // deleted space-y-2 from here to fix the misalignment in mobile screens
+
                 itemClass="text-blue-900 hover:text-blue-700 text-lg font-medium block px-3 py-2 rounded-md"
                 isSearchButtonSpecial={false}
               />

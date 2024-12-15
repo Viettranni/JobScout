@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 export function useJobSearch() {
   const [jobListings, setJobListings] = useState([]);
   const [savedJobs, setSavedJobs] = useState({});
+  const [appliedJobs, setAppliedJobs] = useState({});
   const [expandedJob, setExpandedJob] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -16,11 +17,14 @@ export function useJobSearch() {
   const searchTerm = searchParams.get("searchTerm") || "";
   const city = searchParams.get("city") || "";
 
+  const url = import.meta.env.VITE_API_URL || "http://localhost:4000";
+  
+
   useEffect(() => {
     const fetchJobs = async () => {
       try {
         const jobResponse = await axios.get(
-          `http://localhost:4000/api/jobs?page=${currentPage}&limit=10&searchTerm=${searchTerm}&city=${city}&logo=${
+          `${url}/api/jobs?page=${currentPage}&limit=10&searchTerm=${searchTerm}&city=${city}&logo=${
             selectedLogo !== "All" ? selectedLogo : ""
           }`
         );
@@ -42,7 +46,7 @@ export function useJobSearch() {
 
       try {
         const savedResponse = await axios.get(
-          `http://localhost:4000/api/users/favourites`,
+          `${url}/api/users/favourites`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -70,8 +74,46 @@ export function useJobSearch() {
       }
     };
 
+    const fetchAppliedJobs = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        // User is not authenticated, skip fetching saved jobs
+        return;
+      }
+
+      try {
+        const savedResponse = await axios.get(
+          `${url}/api/users/appliedJobs`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (Array.isArray(savedResponse.data.appliedJobs)) {
+          const appliedJobsMap = savedResponse.data.appliedJobs.reduce(
+            (acc, job) => {
+              acc[job._id] = true;
+              return acc;
+            },
+            {}
+          );
+
+          setAppliedJobs(appliedJobsMap);
+        } else {
+          console.error(
+            "Applied jobs response does not contain an array of applied jobs."
+          );
+        }
+      } catch (error) {
+        console.error("Failed to fetch applied jobs:", error);
+      }
+    };
+
     fetchJobs();
     fetchSavedJobs();
+    fetchAppliedJobs();
   }, [currentPage, searchTerm, city, selectedLogo]);
 
   const toggleJobExpansion = (jobId) => {
@@ -89,7 +131,7 @@ export function useJobSearch() {
     try {
       if (savedJobs[jobId]) {
         // Unsave job
-        await axios.delete(`http://localhost:4000/api/users/favourites`, {
+        await axios.delete(`${url}/api/users/favourites`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -104,7 +146,7 @@ export function useJobSearch() {
       } else {
         // Save job
         await axios.patch(
-          `http://localhost:4000/api/users/favourites`,
+          `${url}/api/users/favourites`,
           { jobPostId: jobId },
           {
             headers: {
@@ -120,14 +162,58 @@ export function useJobSearch() {
     }
   };
 
+  const toggleAppliedJobs = async (jobId) => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      console.error("No token found, user is not authenticated.");
+      return;
+    }
+
+    try {
+      if (appliedJobs[jobId]) {
+        // Unsave job
+        await axios.delete(`${url}/api/users/appliedJobs`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          data: { jobPostId: jobId },
+        });
+
+        setAppliedJobs((prev) => {
+          const updated = { ...prev };
+          delete updated[jobId];
+          return updated;
+        });
+      } else {
+        // Save job
+        await axios.patch(
+          `${url}/api/users/appliedJobs`,
+          { jobPostId: jobId },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setAppliedJobs((prev) => ({ ...prev, [jobId]: true }));
+      }
+    } catch (error) {
+      console.error("Failed to toggle applied job:", error);
+    }
+  };
+
   return {
     jobListings,
     savedJobs,
+    appliedJobs,
     expandedJob,
     currentPage,
     setCurrentPage,
     toggleJobExpansion,
     toggleSaveJob,
+    toggleAppliedJobs,
     totalPages,
     totalJobs,
     setSelectedLogo,
