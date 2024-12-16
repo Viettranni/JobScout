@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import JobCategoryCard from "./JobCategoryCard"; 
 import SearchBar from "./SearchBar";
+import JobScoutLandingImg from "../../../assets/jobScoutLandingImg.png";
 import {
   MonitorIcon,
   CircuitBoardIcon,
@@ -48,7 +49,6 @@ const jobCategories = [
   },
 ];
 
-const JobScoutLandingImg = '/JobScoutLandingImg.png';
 
 function JobSearchComponent() {
   const [visibleBlocks, setVisibleBlocks] = useState(jobCategories.length);
