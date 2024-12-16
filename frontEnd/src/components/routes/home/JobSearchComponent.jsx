@@ -48,7 +48,7 @@ const jobCategories = [
   },
 ];
 
-const JobScoutLandingImg = './public/assets/JobScoutLandingImg.png';
+const JobScoutLandingImg = '/assets/JobScoutLandingImg.png';
 
 function JobSearchComponent() {
   const [visibleBlocks, setVisibleBlocks] = useState(jobCategories.length);
