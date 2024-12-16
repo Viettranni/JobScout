@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import JobCategoryCard from "./JobCategoryCard"; // Use JobCategoryCard instead of CategoryCard
+import JobCategoryCard from "./JobCategoryCard"; 
 import SearchBar from "./SearchBar";
 import {
   MonitorIcon,
@@ -11,7 +11,7 @@ import {
   UsersIcon,
 } from "lucide-react";
 
-// Has to work with backEnd info !!!
+
 const jobCategories = [
   {
     icon: <MonitorIcon className="w-8 h-8" />,
@@ -78,7 +78,7 @@ function JobSearchComponent() {
       <section
         className="flex-grow flex flex-col items-center px-4 sm:px-8 md:px-16 lg:px-20 py-8 sm:py-12 md:py-16 lg:py-20 bg-indigo-950 rounded-b-xl"
         style={{
-          backgroundImage: `url(/assets/jobScoutImg.png)`,
+          backgroundImage: `url(src/assets/JobScoutLandingImg.png)`,
           backgroundSize: "100%",
           backgroundPosition: "bottom center",
           backgroundRepeat: "no-repeat",
