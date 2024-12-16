@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import JobCategoryCard from "./JobCategoryCard"; 
+import JobScoutLandingImg from '/public/assets/JobScoutLandingImg.png';
 import SearchBar from "./SearchBar";
 import {
   MonitorIcon,
@@ -78,7 +79,7 @@ function JobSearchComponent() {
       <section
         className="flex-grow flex flex-col items-center px-4 sm:px-8 md:px-16 lg:px-20 py-8 sm:py-12 md:py-16 lg:py-20 bg-indigo-950 rounded-b-xl"
         style={{
-          backgroundImage: `url(src/assets/JobScoutLandingImg.png)`,
+          backgroundImage: `url(${JobScoutLandingImg})`,
           backgroundSize: "100%",
           backgroundPosition: "bottom center",
           backgroundRepeat: "no-repeat",
