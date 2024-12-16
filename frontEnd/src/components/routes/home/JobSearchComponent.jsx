@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import JobCategoryCard from "./JobCategoryCard"; 
-import JobScoutLandingImg from '/public/assets/JobScoutLandingImg.png';
 import SearchBar from "./SearchBar";
 import {
   MonitorIcon,
@@ -48,6 +47,8 @@ const jobCategories = [
     description: "Explore more job categories to find your perfect match.",
   },
 ];
+
+const JobScoutLandingImg = './public/assets/JobScoutLandingImg.png';
 
 function JobSearchComponent() {
   const [visibleBlocks, setVisibleBlocks] = useState(jobCategories.length);
