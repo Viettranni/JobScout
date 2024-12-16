@@ -78,7 +78,7 @@ function JobSearchComponent() {
       <section
         className="flex-grow flex flex-col items-center px-4 sm:px-8 md:px-16 lg:px-20 py-8 sm:py-12 md:py-16 lg:py-20 bg-indigo-950 rounded-b-xl"
         style={{
-          backgroundImage: `url(assets/JobScoutLandingImg.png)`,
+          backgroundImage: `url(src/assets/JobScoutLandingImg.png)`,
           backgroundSize: "100%",
           backgroundPosition: "bottom center",
           backgroundRepeat: "no-repeat",
