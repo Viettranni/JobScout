@@ -6,12 +6,11 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const cors = require("cors");
 // const authRoutes = require("./src/routes/authRouter");
-const helmet = require("helmet");
-const rateLimit = require("express-rate-limit");
 const adminRoutes = require("./src/routes/adminRouter");
 const jobRoutes = require("./src/routes/jobRouter");
 const userRoutes = require("./src/routes/userRouter");
 const aiModelRouter = require("./src/routes/aiModelRouter");
+const mobileRoutes = require("./src/routes/mobileRouter")
 const {
   requestLogger,
   unknownEndpoint,
@@ -32,6 +31,8 @@ app.use(
     origin: [
       "http://localhost:5173", // Local frontend
       "https://jobscout-frontend.onrender.com", // Deployed frontend (if applicable)
+      "exp://192.168.0.108:8081",
+      "http://192.168.0.108:19000"
     ],
     credentials: true, // Required if sending cookies or using sessions
   })
@@ -57,6 +58,7 @@ connectDB();
 app.use("/api/admin", adminRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/jobs", jobRoutes);
+app.use("/api/mobile", mobileRoutes);
 app.use("/api/coverLetter", aiModelRouter);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // Serve static files from the uploads folder
