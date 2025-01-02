@@ -32,7 +32,8 @@ app.use(
       "http://localhost:5173", // Local frontend
       "https://jobscout-frontend.onrender.com", // Deployed frontend (if applicable)
       "exp://192.168.0.108:8081",
-      "http://192.168.0.108:19000"
+      "http://192.168.0.108:19000",
+      "https://jobscout.viettran.fi"
     ],
     credentials: true, // Required if sending cookies or using sessions
   })

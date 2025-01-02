@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 exports.getAllJobsMobile = async (req, res) => {
   try {
     const { page = 1, searchTerm, city, logo } = req.query; // Use default page 1 if not provided
-    const limit = 5; // Set the limit to 5 jobs only
+    const limit = 832; // Set the limit to 5 jobs only
     const skip = (page - 1) * limit; // Calculate how many jobs to skip
   
     // Build the filter object for MongoDB query

@@ -366,13 +366,17 @@ exports.registerUser = async (req, res) => {
       [],
       []
     );
+
+    // Remove the password field from the user object
+    newUser.password = undefined;
+
     const token = jwt.sign(
       { id: newUser._id, firstname: newUser.firstname },
       process.env.JWT_SECRET,
       { expiresIn: "30m" }
     );
 
-    res.status(201).json({ message: "User created successfully!", token }); // Sending the Token to the client
+    res.status(201).json({ message: "User created successfully!", token, newUser }); // Sending the Token to the client
     console.log("New user registered:", newUser.firstname);
   } catch (error) {
     console.error("Error in registerUser:", error.message); // Log error message
