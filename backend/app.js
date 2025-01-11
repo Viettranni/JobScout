@@ -1,5 +1,5 @@
 require("dotenv").config();
-const connectDB = require("../backend/src/config/db");
+const connectDB = require("./src/config/db");
 const express = require("express");
 const mongoose = require("mongoose");
 const helmet = require("helmet");
