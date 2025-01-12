@@ -12,12 +12,13 @@
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React.js, Vite, Axios
+- **Frontend**: React.js, Vite, Axios, Tailwind CSS
 - **Backend**: Node.js, Express.js
-- **Database**: MongoDB
-- **Authentication**: JWT, Passport.js
+- **Database**: MongoDB Atlas
+- **Authentication**: JWT, Bcrypt
 - **Web Scraping**: Puppeteer
-- **Deployment**: Docker, Render (for cloud hosting)
+- **Testing**: Jest, Swagger
+- **Deployment**: Docker, Render (for cloud hosting), Vercel
 
 ## 🌍 Live Demo
 
