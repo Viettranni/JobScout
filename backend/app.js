@@ -29,11 +29,13 @@ const app = express();
 app.use(
   cors({
     origin: [
+      "http://localhost:5002", // For Docker
       "http://localhost:5173", // Local frontend
-      "https://jobscout-frontend.onrender.com", // Deployed frontend (if applicable)
+      "https://jobscout-frontend.onrender.com", // Deployed frontend
       "exp://192.168.0.108:8081",
-      "http://192.168.0.108:19000",
-      "https://jobscout.viettran.fi"
+      "http://192.168.0.108:19000", 
+      "https://jobscout.viettran.fi", // Viets website
+      
     ],
     credentials: true, // Required if sending cookies or using sessions
   })
@@ -77,7 +79,7 @@ app.get("/error", (req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-  res.json({ message: "API is Running!" });
+  res.json({ message: "Backend is Running!" });
 });
 
 // Use the unknownEndpoint middleware for handling undefined routes

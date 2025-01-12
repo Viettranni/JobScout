@@ -4,13 +4,13 @@ services:
     build:
       context: ./frontEnd  # Path to the frontend Dockerfile
     ports:
-      - "50012:80"         # Map frontend to localhost:5000
+      - "5002:80"         # Map frontend to localhost:5002
 
   backend:
     build:
       context: ./backend  # Path to the backend Dockerfile
     ports:
-      - "30012:3001"       # Map backend to localhost:3001
+      - "3001:3001"       # Map backend to localhost:3001
     depends_on:
       - mongo
 
